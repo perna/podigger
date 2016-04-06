@@ -13,9 +13,15 @@ def get_episodes(feed):
 
     for entry in  d.entries:
 
+        print(entry)
+
         item = {}
         tags = []
         item['title'] = entry.title
+        item['link'] = entry.link
+        item['published'] = entry.published
+        print(entry.published_parsed)
+
         description = no_tag.sub('', entry.description)
 
         item['description'] = description
