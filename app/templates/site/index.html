@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Podigger</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css')}}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-material-design.min.css')}}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/ripples.min.css')}}">
 </head>
 <body ng-app="podigger">
     <div class="container">
@@ -16,6 +17,7 @@
             <button></button>
         </form>
     </div>
+     <script src="{{ url_for('static', filename='js/lib/material.min.js')}}"></script>
     <script src="{{ url_for('static', filename='js/lib/angular.min.js')}}"></script>
     <script src="{{ url_for('static', filename='js/lib/angular-route.min.js')}}"></script>
     <script src="{{ url_for('static', filename='js/app.js')}}"></script>

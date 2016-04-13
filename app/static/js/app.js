@@ -1,3 +1,5 @@
+$.material.init();
+
 angular.module('podigger',['ngRoute'])
     .config(function($routeProvider) {
 

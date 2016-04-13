@@ -64,3 +64,4 @@ target/
 config/config.py
 
 .idea/
+app.db

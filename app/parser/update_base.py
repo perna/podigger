@@ -1,22 +1,12 @@
 from elasticsearch import Elasticsearch
-from datetime import datetime
 import json
 from parser import get_episodes
+from .site import models
 
 es = Elasticsearch()
 
-feeds = [
-            'http://www.portalcafebrasil.com.br/todos/podcasts/feed/',
-            'http://radiofobia.com.br/podcast/category/podcast/feed/',
-            'http://feeds.feedburner.com/toscochanchada',
-            'http://feeds.feedburner.com/CidadeGamer',
-            'http://feeds.feedburner.com/anticastdesign',
-            'http://cinemacomrapadura.com.br/feed'
-        ]
 
 for link in feeds:
-
-    data = get_episodes(link)
 
     podcast = json.loads(data)
 
