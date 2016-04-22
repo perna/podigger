@@ -1,6 +1,6 @@
 $.material.init();
 
-angular.module('podigger',['ngRoute'])
+angular.module('podigger',['ngRoute','ngAnimate'])
     .config(function($routeProvider) {
 
         $routeProvider
