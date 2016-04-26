@@ -3,8 +3,9 @@ from flask.ext.script import Manager
 from flask.ext.migrate import Migrate, MigrateCommand
 from app import app, db
 from app.api.models import Podcast
+from config.config import DevConfiguration
 
-app.config.from_pyfile('../config/dev.cfg')
+app.config.from_object(DevConfiguration)
 
 migrate = Migrate(app, db)
 manager = Manager(app)

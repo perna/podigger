@@ -1,12 +1,14 @@
+from datetime import timedelta
 from flask import Flask
 from flask.ext.elasticsearch import FlaskElasticsearch
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.cors import CORS
 from flask_restful import Api
 from celery import Celery
+from config.config import DevConfiguration
 
 app = Flask(__name__)
-app.config.from_pyfile('../config/dev.cfg')
+app.config.from_object(DevConfiguration)
 
 es = FlaskElasticsearch(app)
 db = SQLAlchemy(app)
@@ -14,6 +16,9 @@ apx = Api(app)
 CORS(app)
 
 celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'], backend=app.config['CELERY_RESULT_BACKEND'])
+
+
+
 celery.conf.update(app.config)
 
 from app.site.views import site

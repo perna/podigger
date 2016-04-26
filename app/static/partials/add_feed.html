@@ -1,22 +1,22 @@
 <div class="col-md-6 col-md-offset-3 well">
-    <form class="form-horizontal">
+    <form name="addFeedForm" ng-submit="submitForm()" class="form-horizontal" novalidate>
         <fieldset>
             <legend>Dados do Podcast</legend>
             <div class="form-group">
                 <label for="podcast_name" class="col-sm-2 control-label">Nome</label>
                 <div class="col-sm-10">
-                    <input type="text" class="form-control" id="podcast_name" name="podcast_name" placeholder="">
+                    <input type="text" class="form-control" id="podcast_name" ng-model="podcast.name" placeholder="Ex. Meu Podcast" required>
                 </div>
             </div>
             <div class="form-group">
                 <label for="podcast_feed" class="col-sm-2 control-label">feed</label>
                 <div class="col-sm-10">
-                    <input type="text" class="form-control" id="podcast_feed" placeholder="" name="podcast_feed">
+                    <input type="text" class="form-control" id="podcast_feed" placeholder="" ng-model="podcast.feed" required>
                 </div>
             </div>
             <div class="form-group">
                 <div class="col-sm-offset-2 col-sm-10">
-                    <button type="submit" class="btn btn-raised btn-success">Enviar</button>
+                    <button type="submit" class="btn btn-raised btn-success" ng-disabled="addFeedForm.$invalid">Enviar</button>
                 </div>
             </div>
         </fieldset>

@@ -25,5 +25,19 @@ angular.module('podigger')
     })
     .controller('FeedController', function($scope, $http){
 
+        $scope.podcast = {};
+
+        $scope.submitForm = function(){
+
+            var url = '/api/podcasts/'
+
+            if($scope.addFeedForm.$valid) {
+
+                $http.post(url, $scope.podcast)
+                    .success(function(data){
+                        console.log(data);
+                })
+            }
+        }
 
     });

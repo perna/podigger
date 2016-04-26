@@ -1,47 +1,27 @@
-<div class="panel panel-default">
-    <form class=form-inline>
-        <fieldset>
-            <div class="form-group">
-                <div class="input-group">
-                    <div class="input-group-addon">Digite o termo da busca</div>
-                    <input type="text" class="form-control" ng-model='term' ng-model-options="{debounce:300}" ng-change="getResults()">
-                </div>
-            </div>
-        </fieldset>
+<div class="row">
+    <form class="col-s12">
+         <div class="input-field col s12">
+             <input id="email" type="text" class="validate" ng-model='term' ng-model-options="{debounce:300}" ng-change="getResults()">
+             <label for="email">Digite o termo da busca</label>
+         </div>
     </form>
 </div>
 
-<h4 ng-show="episodes.length">{{episodes.length}} Resultados da busca por {{term}}</h4>
+<h4 ng-show="episodes.length">{{episodes.length}} Resultados da busca por "<em>{{term}}</em>"</h4>
 <h4 ng-show="!episodes.length">Nenhum resultado</h4>
 
 <div class="row">
-    <div class="col-md-12">
-        <div ng-repeat="episode in episodes" class="col-md-6">
-            <h4>{{episode.podcast}}</h4>
-            <h5><a href="{{episode.link}}">{{episode.title}}</a></h5>
-            <div class="row">
-                <div class="col-md-12">
-                    <p>{{episode.description}}</p>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-5">
-                    <a href="{{episode.enclosure}}"><i class="material-icons">&#xE2C4;</i> download do episódio</a>
-                </div>
-                <div class="col-md-7">
-                    <audio controls src="{{episode.enclosure | trusted}}" type="audio/mpeg"></audio>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-12">
-                <p><strong>publicado em:</strong> {{episode.published | date :'dd-MM-yyyy'}}</p>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-12">
-                    <p><strong>Tags:</strong> <span ng-repeat="tag in episode.tags"> <em>{{tag}}</em>, </span></p>
-                </div>
-            </div>
+    <div ng-repeat="episode in episodes" class="card grey lighten-5 col 10">
+        <div class="card-content blue-grey-text text-lighten-2">
+            <span class="card-title">{{episode.podcast}}</span>
+            <h6><a href="{{episode.link}}">{{episode.title}}</a></h6>
+            <h6><strong>publicado em:</strong> {{episode.published | date :'dd-MM-yyyy'}}</h6>
+            <p>{{episode.description}}</p>
+            <p><strong>Tags:</strong> <div class="chip" ng-repeat="tag in episode.tags">{{tag}}</div></p>
+        </div>
+        <div class="card-action">
+            <a class="text-blue-grey text-darken-3" href="{{episode.enclosure}}"><i class="material-icons">system_update_alt</i> download</a>
+            <audio controls src="{{episode.enclosure | trusted}}" type="audio/mpeg"></audio>
         </div>
     </div>
 </div>
