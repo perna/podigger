@@ -1,4 +1,4 @@
-angular.module('podigger',['ngRoute','ngAnimate'])
+angular.module('podigger',['ngRoute','ngAnimate','ngMessages','angularMoment'])
     .config(function($routeProvider) {
 
         $routeProvider
@@ -22,4 +22,7 @@ angular.module('podigger',['ngRoute','ngAnimate'])
             .otherwise({
                 redirectTo: '/'
             });
+    })
+    .run(function(amMoment){
+        amMoment.changeLocale('pt-br');
     });

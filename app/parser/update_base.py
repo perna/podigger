@@ -18,6 +18,7 @@ class EpisodeUpdater(object):
 
             pod = Podcast.query.filter_by(feed=link).first()
             podcast = json.loads(get_episodes(link[0]))
+            tag_list = None
 
             for item in podcast['items']:
                 episode = {}
@@ -35,8 +36,8 @@ class EpisodeUpdater(object):
                         tag_exists = db.session.query(exists().where(Tag.name == tag)).scalar()
 
                         if not tag_exists:
-                            t = Tag(name=tag)
-                            db.session.add(t)
+                            tag_list = Tag(name=tag)
+                            db.session.add(tag_list)
 
                 if 'enclosure' in item:
                     episode['enclosure'] = item['enclosure']
@@ -55,9 +56,11 @@ class EpisodeUpdater(object):
                         podcast_id=pod.id
                     )
 
-                    ep.tags.append(t)
+                    if tag_list is not None:
+                        ep.tags.append(tag_list)
+
                     db.session.add(ep)
                     db.session.commit()
 
                 res = self.es.index(index='podcasts', doc_type='episode', body=json.dumps(episode))
-                print(res['created'])
+                return {"created": res['created']}

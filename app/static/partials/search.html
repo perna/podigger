@@ -11,11 +11,12 @@
 <h4 ng-show="!episodes.length">Nenhum resultado</h4>
 
 <div class="row">
-    <div ng-repeat="episode in episodes" class="card grey lighten-5 col 10">
+    <div ng-repeat="episode in episodes | orderBy: 'published'" class="card grey lighten-5 col l10">
         <div class="card-content blue-grey-text text-lighten-2">
             <span class="card-title">{{episode.podcast}}</span>
             <h6><a href="{{episode.link}}">{{episode.title}}</a></h6>
-            <h6><strong>publicado em:</strong> {{episode.published | date :'dd-MM-yyyy'}}</h6>
+            <h6><strong>publicado a</strong> <span am-time-ago="episode.published"></span>
+</h6>
             <p>{{episode.description}}</p>
             <p><strong>Tags:</strong> <div class="chip" ng-repeat="tag in episode.tags">{{tag}}</div></p>
         </div>

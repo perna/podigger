@@ -63,5 +63,6 @@ target/
 
 config/config.py
 
-.idea/
+.idea
 app.db
+celerybeat-schedule

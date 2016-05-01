@@ -43,7 +43,7 @@ class Episode(db.Model):
 
 
     def __init__(self, title, link, description, published, enclosure, podcast_id ):
-        self.tile = title
+        self.title = title
         self.link = link
         self.description = description
         self.published = published

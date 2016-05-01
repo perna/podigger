@@ -26,6 +26,8 @@ angular.module('podigger')
     .controller('FeedController', function($scope, $http){
 
         $scope.podcast = {};
+        $scope.successMessage = false;
+        $scope.errorMessage = false;
 
         $scope.submitForm = function(){
 
@@ -35,7 +37,7 @@ angular.module('podigger')
 
                 $http.post(url, $scope.podcast)
                     .success(function(data){
-                        console.log(data);
+                        $scope.successMessage = true;
                 })
             }
         }

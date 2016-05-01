@@ -1,6 +1,7 @@
 from flask import request
 from flask.ext.restful import Resource, reqparse
 from app.api.models import Podcast, Episode, Tag
+from app.repository.podcasts import PodcastRepository
 import requests
 import json
 from app import db, app
@@ -27,10 +28,11 @@ class PodcastAPI(Resource):
 
     def post(self):
         args = self.parser.parse_args()
-        podcast = Podcast(name=args['name'], feed=args['feed'])
-        db.session.add(podcast)
-        db.session.commit()
-        return {'id': podcast.id}, 201
+
+        podcast = PodcastRepository()
+        result = podcast.create_or_update(args['name'], args['feed'])
+
+        return result, 201
 
 
 class TermListAPI(Resource):
@@ -54,11 +56,11 @@ class TermListAPI(Resource):
                     "query": args['term']
                 }
             },
-            "highlight" : {
+            "highlight": {
                 "pre_tags" : ["<strong>"],
-                "post_tags" : ["</strong>"],
-                "fields" : {
-                    "description" : {}
+                "post_tags": ["</strong>"],
+                "fields": {
+                    "description": {}
                 }
             }
         }

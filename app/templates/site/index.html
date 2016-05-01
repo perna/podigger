@@ -7,12 +7,13 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/materialize.min.css')}}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css')}}">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body ng-app="podigger">
    <nav class="cyan darken-4" role="navigation">
        <div class="nav-wrapper container">
-           <a href="#" class="brand-logo">Podigger</a>
+           <a href="#/" class="brand-logo">Podigger</a>
            <a href="javascript:void(0)" data-activates="mobile-menu" class="button-collapse"><i class="material-icons">menu</i></a>
 
            <ul id="nav-mobile" class="right hide-on-med-and-down">
@@ -34,12 +35,15 @@
    </div>
 
 
+   <script src="{{ url_for('static', filename='js/lib/moment-with-locales.min.js')}}"></script>
    <script src="{{ url_for('static', filename='js/lib/jquery.min.js')}}"></script>
    <script src="{{ url_for('static', filename='js/lib/materialize.min.js')}}"></script>
    <script src="{{ url_for('static', filename='js/lib/angular.min.js')}}"></script>
    <script src="{{ url_for('static', filename='js/lib/angular-route.min.js')}}"></script>
    <script src="{{ url_for('static', filename='js/lib/angular-animate.min.js')}}"></script>
    <script src="{{ url_for('static', filename='js/lib/angular-sanitize.min.js')}}"></script>
+   <script src="{{ url_for('static', filename='js/lib/angular-messages.min.js')}}"></script>
+   <script src="{{ url_for('static', filename='js/lib/angular-moment.min.js')}}"></script>
    <script src="{{ url_for('static', filename='js/init.js')}}"></script>
    <script src="{{ url_for('static', filename='js/app.js')}}"></script>
    <script src="{{ url_for('static', filename='js/filters.js')}}"></script>
