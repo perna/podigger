@@ -7,11 +7,18 @@
     </form>
 </div>
 
-<h4 ng-show="episodes.length">{{episodes.length}} Resultados da busca por "<em>{{term}}</em>"</h4>
-<h4 ng-show="!episodes.length">Nenhum resultado</h4>
+<div class="row">
+</div>
+<h4 ng-show="messageSearch == 'searching' ">Procurando...</h4>
+<h4 ng-show="messageSearch == 'done' ">{{episodes.length}} Resultados da busca por "<em>{{term}}</em>"</h4>
+<h4 ng-show="messageSearch == 'empty' ">Nenhum resultado</h4>
+
+<div ng-show="statusSearch" class="progress">
+    <div class="indeterminate"></div>
+</div>
 
 <div class="row">
-    <div ng-repeat="episode in episodes | orderBy: 'published'" class="card grey lighten-5 col l10">
+    <div ng-repeat="episode in episodes | orderBy: 'episode.published': true" class="card grey lighten-5 col l10 s12">
         <div class="card-content blue-grey-text text-lighten-2">
             <span class="card-title">{{episode.podcast}}</span>
             <h6><a href="{{episode.link}}">{{episode.title}}</a></h6>

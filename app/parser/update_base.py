@@ -63,4 +63,4 @@ class EpisodeUpdater(object):
                     db.session.commit()
 
                 res = self.es.index(index='podcasts', doc_type='episode', body=json.dumps(episode))
-                return {"created": res['created']}
+                print({"created": res['created']})

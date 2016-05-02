@@ -3,23 +3,38 @@ angular.module('podigger')
 
         $scope.term = '';
         $scope.episodes = [];
+        $scope.progressSearch= false;
+        $scope.messageSearch = '';
 
         $scope.getResults = function(){
 
             var query = {"term": $scope.term};
             var url = '/api/podcasts/episodes/'
 
+            $scope.messageSearch = 'searching';
+            $scope.progressSearch = true;
+
             $http.post(url,query)
                 .success(function(data) {
                     var len = data.hits.hits.length;
                     var arr = [];
 
-                    for(var i = 0; i < len; i++) {
-                        arr.push(data.hits.hits[i]._source)
-                        //console.log(data.hits.hits[i]._source);
-                    }
+                    $scope.progressSearch = false;
 
-                    $scope.episodes = arr;
+                    if(len === 0) {
+
+                        $scope.messageSearch = 'empty';
+                        return false;
+
+                    } else {
+
+                        for(var i = 0; i < len; i++) {
+                            arr.push(data.hits.hits[i]._source)
+                            //console.log(data.hits.hits[i]._source);
+                        }
+                        $scope.messageSearch = 'done';
+                        $scope.episodes = arr;
+                    }
                 });
         }
     })
