@@ -1,35 +1,45 @@
-<div class="row">
-    <form class="col-s12">
-         <div class="input-field col s12">
-             <input id="email" type="text" class="validate" ng-model='term' ng-model-options="{debounce:300}" ng-change="getResults()">
-             <label for="email">Digite o termo da busca</label>
-         </div>
-    </form>
-</div>
-
-<div class="row">
-</div>
-<h4 ng-show="messageSearch == 'searching' ">Procurando...</h4>
-<h4 ng-show="messageSearch == 'done' ">{{episodes.length}} Resultados da busca por "<em>{{term}}</em>"</h4>
-<h4 ng-show="messageSearch == 'empty' ">Nenhum resultado</h4>
-
-<div ng-show="statusSearch" class="progress">
-    <div class="indeterminate"></div>
-</div>
-
-<div class="row">
-    <div ng-repeat="episode in episodes | orderBy: 'episode.published': true" class="card grey lighten-5 col l10 s12">
-        <div class="card-content blue-grey-text text-lighten-2">
-            <span class="card-title">{{episode.podcast}}</span>
-            <h6><a href="{{episode.link}}">{{episode.title}}</a></h6>
-            <h6><strong>publicado a</strong> <span am-time-ago="episode.published"></span>
-</h6>
-            <p>{{episode.description}}</p>
-            <p><strong>Tags:</strong> <div class="chip" ng-repeat="tag in episode.tags">{{tag}}</div></p>
-        </div>
-        <div class="card-action">
-            <a class="text-blue-grey text-darken-3" href="{{episode.enclosure}}"><i class="material-icons">system_update_alt</i> download</a>
-            <audio controls src="{{episode.enclosure | trusted}}" type="audio/mpeg"></audio>
+<div class="container">
+    <div class="row">
+        <div class="col-lg-10">
+          <div class="well">
+            <form class="form-horizontal">
+                <fieldset>
+                  <legend>Busca</legend>
+                   <div class="form-group">
+                       <label for="busca" class="col-lg-3 control-label">Digite o termo da busca</label>
+                       <div class="col-lg-7">
+                         <input id="bursca" type="text" class="form-control" ng-model='term' ng-model-options="{debounce:300}" ng-change="getResults()">
+                       </div>
+                   </div>
+               </fieldset>
+            </form>
+          </div>
         </div>
     </div>
+
+    <div class="row">
+        <div class="col-md-10">
+            <h4 ng-show="messageSearch == 'searching' ">Procurando...</h4>
+            <h4 ng-show="messageSearch == 'done' ">{{episodes.length}} Resultados da busca por "<em>{{term}}</em>"</h4>
+            <h4 ng-show="messageSearch == 'empty' ">Nenhum resultado</h4>
+        </div>
+        <div ng-show="messageSearch == 'searching'" class="progress progress-striped active col-md-10">
+            <div class="progress-bar" style="width: 100%"></div>
+        </div>
+    </div>
+    <div class="row">
+        <div ng-repeat="episode in episodes | orderBy: 'episode.published': true" class="well well-lg col-md-10">
+            <h4>{{episode.podcast}}</h4>
+            <h5><a href="{{episode.link}}">{{episode.title}}</a></h6>
+            <h6><strong>publicado a</strong> <span am-time-ago="episode.published"></span></h6>
+            <p>{{episode.description}}</p>
+            <p class="clearfix"><strong>Tags:</strong> <span class="label label-success label-tag" ng-repeat="tag in episode.tags">{{tag}}</span></p>
+            <div>
+                <a href="{{episode.enclosure}}"><i class="fa fa-download" aria-hidden="true"></i> download</a>
+                <audio controls preload="none" src="{{episode.enclosure | trusted}}" type="audio/mpeg"></audio>
+            </div>
+        </div>
+    </div>
+
+
 </div>

@@ -1,3 +1,26 @@
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+body {
+  /* Margin bottom by footer height */
+  margin-bottom: 60px;
+}
+
+body > .container {
+  padding-top: 60px;
+}
+
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  /* Set the fixed height of the footer here */
+  height: 60px;
+  background-color: #f5f5f5;
+}
+
 .animate-enter {
     -webkit-animation: enter 600ms cubic-bezier(0.250, 0.100, 0.250, 1.000);
     animation: enter 600ms cubic-bezier(0.250, 0.100, 0.250, 1.000);
@@ -71,3 +94,5 @@
         bottom: 0px;
     }
 }
+
+.label-tag {margin: 5px; display: inline-block;}

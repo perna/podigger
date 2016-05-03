@@ -5,46 +5,53 @@
     <title>Podigger</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/materialize.min.css')}}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css')}}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/font-awesome.min.css')}}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css')}}">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body ng-app="podigger">
-   <nav class="cyan darken-4" role="navigation">
-       <div class="nav-wrapper container">
-           <a href="#/" class="brand-logo">Podigger</a>
-           <a href="javascript:void(0)" data-activates="mobile-menu" class="button-collapse"><i class="material-icons">menu</i></a>
+    <!-- Fixed navbar -->
+    <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#/">Podigger</a>
+            </div>
+            <div id="navbar" class="collapse navbar-collapse">
+                <ul class="nav navbar-nav">
+                    <li><a href="#/search">Busca</a></li>
+                    <li><a href="#/add-feed">Adicionar podcast</a></li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="#/about">Sobre o Podigger</a></li>
+                    <li><a href="#/contact">Contato</a></li>
+                </ul>
+            </div><!--/.nav-collapse -->
+        </div>
+    </nav>
 
-           <ul id="nav-mobile" class="right hide-on-med-and-down">
-               <li><a href="#/search">Buscar</a></li>
-               <li><a href="#/add-feed">Adicionar Podcast</a></li>
-               <li><a href="#/about">Sobre o Podigger</a></li>
-               <li><a href="#/contact">Sugestões e Contato</a></li>
-           </ul>
-           <ul class="side-nav" id="mobile-menu">
-               <li><a href="#/search">Buscar</a></li>
-               <li><a href="#/add-feed">Adicionar Podcast</a></li>
-               <li><a href="#/about">Sobre o Podigger</a></li>
-               <li><a href="#/contact">Sugestões e Contato</a></li>
-           </ul>
-       </div>
-   </nav>
-   <div class="container">
+    <div class="container">
         <ng-view></ng-view>
-   </div>
-
-
+    </div>
+    <footer class="footer">
+       <div class="container">
+           <p class="text-muted">Place sticky footer content here.</p>
+       </div>
+    </footer>
    <script src="{{ url_for('static', filename='js/lib/moment-with-locales.min.js')}}"></script>
    <script src="{{ url_for('static', filename='js/lib/jquery.min.js')}}"></script>
-   <script src="{{ url_for('static', filename='js/lib/materialize.min.js')}}"></script>
+   <script src="{{ url_for('static', filename='js/lib/bootstrap.min.js')}}"></script>
    <script src="{{ url_for('static', filename='js/lib/angular.min.js')}}"></script>
    <script src="{{ url_for('static', filename='js/lib/angular-route.min.js')}}"></script>
    <script src="{{ url_for('static', filename='js/lib/angular-animate.min.js')}}"></script>
    <script src="{{ url_for('static', filename='js/lib/angular-sanitize.min.js')}}"></script>
    <script src="{{ url_for('static', filename='js/lib/angular-messages.min.js')}}"></script>
    <script src="{{ url_for('static', filename='js/lib/angular-moment.min.js')}}"></script>
-   <script src="{{ url_for('static', filename='js/init.js')}}"></script>
    <script src="{{ url_for('static', filename='js/app.js')}}"></script>
    <script src="{{ url_for('static', filename='js/filters.js')}}"></script>
    <script src="{{ url_for('static', filename='js/controllers.js')}}"></script>

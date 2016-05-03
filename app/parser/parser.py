@@ -9,9 +9,10 @@ def get_episodes(url):
     d = feedparser.parse(url)
     no_tag = re.compile((r'(<!--.*?-->|<[^>]*>)'))
 
-    print(d.feed.title)
+    if 'title' in d.feed:
+        podcast['title'] = d.feed.title
+        print(d.feed.title)
 
-    podcast['title'] = d.feed.title
     podcast['items'] = []
 
     for entry in d.entries:
