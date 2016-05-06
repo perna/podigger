@@ -6,6 +6,7 @@ html {
 body {
   /* Margin bottom by footer height */
   margin-bottom: 60px;
+  background: #18bc9c;
 }
 
 body > .container {
@@ -18,8 +19,13 @@ body > .container {
   width: 100%;
   /* Set the fixed height of the footer here */
   height: 60px;
-  background-color: #f5f5f5;
+  background-color: #128F76;
+  color: #fff;
+  padding:20px;
+  text-align: center;
 }
+
+.footer p {color: #fff;}
 
 .animate-enter {
     -webkit-animation: enter 600ms cubic-bezier(0.250, 0.100, 0.250, 1.000);
@@ -96,3 +102,25 @@ body > .container {
 }
 
 .label-tag {margin: 5px; display: inline-block;}
+
+.listeners-content,
+.podcasters-content,
+.users-content{color: #fff;}
+
+.listeners-content h3,
+.podcasters-content h3,
+.users-content h3{
+    text-align: center;
+    color: #fff;
+}
+
+
+
+.jumbotron{
+    margin-top: 80px;
+    background: #1a242f;
+    color: #fff;
+    -webkit-box-shadow: 0px 0px 10px 0px rgba(50, 50, 50, 0.54);
+-moz-box-shadow:    0px 0px 10px 0px rgba(50, 50, 50, 0.54);
+box-shadow:         0px 0px 10px 0px rgba(50, 50, 50, 0.54);
+}

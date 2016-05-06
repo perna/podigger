@@ -1,40 +1,30 @@
-<div class="row">
-    <div class="col s12 m10 l10">
-        <div class="card cyan darken-3">
-            <div class="card-content white-text">
-                <span class="card-title">Cadastre o seu podcast</span>
-                <p>Preencha o formulário com o nome e o feed do podcast, o <strong>Podigger</strong> fará a indexação de todos os episódios listados no seu feed.</p>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="row">
-    <form name="addFeedForm" ng-submit="submitForm()"  class="col s12 m10 l10" novalidate>
-        <div class="row">
-            <div class="input-field col s12">
-                <input type="text" id="podcast_name" name="name" ng-model="podcast.name" required>
+<div class="panel panel-default">
+  <div class="panel-body">
+    <h2>Cadastre o seu podcast</h2>
+    <p>Preencha o formulário com o nome e o feed do podcast, o <strong>Podigger</strong> fará a indexação de todos os episódios listados no seu feed.</p>
+      <div class="row">
+    <div class="col-md-6">
+        <form name="addFeedForm" ng-submit="submitForm()" novalidate>
+            <div class="form-group">
                 <label for="podcast_name">Nome</label>
+                <input type="text" class="form-control" id="podcast_name" name="name" ng-model="podcast.name" required>
             </div>
-        </div>
-        <div class="row">
-            <div class="input-field col s12">
-                <input type="url" id="podcast_feed" name="feed" ng-model="podcast.feed" ng-class="{ 'invalid': addFeedForm.feed.$touched && addFeedForm.feed.$invalid }" required>
+            <div class="form-group" ng-class="{ 'has-error: addFeedForm.feed.$touched && addFeedForm.feed.$invalid }">
                 <label for="podcast_feed">Feed</label>
+                <input type="url" id="podcast_feed" name="feed" ng-model="podcast.feed" class="form-control" placeholder="Ex. http://feeds.meufeed.com.br" required>
                 <div ng-messages="addFeedForm.feed.$error" ng-if="addFeedForm.feed.$touched">
-                    <p ng-message="required">é adicionar a url do feed</p>
+                    <p ng-message="required">é necessário adicionar a url do feed</p>
                 </div>
             </div>
-        </div>
-        <div class="row">
-            <div class="input-field col s12">
-                <button type="submit" class="waves-effect waves-light btn-large" ng-disabled="addFeedForm.$invalid">Enviar<i class="material-icons right">send</i></button>
-            </div>
-        </div>
-    </form>
+            <button type="submit" class="btn btn-success" ng-disabled="addFeedForm.$invalid">Enviar</button>
+        </form>
+    </div>
 </div>
 <div class="row">
-    <div ng-messages="addFeedForm.name.$error" class="col s12 m6">
+    <div ng-messages="addFeedForm.name.$error" class="alert alert-warning">
         <div ng-message="required">You forgot to enter your email address...</div>
     </div>
 </div>
+  </div>
+</div>
+

@@ -2,7 +2,6 @@ import os
 from flask.ext.script import Manager
 from flask.ext.migrate import Migrate, MigrateCommand
 from app import app, db
-from app.api.models import Podcast
 from config.config import DevConfiguration
 
 app.config.from_object(DevConfiguration)

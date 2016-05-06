@@ -11,7 +11,8 @@ def get_episodes(url):
 
     if 'title' in d.feed:
         podcast['title'] = d.feed.title
-        print(d.feed.title)
+    else:
+        podcast['title'] = 'sem título'
 
     podcast['items'] = []
 

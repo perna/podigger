@@ -3,15 +3,12 @@
         <div class="col-lg-10">
           <div class="well">
             <form class="form-horizontal">
-                <fieldset>
-                  <legend>Busca</legend>
-                   <div class="form-group">
-                       <label for="busca" class="col-lg-3 control-label">Digite o termo da busca</label>
-                       <div class="col-lg-7">
-                         <input id="bursca" type="text" class="form-control" ng-model='term' ng-model-options="{debounce:300}" ng-change="getResults()">
-                       </div>
+               <div class="form-group">
+                   <label for="busca" class="col-lg-3 control-label">Digite o termo da busca</label>
+                   <div class="col-lg-7">
+                     <input id="busca" type="text" class="form-control" ng-model='term' ng-model-options="{debounce:300}" ng-change="getResults()">
                    </div>
-               </fieldset>
+               </div>
             </form>
           </div>
         </div>

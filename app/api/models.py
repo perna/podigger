@@ -1,4 +1,6 @@
 import datetime
+import json
+from sqlalchemy.dialects.postgresql import JSON
 from app import db
 
 
@@ -32,23 +34,25 @@ class Episode(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(), nullable=False)
-    link = db.Column(db.String(), unique=True, nullable=False)
+    link = db.Column(db.String(), unique=True, nullable=False, index=True)
     description = db.Column(db.Text())
     published = db.Column(db.DateTime)
     enclosure = db.Column(db.String())
+    to_json = db.Column(JSON)
     created_at = db.Column(db.DateTime, default=datetime.datetime.now)
     updated_at = db.Column(db.DateTime, onupdate=datetime.datetime.now)
     podcast_id = db.Column(db.Integer, db.ForeignKey('podcast.id'))
     tags = db.relationship('Tag', secondary=tags, backref=db.backref('podcasts', lazy='dynamic'))
 
 
-    def __init__(self, title, link, description, published, enclosure, podcast_id ):
+    def __init__(self, title, link, description, published, enclosure, podcast_id, data_json):
         self.title = title
         self.link = link
         self.description = description
         self.published = published
         self.enclosure = enclosure
         self.podcast_id = podcast_id
+        self.to_json = json.dumps(data_json)
 
     def __repr__(self):
         return '<id {}>'.format(self.id)

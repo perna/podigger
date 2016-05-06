@@ -9,7 +9,7 @@ angular.module('podigger')
         $scope.getResults = function(){
 
             var query = {"term": $scope.term};
-            var url = '/api/podcasts/episodes/'
+            var url = '/api/podcasts/episodes/';
 
             $scope.messageSearch = 'searching';
             $scope.progressSearch = true;
@@ -29,14 +29,14 @@ angular.module('podigger')
                     } else {
 
                         for(var i = 0; i < len; i++) {
-                            arr.push(data.hits.hits[i]._source)
+                            arr.push(data.hits.hits[i]._source);
                             //console.log(data.hits.hits[i]._source);
                         }
                         $scope.messageSearch = 'done';
                         $scope.episodes = arr;
                     }
                 });
-        }
+        };
     })
     .controller('FeedController', function($scope, $http){
 
@@ -46,15 +46,14 @@ angular.module('podigger')
 
         $scope.submitForm = function(){
 
-            var url = '/api/podcasts/'
+            var url = '/api/podcasts/';
 
             if($scope.addFeedForm.$valid) {
 
                 $http.post(url, $scope.podcast)
                     .success(function(data){
                         $scope.successMessage = true;
-                })
+                });
             }
-        }
-
+        };
     });

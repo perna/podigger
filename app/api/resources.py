@@ -1,7 +1,6 @@
 from flask import request
 from flask.ext.restful import Resource, reqparse
-from app.api.models import Podcast, Episode, Tag
-from app.repository.podcasts import PodcastRepository
+from app.repository.podcast import PodcastRepository
 import requests
 import json
 from app import db, app
@@ -48,8 +47,6 @@ class TermListAPI(Resource):
         args = self.parser.parse_args()
         url = app.config['ES_URL']['episodes'] + '/_search'
 
-        print(url)
-
         query = {
             "query": {
                 "query_string": {
@@ -68,5 +65,3 @@ class TermListAPI(Resource):
         resp = requests.post(url, data=json.dumps(query))
         data = resp.json()
         return data
-
-

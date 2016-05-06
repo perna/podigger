@@ -9,5 +9,5 @@ angular('podigger')
                         scope.timeElapsed = element[0].currentTime;
                         scope.$apply();
                     });
-                }
+                };
     });
