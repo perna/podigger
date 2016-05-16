@@ -1,4 +1,3 @@
-from elasticsearch import Elasticsearch
 from sqlalchemy import exists
 import json
 from . parser import get_episodes
@@ -8,7 +7,6 @@ from app.api.models import Tag, Episode, Podcast, db
 class EpisodeUpdater(object):
 
     def __init__(self, feeds):
-        self.es = Elasticsearch()
         self.feeds = feeds
         self.episodes = {}
 
@@ -18,10 +16,10 @@ class EpisodeUpdater(object):
 
             pod = Podcast.query.filter_by(feed=link).first()
             podcast = json.loads(get_episodes(link[0]))
-            tag_list = None
 
             for item in podcast['items']:
                 episode = {}
+                tag_list = []
 
                 episode['podcast'] = podcast['title']
                 episode['title'] = item['title']
@@ -36,9 +34,9 @@ class EpisodeUpdater(object):
                         tag_exists = db.session.query(exists().where(Tag.name == tag)).first()
 
                         if not tag_exists:
-                            tag_list = Tag(name=tag)
-                            db.session.add(tag_list)
-
+                            t = Tag(name=tag)
+                            db.session.add(t)
+                            tag_list.append(t)
 
                 if 'enclosure' in item:
                     episode['enclosure'] = item['enclosure']
@@ -58,11 +56,8 @@ class EpisodeUpdater(object):
                         data_json=episode
                     )
 
-                    if tag_list is not None:
+                    if tag_list:
                         ep.tags.append(tag_list)
 
                     db.session.add(ep)
                     db.session.commit()
-
-                    res = self.es.index(index='podcasts', doc_type='episode', body=json.dumps(episode))
-                    print({"created": res['created']})

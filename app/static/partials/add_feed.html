@@ -1,30 +1,37 @@
 <div class="panel panel-default">
   <div class="panel-body">
-    <h2>Cadastre o seu podcast</h2>
-    <p>Preencha o formulário com o nome e o feed do podcast, o <strong>Podigger</strong> fará a indexação de todos os episódios listados no seu feed.</p>
-      <div class="row">
-    <div class="col-md-6">
-        <form name="addFeedForm" ng-submit="submitForm()" novalidate>
-            <div class="form-group">
-                <label for="podcast_name">Nome</label>
-                <input type="text" class="form-control" id="podcast_name" name="name" ng-model="podcast.name" required>
-            </div>
-            <div class="form-group" ng-class="{ 'has-error: addFeedForm.feed.$touched && addFeedForm.feed.$invalid }">
-                <label for="podcast_feed">Feed</label>
-                <input type="url" id="podcast_feed" name="feed" ng-model="podcast.feed" class="form-control" placeholder="Ex. http://feeds.meufeed.com.br" required>
-                <div ng-messages="addFeedForm.feed.$error" ng-if="addFeedForm.feed.$touched">
-                    <p ng-message="required">é necessário adicionar a url do feed</p>
+    <div class="row">
+        <div class="col-md-6">
+          <h2>Cadastre o seu podcast</h2>
+          <p>Preencha o formulário com o nome e o feed do podcast, o <strong>Podigger</strong> fará a indexação de todos os episódios listados no seu feed.</p>
+        </div>
+    </div>
+    <div class="row">
+        <div ng-show="successMessage" class="col-md-6 alert alert-success alert-dismissible" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h5>Podcast adicionado com sucesso</h5>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <form name="addFeedForm" ng-submit="submitForm()" novalidate>
+                <div class="form-group" ng-class="{ 'has-error: addFeedForm.name.$touched && addFeedForm.name.$invalid }">
+                    <label for="podcast_name">Nome</label>
+                    <input type="text" class="form-control" id="podcast_name" name="name" ng-model="podcast.name" required>
+                    <div ng-messages="addFeedForm.name.$error" ng-if="addFeedForm.name.$touched">
+                        <p class="text-danger" ng-message="required">Insira o nome do podcast</p>
+                    </div>
                 </div>
-            </div>
-            <button type="submit" class="btn btn-success" ng-disabled="addFeedForm.$invalid">Enviar</button>
-        </form>
+                <div class="form-group" ng-class="{ 'has-error: addFeedForm.feed.$touched && addFeedForm.feed.$invalid }">
+                    <label for="podcast_feed">Feed</label>
+                    <input type="url" id="podcast_feed" name="feed" ng-model="podcast.feed" class="form-control" placeholder="Ex. http://feeds.meufeed.com.br" required>
+                    <div ng-messages="addFeedForm.feed.$error" ng-if="addFeedForm.feed.$touched">
+                        <p class="text-danger" ng-message="required">Insira a url do feed</p>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-success" ng-disabled="addFeedForm.$invalid">Enviar</button>
+            </form>
+        </div>
+    </div>
     </div>
 </div>
-<div class="row">
-    <div ng-messages="addFeedForm.name.$error" class="alert alert-warning">
-        <div ng-message="required">You forgot to enter your email address...</div>
-    </div>
-</div>
-  </div>
-</div>
-

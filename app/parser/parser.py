@@ -11,8 +11,10 @@ def get_episodes(url):
 
     if 'title' in d.feed:
         podcast['title'] = d.feed.title
+        print(podcast['title'])
     else:
         podcast['title'] = 'sem título'
+        print(podcast['title'])
 
     podcast['items'] = []
 
@@ -39,3 +41,14 @@ def get_episodes(url):
         podcast['items'].append(item)
 
     return json.dumps(podcast)
+
+
+def is_valid_feed(url):
+    d = feedparser.parse(url)
+    if d.bozo == 0:
+       return True
+    else:
+        error = d.bozo_exception
+        error_message = {'error': error.getMessage(), 'line': error.getLineNumber()}
+        return json.dumps(error_message)
+

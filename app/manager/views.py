@@ -20,4 +20,48 @@ def delete_episodes():
     return json.dumps(msg), 200
 
 
+@manager.route('/episodes/create')
+def create_index():
+    mapping='''
+    {
+        "settings" : {
+        "number_of_shards" : 3,
+        "number_of_replicas" : 2
+        },
+        "mappings":{
+            "episodes":{
+                "properties": {
+                    "podcast": {
+                        "type": "string"
+                    },
+                    "title": {
+                        "type": "string",
+                        "analyzer": "brazilian"
+                    },
+                    "description":{
+                        "type": "string",
+                        "analyzer": "brazilian"
+                    },
+                    "published": {
+                        "type": "string",
+                        "index": "not_analyzed"
+                    },
+                    "tags":{
+                        "type": "string"
+                    },
+                    "enclosure": {
+                        "type": "string",
+                        "index": "not_analyzed"
+                    },
+                    "link": {
+                        "type": "string", "index": "not_analyzed"
+                    }
+                }
+            }
+        }
+    }
+    '''
+    res = es.indices.create(index='podcasts', ignore=400, body=mapping)
+    msg = {'message': 'created', 'status': res}
+    return json.dumps(msg), 200
 

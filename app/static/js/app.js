@@ -1,5 +1,5 @@
-angular.module('podigger',['ngRoute','ngAnimate','ngMessages','angularMoment'])
-    .config(function($routeProvider) {
+angular.module('podigger',['ngRoute','ngAnimate','ngMessages','angularMoment','angularUtils.directives.dirPagination'])
+    .config(function($routeProvider, paginationTemplateProvider) {
 
         $routeProvider
             .when('/', {
@@ -22,6 +22,8 @@ angular.module('podigger',['ngRoute','ngAnimate','ngMessages','angularMoment'])
             .otherwise({
                 redirectTo: '/'
             });
+
+            paginationTemplateProvider.setPath('static/js/lib/dirPagination.tpl.html');
     })
     .run(function(amMoment){
         amMoment.changeLocale('pt-br');

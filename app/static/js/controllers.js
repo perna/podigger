@@ -8,34 +8,33 @@ angular.module('podigger')
 
         $scope.getResults = function(){
 
-            var query = {"term": $scope.term};
-            var url = '/api/podcasts/episodes/';
+            if($scope.term.length > 2) {
+                var query = {"term": $scope.term};
+                var url = '/api/podcasts/episodes/';
 
-            $scope.messageSearch = 'searching';
-            $scope.progressSearch = true;
+                $scope.messageSearch = 'searching';
+                $scope.progressSearch = true;
 
-            $http.post(url,query)
-                .success(function(data) {
-                    var len = data.hits.hits.length;
-                    var arr = [];
+                $http.post(url,query)
+                    .success(function(data) {
+                        var len = data.length;
+                        var arr = [];
 
-                    $scope.progressSearch = false;
+                        $scope.progressSearch = false;
 
-                    if(len === 0) {
-
-                        $scope.messageSearch = 'empty';
-                        return false;
-
-                    } else {
-
-                        for(var i = 0; i < len; i++) {
-                            arr.push(data.hits.hits[i]._source);
-                            //console.log(data.hits.hits[i]._source);
+                        if(len === 0) {
+                            $scope.messageSearch = 'empty';
+                            $scope.episodes = [];
+                            return false;
+                        } else {
+                            for(var i = 0; i < len; i++) {
+                                arr.push(JSON.parse(data[i]));
+                            }
+                            $scope.messageSearch = 'done';
+                            $scope.episodes = arr;
                         }
-                        $scope.messageSearch = 'done';
-                        $scope.episodes = arr;
-                    }
                 });
+            }
         };
     })
     .controller('FeedController', function($scope, $http){
@@ -47,12 +46,18 @@ angular.module('podigger')
         $scope.submitForm = function(){
 
             var url = '/api/podcasts/';
+            var params = {
+                name: $scope.podcast.name,
+                feed: $scope.podcast.feed
+            };
 
             if($scope.addFeedForm.$valid) {
 
-                $http.post(url, $scope.podcast)
+                $http.post(url, params)
                     .success(function(data){
                         $scope.successMessage = true;
+                        $scope.podcasts.name = '';
+                        $scope.podcasts.feed = '';
                 });
             }
         };

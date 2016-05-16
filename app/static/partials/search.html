@@ -1,12 +1,15 @@
 <div class="container">
     <div class="row">
-        <div class="col-lg-10">
+        <div class="col-lg-10 col-lg-offset-1 form-search-container">
           <div class="well">
             <form class="form-horizontal">
                <div class="form-group">
-                   <label for="busca" class="col-lg-3 control-label">Digite o termo da busca</label>
-                   <div class="col-lg-7">
-                     <input id="busca" type="text" class="form-control" ng-model='term' ng-model-options="{debounce:300}" ng-change="getResults()">
+                   <label for="busca" class="col-md-1 col-sm-1 control-label">Termo:</label>
+                   <div class="col-md-9 col-sm-9">
+                     <input id="busca" type="text" class="form-control" ng-model='term' min="3">
+                   </div>
+                   <div class="col-lg-2 col-sm-12">
+                     <button class="btn btn-primary" ng-click="getResults()"><i class="fa fa-search" aria-hidden="true"></i> Buscar</button>
                    </div>
                </div>
             </form>
@@ -15,7 +18,7 @@
     </div>
 
     <div class="row">
-        <div class="col-md-10">
+        <div class="col-md-10 col-lg-offset-1">
             <h4 ng-show="messageSearch == 'searching' ">Procurando...</h4>
             <h4 ng-show="messageSearch == 'done' ">{{episodes.length}} Resultados da busca por "<em>{{term}}</em>"</h4>
             <h4 ng-show="messageSearch == 'empty' ">Nenhum resultado</h4>
@@ -25,10 +28,10 @@
         </div>
     </div>
     <div class="row">
-        <div ng-repeat="episode in episodes | orderBy: 'episode.published': true" class="well well-lg col-md-10">
+        <div dir-paginate="episode in episodes | orderBy: 'episode.published': true | itemsPerPage: 10" class="well well-lg col-md-10 col-lg-offset-1 episode-box">
             <h4>{{episode.podcast}}</h4>
             <h5><a href="{{episode.link}}">{{episode.title}}</a></h6>
-            <h6><strong>publicado a</strong> <span am-time-ago="episode.published"></span></h6>
+            <h6><strong>publicado há</strong> <span am-time-ago="episode.published"></span></h6>
             <p>{{episode.description}}</p>
             <p class="clearfix"><strong>Tags:</strong> <span class="label label-success label-tag" ng-repeat="tag in episode.tags">{{tag}}</span></p>
             <div>
@@ -36,7 +39,6 @@
                 <audio controls preload="none" src="{{episode.enclosure | trusted}}" type="audio/mpeg"></audio>
             </div>
         </div>
+        <dir-pagination-controls></dir-pagination-controls>
     </div>
-
-
 </div>
