@@ -33,9 +33,10 @@ class EpisodeUpdater(object):
                     for tag in episode['tags']:
                         tag_exists = db.session.query(exists().where(Tag.name == tag)).first()
 
-                        if not tag_exists:
+                        if not tag_exists[0]:
                             t = Tag(name=tag)
                             db.session.add(t)
+                            db.session.flush()
                             tag_list.append(t)
 
                 if 'enclosure' in item:
@@ -45,7 +46,7 @@ class EpisodeUpdater(object):
 
                 episode_exists = db.session.query(Episode).filter_by(link=episode['link']).first()
 
-                if not episode_exists:
+                if episode_exists is None:
                     ep = Episode(
                         title=episode['title'],
                         link=episode['link'],
@@ -57,7 +58,8 @@ class EpisodeUpdater(object):
                     )
 
                     if tag_list:
-                        ep.tags.append(tag_list)
+                        for ep_tag in tag_list:
+                            ep.tags.append(ep_tag)
 
                     db.session.add(ep)
-                    db.session.commit()
+                db.session.commit()

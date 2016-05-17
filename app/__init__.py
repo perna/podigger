@@ -1,5 +1,4 @@
 from flask import Flask
-from flask.ext.elasticsearch import FlaskElasticsearch
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.cors import CORS
 from flask_restful import Api
@@ -9,7 +8,6 @@ from config.config import DevConfiguration
 app = Flask(__name__)
 app.config.from_object(DevConfiguration)
 
-es = FlaskElasticsearch(app)
 db = SQLAlchemy(app)
 apx = Api(app)
 CORS(app)
