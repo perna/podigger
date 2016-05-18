@@ -14,29 +14,37 @@ class PodcastAPI(Resource):
         super(PodcastAPI, self).__init__()
 
     def get(self, id):
-        return self.repository.get_by_id(id), 200
+        result = self.repository.get_by_id(id)
+        return result, 200
 
     def put(self, id):
         args = self.parser.parse_args()
-        result = self.repository.edit(args['id'])
-        return result
+        result = self.repository.edit(id, args['name'], args['feed'])
+        return result, 200
 
     def delete(self, id):
-        pass
-
-
-    def post(self):
         args = self.parser.parse_args()
-        result = self.repository.create_or_update(args['name'], args['feed'])
-
-        return result, 201
+        result = self.repository.delete(id)
+        return result
 
 
 class PodcastListAPI(Resource):
 
+    def __init__(self):
+        self.parser = reqparse.RequestParser()
+        self.parser.add_argument('name', type=str, required=True, location='json', help="o nome é obrigatório")
+        self.parser.add_argument('feed', type=str, required=True, location='json', help="o feed é obrigatório")
+        self.repository = PodcastRepository()
+        super(PodcastListAPI, self).__init__()
+
     def get(self):
         podcasts = PodcastRepository()
         return podcasts.get_all(), 200
+
+    def post(self):
+        args = self.parser.parse_args()
+        result = self.repository.create_or_update(args['name'], args['feed'])
+        return result, 201
 
 
 class TermListAPI(Resource):

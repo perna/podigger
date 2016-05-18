@@ -19,7 +19,7 @@ from app.site.views import site
 from app.manager.views import manager
 from app.api.resources import PodcastAPI, PodcastListAPI, TermListAPI
 
-apx.add_resource(PodcastAPI, '/api/podcasts/', '/api/podcasts/<int:id>',endpoint="podcast")
+apx.add_resource(PodcastAPI, '/api/podcasts/<int:id>',endpoint="podcast")
 apx.add_resource(PodcastListAPI, '/api/podcasts/',endpoint="podcasts")
 apx.add_resource(TermListAPI, '/api/podcasts/episodes/', endpoint="episodes")
 

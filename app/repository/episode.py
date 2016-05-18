@@ -12,3 +12,7 @@ class EpisodeRepository:
             episodes.append(row)
 
         return episodes
+
+    def count_all():
+        count = db.session.query(Episode).count()
+        return count

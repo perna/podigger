@@ -25,7 +25,8 @@
             <div id="navbar" class="collapse navbar-collapse">
                 <ul class="nav navbar-nav">
                     <li><a href="#/search">Busca</a></li>
-                    <li><a href="#/add-feed">Adicionar podcast</a></li>
+                    <li><a href="#/add-podcast">Adicionar podcast</a></li>
+                    <li><a href="#/list-podcasts">Listar podcasts</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <li><a href="#/about">Sobre o Podigger</a></li>
@@ -40,7 +41,8 @@
     </div>
     <footer class="footer">
        <div class="container">
-           <p class="text-muted">Poddiger&copy; 2016 | versão 0.0.1 - beta | Criado por <a href="http://andersonmeira.com">Anderson Meira</a> | <strong>Powered by</strong> Python, Flask, PostgreSQL, Angularjs and Bootstrap.</p>
+           <p class="text-muted">Poddiger&copy; 2016 | versão 0.0.1 - beta | Criado por <a href="http://andersonmeira.com">Anderson Meira</a> | <strong>Powered by</strong> <i class="fa fa-heart" aria-hidden="true"></i> Python, Flask, PostgreSQL, Angularjs and Bootstrap.</p>
+           <p>podcasts:{{data.podcasts}} | episódios: {{ data.episodes }}</p>
        </div>
     </footer>
    <script src="{{ url_for('static', filename='js/lib/moment-with-locales.min.js')}}"></script>

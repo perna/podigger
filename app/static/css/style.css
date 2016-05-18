@@ -130,3 +130,9 @@ div.episode-box.animate-leave {
 
 .pagination>li>a {background: #128f76;}
 .pagination>.disabled>a {background: #1a242f;}
+
+.table > tbody > tr > td {
+     vertical-align: middle;
+}
+
+.form-search-container .form-group{margin-bottom: 0;}

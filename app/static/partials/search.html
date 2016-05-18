@@ -30,10 +30,10 @@
     <div class="row">
         <div dir-paginate="episode in episodes | orderBy: 'episode.published': true | itemsPerPage: 10" class="well well-lg col-md-10 col-lg-offset-1 episode-box">
             <h4>{{episode.podcast}}</h4>
-            <h5><a href="{{episode.link}}">{{episode.title}}</a></h6>
-            <h6><strong>publicado há</strong> <span am-time-ago="episode.published"></span></h6>
+            <h5><i class="fa fa-link" aria-hidden="true"> </i> <a href="{{episode.link}}">{{episode.title}}</a></h6>
+            <h6><i class="fa fa-clock-o" aria-hidden="true"></i> <strong>publicado há</strong> <span am-time-ago="episode.published"></span></h6>
             <p>{{episode.description}}</p>
-            <p class="clearfix"><strong>Tags:</strong> <span class="label label-success label-tag" ng-repeat="tag in episode.tags">{{tag}}</span></p>
+            <p class="clearfix"><i class="fa fa-tags" aria-hidden="true"></i><strong>Tags:</strong> <span class="label label-success label-tag" ng-repeat="tag in episode.tags">{{tag}}</span></p>
             <div>
                 <a href="{{episode.enclosure}}"><i class="fa fa-download" aria-hidden="true"></i> download</a>
                 <audio controls preload="none" src="{{episode.enclosure | trusted}}" type="audio/mpeg"></audio>

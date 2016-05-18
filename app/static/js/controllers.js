@@ -61,4 +61,18 @@ angular.module('podigger')
                 });
             }
         };
+    })
+    .controller('PodcastController', function($scope, $http) {
+
+        var url = '/api/podcasts/';
+        $scope.list = '';
+
+        $scope.listAll = function(){
+
+            $http.get(url)
+                .success(function(data){
+                    $scope.list = data;
+            })
+        };
+
     });
