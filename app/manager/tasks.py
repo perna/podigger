@@ -1,16 +1,18 @@
 from app import celery, app
-from app.parser.update_base import EpisodeUpdater
+from app.parser.updater import EpisodeUpdater
 from app.api.models import Podcast
-
+from .email import SendMail
 
 @celery.task()
-def update_async_episodes(feeds):
-    episodes = EpisodeUpdater(feeds)
+def add_episode(feed):
+    episodes = EpisodeUpdater(feed)
     episodes.populate()
 
 
 @celery.task(name='update_base')
 def update_base():
+    email = SendMail()
+    email.send('celery task update_base','Atualizando a base de episódios')
     feeds = Podcast.query.with_entities(Podcast.feed).all()
     episodes = EpisodeUpdater(feeds)
     episodes.populate()

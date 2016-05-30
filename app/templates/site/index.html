@@ -5,6 +5,28 @@
     <title>Podigger</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <!-- Social: Facebook / Open Graph -->
+    <meta property="fb:admins" content="id do seu fb insight">
+    <meta property="og:url" content="url do seu site">
+    <meta property="og:type" content="tipo do link, article, page, etc">
+    <meta property="og:title" content="título do site">
+    <meta property="og:image" content="imagem do site (LINK ABSOLUTO)">
+    <meta property="og:description" content="breve descrição">
+    <meta property="og:site_name" content="Nome do site">
+    <meta property="article:author" content="fb de quem escreveu">
+    <meta property="article:publisher" content="fb de quem publicou">
+    <meta property="article:published_time" content="momento de publicação">
+    <meta property="article:tag" content="tag1">
+    <meta property="article:tag" content="tag2">
+
+    <!-- Social: Twitter -->
+    <meta name="twitter:card" content="summary_large_image"> <!-- aqui fica o tipo de card -->
+    <meta name="twitter:site" content="@willian_justen"> <!-- twitter handler do site -->
+    <meta name="twitter:title" content="Título do Post">
+    <meta name="twitter:description" content="Descrição do post">
+    <meta property="twitter:image:src" content="link da imagem">
+
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css')}}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/font-awesome.min.css')}}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css')}}">
@@ -40,9 +62,9 @@
         <ng-view></ng-view>
     </div>
     <footer class="footer">
-       <div class="container">
-           <p class="text-muted">Poddiger&copy; 2016 | versão 0.0.1 - beta | Criado por <a href="http://andersonmeira.com">Anderson Meira</a> | <strong>Powered by</strong> <i class="fa fa-heart" aria-hidden="true"></i> Python, Flask, PostgreSQL, Angularjs and Bootstrap.</p>
-           <p>podcasts:{{data.podcasts}} | episódios: {{ data.episodes }}</p>
+       <div class="container text-center">
+           <p class="text-muted">Poddiger&copy; 2016 <span class="space-divider-footer">|</span> versão 0.0.1 - beta <span class="space-divider-footer">|</span> Criado por <a href="http://andersonmeira.com">Anderson Meira</a> <span class="space-divider-footer">|</span> Feito com <i class="fa fa-heart text-danger" aria-hidden="true"></i> e <a href="https://www.python.org/">Python</a></p>
+           <p>Total de podcasts: {{ data.podcasts }} <span class="space-divider-footer">|</span> Total de episódios: {{ data.episodes }}</p>
        </div>
     </footer>
    <script src="{{ url_for('static', filename='js/lib/moment-with-locales.min.js')}}"></script>

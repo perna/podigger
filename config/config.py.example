@@ -1,2 +1,20 @@
 class Configuration(object):
     DEBUG = True
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    CELERY_TIMEZONE = 'America/Sao_Paulo'
+
+    CELERYBEAT_SCHEDULE = {
+        'update_base': {
+            'task': 'update_base',
+            'schedule': crontab(hour=4, minute=00)
+        }
+    }
+
+
+ class DevConfiguration(BaseConfiguration):
+
+    SECRET_KEY = 'key development'
+    SQLALCHEMY_DATABASE_URI = 'postgresql://192.168.33.10/podigger'
+
+    CELERY_BROKER_URL = 'redis://192.168.33.10:6379/0'
+    CELERY_RESULT_BACKEND = 'redis://192.168.33.10:6379/0'

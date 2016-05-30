@@ -44,6 +44,7 @@ class PodcastListAPI(Resource):
     def post(self):
         args = self.parser.parse_args()
         result = self.repository.create_or_update(args['name'], args['feed'])
+        print(result)
         return result, 201
 
 

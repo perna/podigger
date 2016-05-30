@@ -17,5 +17,5 @@ def index():
 def send_email():
     subject = "assunto teste"
     message = "testando o disparo de email da aplicação"
-    response = email.send(subject,message)
-    return (response.text, response.status_code)
+    email.send(subject,message)
+    return "works"

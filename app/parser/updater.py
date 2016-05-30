@@ -13,7 +13,6 @@ class EpisodeUpdater(object):
     def populate(self):
 
         for link in self.feeds:
-
             pod = Podcast.query.filter_by(feed=link).first()
             podcast = json.loads(get_episodes(link[0]))
 
@@ -62,4 +61,4 @@ class EpisodeUpdater(object):
                             ep.tags.append(ep_tag)
 
                     db.session.add(ep)
-                db.session.commit()
+            db.session.commit()

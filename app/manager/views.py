@@ -10,10 +10,3 @@ manager = Blueprint('manager', __name__)
 def update_episodes():
     task = update_base.delay()
     return task.id, 200
-
-
-@manager.route('/episodes/delete')
-def delete_episodes():
-    msg = {'message': 'deleted'}
-    return json.dumps(msg), 200
-

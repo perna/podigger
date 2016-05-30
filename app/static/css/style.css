@@ -5,7 +5,7 @@ html {
 }
 body {
   /* Margin bottom by footer height */
-  margin-bottom: 60px;
+  margin-bottom: 100px;
   background: #18bc9c;
 }
 
@@ -18,7 +18,7 @@ body > .container {
   bottom: 0;
   width: 100%;
   /* Set the fixed height of the footer here */
-  height: 60px;
+  height: 100px;
   background-color: #128F76;
   color: #fff;
   padding:20px;
@@ -136,3 +136,4 @@ div.episode-box.animate-leave {
 }
 
 .form-search-container .form-group{margin-bottom: 0;}
+.space-divider-footer {margin: 0 10px;}

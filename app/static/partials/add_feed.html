@@ -1,4 +1,5 @@
-<div class="panel panel-default">
+<div class="container">
+    <div class="panel panel-default">
   <div class="panel-body">
     <div class="row">
         <div class="col-md-6">
@@ -7,9 +8,17 @@
         </div>
     </div>
     <div class="row">
-        <div ng-show="successMessage" class="col-md-6 alert alert-success alert-dismissible" role="alert">
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h5>Podcast adicionado com sucesso</h5>
+        <div class="col-md-6">
+            <div ng-show="successMessage" class="alert alert-success alert-dismissible" role="alert">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <p>Podcast adicionado com sucesso</p>
+            </div>
+            <div ng-show="errorMessage" class="alert alert-danger alert-dismissible" role="alert">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <p>Erro ao adicionar novo podcast</p>
+                <p>Por favor verifique se a url do feed está correta e se o feed está no formato válido</p>
+                <p><strong>Erro:</strong>{{message.text}} <br> <strong>Linha:</strong>{{message.line}}</p>
+            </div>
         </div>
     </div>
     <div class="row">
@@ -34,4 +43,5 @@
         </div>
     </div>
     </div>
+</div>
 </div>

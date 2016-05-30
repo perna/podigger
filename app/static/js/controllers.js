@@ -37,13 +37,17 @@ angular.module('podigger')
             }
         };
     })
-    .controller('FeedController', function($scope, $http){
+    .controller('FeedController', function($scope, $http, $location){
 
         $scope.podcast = {};
         $scope.successMessage = false;
         $scope.errorMessage = false;
+        $scope.message = {};
 
         $scope.submitForm = function(){
+
+            $scope.successMessage = false;
+            $scope.errorMessage = false;
 
             var url = '/api/podcasts/';
             var params = {
@@ -54,10 +58,19 @@ angular.module('podigger')
             if($scope.addFeedForm.$valid) {
 
                 $http.post(url, params)
-                    .success(function(data){
-                        $scope.successMessage = true;
-                        $scope.podcasts.name = '';
-                        $scope.podcasts.feed = '';
+                    .success(function(response){
+
+                        var data = JSON.parse(response);
+
+                        if(data.status === 'error') {
+                            $scope.errorMessage = true;
+                            $scope.message.text = data.message;
+                            $scope.message.line = data.line;
+                        } else {
+                            $scope.successMessage = true;
+                        }
+                        $scope.podcast.name = '';
+                        $scope.podcast.feed = '';
                 });
             }
         };
