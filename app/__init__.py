@@ -17,11 +17,12 @@ celery.conf.update(app.config)
 
 from app.site.views import site
 from app.manager.views import manager
-from app.api.resources import PodcastAPI, PodcastListAPI, TermListAPI
+from app.api.resources import PodcastAPI, PodcastListAPI, TermListAPI, EpisodeAPI
 
 apx.add_resource(PodcastAPI, '/api/podcasts/<int:id>',endpoint="podcast")
 apx.add_resource(PodcastListAPI, '/api/podcasts/',endpoint="podcasts")
-apx.add_resource(TermListAPI, '/api/podcasts/episodes/', endpoint="episodes")
+apx.add_resource(TermListAPI, '/api/podcasts/episodes/', endpoint="episodes-list")
+apx.add_resource(EpisodeAPI, '/api/podcasts/<int:id>/episodes/', endpoint="episodes")
 
 app.register_blueprint(site)
 app.register_blueprint(manager, url_prefix='/manager')

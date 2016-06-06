@@ -44,7 +44,6 @@ class PodcastListAPI(Resource):
     def post(self):
         args = self.parser.parse_args()
         result = self.repository.create_or_update(args['name'], args['feed'])
-        print(result)
         return result, 201
 
 
@@ -59,5 +58,20 @@ class TermListAPI(Resource):
         args = self.parser.parse_args()
         episode = EpisodeRepository()
         episodes = episode.search_by_term(args['term'])
+
+        return episodes, 200
+
+
+class EpisodeAPI(Resource):
+
+    #def __init__(self):
+    #    self.parser = reqparse.RequestParser()
+    #    self.parser.add_argument('id', type=int, required=True)
+    #    super(EpisodeAPI, self).__init__()
+
+    def get(self, id):
+        #args = self.parser.parse_args()
+        episode = EpisodeRepository()
+        episodes = episode.get_all_by_podcast(id)
 
         return episodes, 200

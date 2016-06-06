@@ -40,11 +40,11 @@ class PodcastRepository:
 
     def get_all(self):
 
-        query = Podcast.query.with_entities(Podcast.name, Podcast.feed)
+        query = Podcast.query.all()
         podcasts = []
 
         for q in query:
-            row = {"name": q.name, "feed": q.feed}
+            row = {"name": q.name, "feed": q.feed, "total_episodes": q.episodes.count()}
             podcasts.append(row)
 
         return podcasts

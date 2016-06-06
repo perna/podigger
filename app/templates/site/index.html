@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <title>Podigger</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Motor de Busca para Podcasts. Search Engine for podcasts">
+    <meta name="keywords" content="podcasts, episodios, busca, search, feeds, temas, ouvintes, podcasters">
+    <meta name="author" content="Anderson Meira">
+    <meta name="robots" content="index,follow">
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
     <!-- Social: Facebook / Open Graph -->
@@ -63,8 +67,8 @@
     </div>
     <footer class="footer">
        <div class="container text-center">
-           <p class="text-muted">Poddiger&copy; 2016 <span class="space-divider-footer">|</span> versão 0.0.1 - beta <span class="space-divider-footer">|</span> Criado por <a href="http://andersonmeira.com">Anderson Meira</a> <span class="space-divider-footer">|</span> Feito com <i class="fa fa-heart text-danger" aria-hidden="true"></i> e <a href="https://www.python.org/">Python</a></p>
-           <p>Total de podcasts: {{ data.podcasts }} <span class="space-divider-footer">|</span> Total de episódios: {{ data.episodes }}</p>
+           <p class="text-muted">Poddiger&copy; 2016 <span class="space-divider-footer">|</span> versão 0.0.1 - beta <span class="space-divider-footer">|</span> Criado por <a href="http://andersonmeira.com">Anderson Meira</a> <span class="space-divider-footer">|</span> Feito com <i class="fa fa-heart text-warning" aria-hidden="true"></i> e <a href="https://www.python.org/">Python</a></p>
+           <p>Total de podcasts cadastrados: {{ data.podcasts }} <span class="space-divider-footer">|</span> Total de episódios indexados: {{ data.episodes }}</p>
        </div>
     </footer>
    <script src="{{ url_for('static', filename='js/lib/moment-with-locales.min.js')}}"></script>

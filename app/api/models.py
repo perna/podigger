@@ -24,6 +24,7 @@ class Podcast(db.Model):
     feed = db.Column(db.String(), unique=True, nullable=False, index=True)
     created_at = db.Column(db.DateTime, default=datetime.datetime.now)
     updated_at = db.Column(db.DateTime, onupdate=datetime.datetime.now)
+    episodes = db.relationship('Episode', backref='podcast', lazy='dynamic')
 
     def __init__(self, name, feed):
         self.name = name

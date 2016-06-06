@@ -14,12 +14,14 @@
                 <thead>
                     <tr>
                         <th>Podcast</th>
+                        <th class="text-center">Total de episódios<br> indexados</th>
                         <th class="text-center">Feed</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr ng-repeat="item in list | orderBy:'name' | filter: search">
                         <td>{{item.name}}</td>
+                        <td class="text-center">{{item.total_episodes}}</td>
                         <td class="text-center"><a href="{{item.feed}}" alt="{{item.name}}"><i class="fa fa-rss-square fa-2x" aria-hidden="true"></i></a></td>
                     </tr>
                 </tbody>
