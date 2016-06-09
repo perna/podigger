@@ -37,7 +37,6 @@ class PodcastRepository:
             data = json.dumps({'status': 'error', 'message': exc.getMessage(), 'line': exc.getLineNumber()})
             return data
 
-
     def get_all(self):
 
         query = Podcast.query.all()
@@ -48,7 +47,6 @@ class PodcastRepository:
             podcasts.append(row)
 
         return podcasts
-
 
     def get_by_id(self, id):
         query = Podcast.query.get(id)

@@ -16,20 +16,24 @@ tags = db.Table(
 )
 
 
-class Podcast(db.Model):
-    __tablename__ = 'podcast'
+class Base(db.Model):
+    __abstract__ = True
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    name = db.Column(db.String(128), unique=True, nullable=False, index=True)
-    feed = db.Column(db.String(), unique=True, nullable=False, index=True)
     created_at = db.Column(db.DateTime, default=datetime.datetime.now)
     updated_at = db.Column(db.DateTime, onupdate=datetime.datetime.now)
+
+
+class Podcast(Base):
+    __tablename__ = 'podcast'
+
+    name = db.Column(db.String(128), unique=True, nullable=False, index=True)
+    feed = db.Column(db.String(), unique=True, nullable=False, index=True)
     episodes = db.relationship('Episode', backref='podcast', lazy='dynamic')
 
     def __init__(self, name, feed):
         self.name = name
         self.feed = feed
-
 
     def __repr__(self):
         return '<id {}>'.format(self.id)
@@ -39,19 +43,16 @@ class EpisodeQuery(BaseQuery, SearchQueryMixin):
     pass
 
 
-class Episode(db.Model):
+class Episode(Base):
     query_class = EpisodeQuery
     __tablename__ = 'episode'
 
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     title = db.Column(db.String(), nullable=False)
     link = db.Column(db.String(), unique=True, nullable=False, index=True)
     description = db.Column(db.Text())
     published = db.Column(db.DateTime)
     enclosure = db.Column(db.String())
     to_json = db.Column(JSON)
-    created_at = db.Column(db.DateTime, default=datetime.datetime.now)
-    updated_at = db.Column(db.DateTime, onupdate=datetime.datetime.now)
     podcast_id = db.Column(db.Integer, db.ForeignKey('podcast.id'))
     tags = db.relationship('Tag', secondary=tags, backref=db.backref('episodes', lazy='dynamic'))
     search_vector = db.Column(TSVectorType('title', 'description'))
@@ -69,10 +70,9 @@ class Episode(db.Model):
         return '<id {}>'.format(self.id)
 
 
-class Tag(db.Model):
+class Tag(Base):
     __tablename__ = 'tag'
 
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(), unique=True, nullable=False, index=True)
 
     def __init__(self, name):
@@ -80,3 +80,10 @@ class Tag(db.Model):
 
     def __repr__(self):
         return '<id {}>'.format(self.id)
+
+
+class PopularTerm(Base):
+    __tablename__ = 'popular_term'
+
+    term = db.Column(db.String(), unique=True, nullable=False, index=True)
+    times = db.Column(db.Integer, default=1)
