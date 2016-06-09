@@ -8,7 +8,10 @@ services:
 addons:
   postgresql: "9.4"
 
-install: "pip install -r requirements.txt"
+before_script:
+  - psql -c 'create database podigger;' -U postgres
+
+install: pip install -r requirements.txt
 
 script:
   - python manager db upgrade
