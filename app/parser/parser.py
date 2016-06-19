@@ -19,15 +19,16 @@ def get_episodes(url):
     podcast['items'] = []
 
     for entry in d.entries:
-        item = {}
-        tags = []
-        item['title'] = entry.title
-        item['link'] = entry.link
-        item['published'] = entry.published
+        if 'link' in entry:
+            item = {}
+            tags = []
+            item['title'] = entry.title
+            item['link'] = entry.link
+            item['published'] = entry.published
 
-        description = no_tag.sub('', entry.description)
+            description = no_tag.sub('', entry.description)
 
-        item['description'] = description
+            item['description'] = description
 
         if 'tags' in entry:
             for t in entry.tags:

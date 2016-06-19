@@ -16,7 +16,7 @@ celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'], backend=app.co
 celery.conf.update(app.config)
 
 from app.site.views import site
-from app.utils.views import manager
+from app.utils.views import utils
 from app.api.resources import PodcastAPI, PodcastListAPI, TermListAPI, EpisodeAPI
 
 apx.add_resource(PodcastAPI, '/api/podcasts/<int:id>',endpoint="podcast")
@@ -25,4 +25,4 @@ apx.add_resource(TermListAPI, '/api/podcasts/episodes/', endpoint="episodes-list
 apx.add_resource(EpisodeAPI, '/api/podcasts/<int:id>/episodes/', endpoint="episodes")
 
 app.register_blueprint(site)
-app.register_blueprint(manager, url_prefix='/utils')
+app.register_blueprint(utils, url_prefix='/utils')

@@ -66,14 +66,8 @@ class TermListAPI(Resource):
 
 class EpisodeAPI(Resource):
 
-    #def __init__(self):
-    #    self.parser = reqparse.RequestParser()
-    #    self.parser.add_argument('id', type=int, required=True)
-    #    super(EpisodeAPI, self).__init__()
-
-    def get(self, id):
-        #args = self.parser.parse_args()
+    def get(self, id_episode):
         episode = EpisodeRepository()
-        episodes = episode.get_all_by_podcast(id)
+        episodes = episode.get_all_by_podcast(id_episode)
 
         return episodes, 200

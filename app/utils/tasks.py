@@ -11,8 +11,8 @@ def add_episode(feed):
 
 @celery.task(name='update_base')
 def update_base():
-    #email = SendMail()
-    #email.send('celery task update_base','Atualizando a base de episódios')
+    email = SendMail()
     feeds = Podcast.query.with_entities(Podcast.feed).all()
     episodes = EpisodeUpdater(feeds)
     episodes.populate()
+    email.send('celery task update_base', 'Atualizando a base de episódios {}'.format(feeds))
