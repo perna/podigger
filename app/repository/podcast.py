@@ -1,5 +1,5 @@
 from app.api.models import Podcast, db
-from app.manager.tasks import add_episode
+from app.utils.tasks import add_episode
 import feedparser
 import json
 

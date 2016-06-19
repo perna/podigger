@@ -7,8 +7,6 @@ from sqlalchemy_utils.types import TSVectorType
 from sqlalchemy_searchable import make_searchable
 from app import db
 
-make_searchable()
-
 tags = db.Table(
     'tags',
     db.Column('tag_id', db.Integer, db.ForeignKey('tag.id')),
@@ -38,6 +36,8 @@ class Podcast(Base):
     def __repr__(self):
         return '<id {}>'.format(self.id)
 
+
+make_searchable()
 
 class EpisodeQuery(BaseQuery, SearchQueryMixin):
     pass
@@ -85,5 +85,13 @@ class Tag(Base):
 class PopularTerm(Base):
     __tablename__ = 'popular_term'
 
-    term = db.Column(db.String(), unique=True, nullable=False, index=True)
+    term = db.Column(db.String(), nullable=False, index=True)
     times = db.Column(db.Integer, default=1)
+    date_search = db.Column(db.Date(), index=True,  default=datetime.datetime.today())
+
+    def __init__(self, term, date_search):
+        self.term = term
+        self.date_search = date_search
+
+    def __repr__(self):
+        return '<id {}>'.format(self.id)

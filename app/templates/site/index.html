@@ -2,7 +2,8 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Podigger</title>
+    <title>Podigger - Motor de buscas para podcasts</title>
+    <base href="/" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Motor de Busca para Podcasts. Search Engine for podcasts">
     <meta name="keywords" content="podcasts, episodios, busca, search, feeds, temas, ouvintes, podcasters">
@@ -10,30 +11,10 @@
     <meta name="robots" content="index,follow">
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
-    <!-- Social: Facebook / Open Graph -->
-    <meta property="fb:admins" content="id do seu fb insight">
-    <meta property="og:url" content="url do seu site">
-    <meta property="og:type" content="tipo do link, article, page, etc">
-    <meta property="og:title" content="título do site">
-    <meta property="og:image" content="imagem do site (LINK ABSOLUTO)">
-    <meta property="og:description" content="breve descrição">
-    <meta property="og:site_name" content="Nome do site">
-    <meta property="article:author" content="fb de quem escreveu">
-    <meta property="article:publisher" content="fb de quem publicou">
-    <meta property="article:published_time" content="momento de publicação">
-    <meta property="article:tag" content="tag1">
-    <meta property="article:tag" content="tag2">
-
-    <!-- Social: Twitter -->
-    <meta name="twitter:card" content="summary_large_image"> <!-- aqui fica o tipo de card -->
-    <meta name="twitter:site" content="@willian_justen"> <!-- twitter handler do site -->
-    <meta name="twitter:title" content="Título do Post">
-    <meta name="twitter:description" content="Descrição do post">
-    <meta property="twitter:image:src" content="link da imagem">
-
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css')}}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/font-awesome.min.css')}}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css')}}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/sweetalert2.min.css')}}">
 </head>
 <body ng-app="podigger">
     <!-- Fixed navbar -->
@@ -50,12 +31,14 @@
             </div>
             <div id="navbar" class="collapse navbar-collapse">
                 <ul class="nav navbar-nav">
-                    <li><a href="#/search">Busca</a></li>
-                    <li><a href="#/add-podcast">Adicionar podcast</a></li>
-                    <li><a href="#/list-podcasts">Listar podcasts</a></li>
+                    <li class="active"><a href="#/search">Busca</a></li>
+                    <li><a href="#/add-podcast">Adicione o seu podcast</a></li>
+                    <li><a href="#/list-podcasts">Lista de podcasts</a></li>
+                    <li><a class="link-trends" href="javascript:void(0);">Trends</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <li><a href="#/about">Sobre o Podigger</a></li>
+                    <li><a class="link-api" href="javascript:void(0)">API</a></li>
                     <li><a href="#/contact">Contato</a></li>
                 </ul>
             </div><!--/.nav-collapse -->
@@ -75,6 +58,7 @@
    <script src="{{ url_for('static', filename='js/lib/jquery.min.js')}}"></script>
    <script src="{{ url_for('static', filename='js/lib/bootstrap.min.js')}}"></script>
    <script src="{{ url_for('static', filename='js/lib/angular.min.js')}}"></script>
+    <script src="{{ url_for('static', filename='js/lib/sweetalert2.min.js')}}"></script>
    <script src="{{ url_for('static', filename='js/lib/angular-route.min.js')}}"></script>
    <script src="{{ url_for('static', filename='js/lib/angular-animate.min.js')}}"></script>
    <script src="{{ url_for('static', filename='js/lib/angular-sanitize.min.js')}}"></script>
@@ -84,5 +68,6 @@
    <script src="{{ url_for('static', filename='js/app.js')}}"></script>
    <script src="{{ url_for('static', filename='js/filters.js')}}"></script>
    <script src="{{ url_for('static', filename='js/controllers.js')}}"></script>
+<script src="{{ url_for('static', filename='js/widgets.js')}}"></script>
 </body>
 </html>

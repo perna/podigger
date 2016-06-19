@@ -1,9 +1,9 @@
 from flask import Blueprint
 from app.api.models import Podcast
-from app.manager.tasks import update_base
+from app.utils.tasks import update_base
 import json
 
-manager = Blueprint('manager', __name__)
+manager = Blueprint('utils', __name__)
 
 
 @manager.route('/episodes/update')

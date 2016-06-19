@@ -1,7 +1,7 @@
 from flask.ext.restful import Resource, reqparse
 from app.repository.podcast import PodcastRepository
 from app.repository.episode import EpisodeRepository
-import json
+from app.repository.term import TermRepository
 
 
 class PodcastAPI(Resource):
@@ -58,6 +58,8 @@ class TermListAPI(Resource):
         args = self.parser.parse_args()
         episode = EpisodeRepository()
         episodes = episode.search_by_term(args['term'])
+        term = TermRepository()
+        term.create_or_update(args['term'])
 
         return episodes, 200
 

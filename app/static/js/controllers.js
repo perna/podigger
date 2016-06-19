@@ -42,6 +42,7 @@ angular.module('podigger')
         $scope.podcast = {};
         $scope.successMessage = false;
         $scope.errorMessage = false;
+        $scope.loading = false;
         $scope.message = {};
 
         $scope.submitForm = function(){
@@ -57,6 +58,8 @@ angular.module('podigger')
 
             if($scope.addFeedForm.$valid) {
 
+                $scope.loading = true;
+
                 $http.post(url, params)
                     .success(function(response){
 
@@ -71,6 +74,7 @@ angular.module('podigger')
                         }
                         $scope.podcast.name = '';
                         $scope.podcast.feed = '';
+                        $scope.loading = false;
                 });
             }
         };

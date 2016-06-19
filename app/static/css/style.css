@@ -114,6 +114,9 @@ div.episode-box.animate-leave {
     color: #fff;
 }
 
+.listeners-content a,
+.podcasters-content a {color:#fff;}
+
 
 
 .jumbotron{
@@ -139,3 +142,22 @@ div.episode-box.animate-leave {
 .space-divider-footer {margin: 0 10px;}
 
 footer a {color:#c0ff10;}
+
+@media only screen and (max-width : 480px) {
+
+    body{margin-bottom:145px;}
+
+    .header-logo img{display:block;margin: 0 auto;}
+    .header-content h2,
+    .header-content p{text-align:center;}
+    .header-content .btn-search,
+    .header-content .btn-add-podcast{
+        float:none!important;
+        display:block;
+        margin: 10px auto;
+    }
+
+    .footer{height:145px;}
+
+
+}
