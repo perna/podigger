@@ -18,6 +18,7 @@ def get_episodes(url):
     podcast['items'] = []
 
     for entry in d.entries:
+
         if 'link' in entry:
             item = {}
             tags = []
@@ -35,8 +36,9 @@ def get_episodes(url):
 
             item['tags'] = tags
 
-        if 'enclosures' in entry:
-            item['enclosure'] = entry.enclosures[0].href
+        if hasattr(entry, 'enclosures'):
+            if len(entry.enclosures) > 0:
+                item['enclosure'] = entry.enclosures[0].href
 
         podcast['items'].append(item)
 
