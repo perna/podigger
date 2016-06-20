@@ -4,7 +4,6 @@ import json
 
 
 def get_episodes(url):
-
     podcast = {}
     d = feedparser.parse(url)
     no_tag = re.compile((r'(<!--.*?-->|<[^>]*>)'))
@@ -36,7 +35,7 @@ def get_episodes(url):
 
             item['tags'] = tags
 
-        if entry.enclosures:
+        if 'enclosures' in entry:
             item['enclosure'] = entry.enclosures[0].href
 
         podcast['items'].append(item)
@@ -47,9 +46,8 @@ def get_episodes(url):
 def is_valid_feed(url):
     d = feedparser.parse(url)
     if d.bozo == 0:
-       return True
+        return True
     else:
         error = d.bozo_exception
         error_message = {'error': error.getMessage(), 'line': error.getLineNumber()}
         return json.dumps(error_message)
-
