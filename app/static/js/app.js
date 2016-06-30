@@ -1,4 +1,4 @@
-angular.module('podigger',['ngRoute','ngAnimate','ngMessages','angularMoment','angularUtils.directives.dirPagination'])
+angular.module('podigger',['ngRoute','ngAnimate','ngMessages','angularMoment','angularUtils.directives.dirPagination','chart.js'])
     .config(function($routeProvider, paginationTemplateProvider) {
 
         $routeProvider
@@ -22,6 +22,10 @@ angular.module('podigger',['ngRoute','ngAnimate','ngMessages','angularMoment','a
             })
             .when('/contact', {
                 templateUrl: 'static/partials/contact.html'
+            })
+            .when('/trends', {
+                templateUrl: 'static/partials/trends.html',
+                controller: 'TrendController'
             })
             .otherwise({
                 redirectTo: '/'

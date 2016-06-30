@@ -117,8 +117,6 @@ div.episode-box.animate-leave {
 .listeners-content a,
 .podcasters-content a {color:#fff;}
 
-
-
 .jumbotron{
     background: #1a242f;
     color: #fff;
@@ -140,6 +138,8 @@ div.episode-box.animate-leave {
 
 .form-search-container .form-group{margin-bottom: 0;}
 .space-divider-footer {margin: 0 10px;}
+
+.img-loading-podcasts{display:block;margin:10px auto;}
 
 footer a {color:#c0ff10;}
 

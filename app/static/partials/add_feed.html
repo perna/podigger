@@ -7,10 +7,12 @@
                   <h4>Veja como é fácil adicionar um novo feed:</h4>
                   <div class="well">
                       <ul>
+                        <li>Pode ser que seu podcast já tenha sido adicionado por um ouvinte ou podcaster. Já
+                            verificou em <a href="#/list-podcasts"><strong>nossa lista?</strong></a></li>
                         <li><span class="label label-danger">Verifique se o feed não possui erros</span>, utilizando a <a
                                 href="https://validator.w3.org/feed/">ferramenta de validação do W3C</a>;</li>
                         <li>Se estiver tudo ok, preencha o formulário com o nome e o feed do podcast;</li>
-                        <li>Em instantes, o <strong>Podigger</strong> irá indexar todos os episódios listados no feed.;</li>
+                        <li>Em instantes, o <strong>Podigger</strong> irá indexar todos os episódios listados no feed;</li>
                         <li>Diariamente o <strong>Podigger</strong> verifica atualizações em todos os feeds cadastrados.</li>
                       </ul>
                   </div>
@@ -33,14 +35,14 @@
             <div class="row">
                 <div class="col-md-7">
                     <form name="addFeedForm" ng-submit="submitForm()" novalidate>
-                        <div class="form-group" ng-class="{ 'has-error: addFeedForm.name.$touched && addFeedForm.name.$invalid }">
+                        <div class="form-group" ng-class="{'has-error': addFeedForm.name.$touched && addFeedForm.name.$invalid }">
                             <label for="podcast_name">Nome</label>
                             <input type="text" class="form-control" id="podcast_name" name="name" ng-model="podcast.name" required>
                             <div ng-messages="addFeedForm.name.$error" ng-if="addFeedForm.name.$touched">
                                 <p class="text-danger" ng-message="required">Insira o nome do podcast</p>
                             </div>
                         </div>
-                        <div class="form-group" ng-class="{ 'has-error: addFeedForm.feed.$touched && addFeedForm.feed.$invalid }">
+                        <div class="form-group" ng-class="{ 'has-error': addFeedForm.feed.$touched && addFeedForm.feed.$invalid }">
                             <label for="podcast_feed">Feed</label>
                             <input type="url" id="podcast_feed" name="feed" ng-model="podcast.feed" class="form-control" placeholder="Ex. http://feeds.meufeed.com.br" required>
                             <div ng-messages="addFeedForm.feed.$error" ng-if="addFeedForm.feed.$touched">

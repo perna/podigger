@@ -1,3 +1,4 @@
+from datetime import date
 from flask.ext.restful import Resource, reqparse
 from app.repository.podcast import PodcastRepository
 from app.repository.episode import EpisodeRepository
@@ -71,3 +72,17 @@ class EpisodeAPI(Resource):
         episodes = episode.get_all_by_podcast(id_episode)
 
         return episodes, 200
+
+
+class PopularTermAPI(Resource):
+
+    def get(self, init_date, final_date=date.today(), num_limit=10):
+        popterm = TermRepository()
+        terms = popterm.get_top_terms(init_date, final_date, num_limit)
+        dates = {
+            "initial_date" : str(init_date),
+            "final_date": str(final_date)
+        }
+        terms.append(dates)
+
+        return terms, 200

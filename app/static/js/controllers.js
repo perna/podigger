@@ -63,6 +63,7 @@ angular.module('podigger')
                 $http.post(url, params)
                     .success(function(response){
 
+                        $scope.loading = false;
                         var data = JSON.parse(response);
 
                         if(data.status === 'error') {
@@ -74,7 +75,6 @@ angular.module('podigger')
                         }
                         $scope.podcast.name = '';
                         $scope.podcast.feed = '';
-                        $scope.loading = false;
                 });
             }
         };
@@ -83,13 +83,120 @@ angular.module('podigger')
 
         var url = '/api/podcasts/';
         $scope.list = '';
+        $scope.loading = true;
+        $scope.tableListPodcasts = false;
 
         $scope.listAll = function(){
 
             $http.get(url)
                 .success(function(data){
+                    $scope.loading = false;
+                    $scope.tableListPodcasts = true;
                     $scope.list = data;
             })
         };
+
+    })
+    .controller('TrendController', function($scope, $http){
+
+        function getDeltaDays(days) {
+
+            var date = new Date(),
+                last = new Date(date.getTime() - (days * 24 * 60 * 60 * 1000)),
+                day = (last.getDate() < 10)? '0'+ last.getDate():last.getDate(),
+                month = ((last.getMonth()+1) < 10)? '0'+(last.getMonth()+1):last.getMonth()+1,
+                year = last.getFullYear(),
+                pastDate = year+'-'+month+'-'+day;
+                return pastDate;
+         }
+
+        function getTodayMostSearchedTerms() {
+
+            var url = '/api/terms/'+getDeltaDays(0);
+
+            $http.get(url)
+                .success(function(data){
+
+                    var dataSize = data.length - 1;
+                    var dataLabel = [];
+                    var dataTimes = [];
+
+                    for(var i = 0; i < dataSize; i++) {
+                        dataLabel.push(data[i].name)
+                        dataTimes.push(data[i].times)
+                    }
+
+                    $scope.labels = dataLabel;
+                    $scope.data = dataTimes;
+            });
+        }
+
+
+
+        function getSevenMostSearchedTerms() {
+
+            var url = '/api/terms/'+getDeltaDays(7);
+
+            $http.get(url)
+                .success(function(data){
+
+                    var dataSize = data.length - 1;
+                    var dataLabel = [];
+                    var dataTimes = [];
+
+                    for(var i = 0; i < dataSize; i++) {
+                        dataLabel.push(data[i].name)
+                        dataTimes.push(data[i].times)
+                    }
+
+                    $scope.labels7 = dataLabel;
+                    $scope.data7 = dataTimes;
+            });
+        }
+
+        function getFifteenMostSearchedTerms() {
+
+            var url = '/api/terms/'+getDeltaDays(15);
+            $http.get(url)
+                .success(function(data){
+
+                    var dataSize = data.length - 1;
+                    var dataLabel = [];
+                    var dataTimes = [];
+
+                    for(var i = 0; i < dataSize; i++) {
+                        dataLabel.push(data[i].name)
+                        dataTimes.push(data[i].times)
+                    }
+
+                    $scope.labels15 = dataLabel;
+                    $scope.data15 = dataTimes;
+            });
+        }
+
+        function getThirtyMostSearchedTerms() {
+
+            var url = '/api/terms/'+getDeltaDays(15);
+            $http.get(url)
+                .success(function(data){
+
+                    var dataSize = data.length - 1;
+                    var dataLabel = [];
+                    var dataTimes = [];
+
+                    for(var i = 0; i < dataSize; i++) {
+                        dataLabel.push(data[i].name)
+                        dataTimes.push(data[i].times)
+                    }
+
+                    $scope.labels30 = dataLabel;
+                    $scope.data30 = dataTimes;
+            });
+        }
+
+        getTodayMostSearchedTerms();
+        getSevenMostSearchedTerms();
+        getFifteenMostSearchedTerms();
+        getThirtyMostSearchedTerms();
 
     });

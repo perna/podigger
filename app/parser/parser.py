@@ -20,6 +20,7 @@ def get_episodes(url):
     for entry in d.entries:
 
         if 'link' in entry:
+            global item
             item = {}
             tags = []
             item['title'] = entry.title

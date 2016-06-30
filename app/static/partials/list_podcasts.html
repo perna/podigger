@@ -4,13 +4,19 @@
             <form class="form-inline pull-left">
                 <div class="form-group">
                     <label for="podcast_filter">Filtrar pelo nome</label>
-                    <input type="text" class="form-control" ng-model="search">
+                    <input id="podcast_filter" type="text" class="form-control" ng-model="search">
                 </div>
             </form>
             <a class="btn btn-default pull-right" href="#/add-podcast"><i class="fa fa-plus-circle" aria-hidden="true"></i> Adicionar podcast</a>
         </div>
         <div class="panel-body">
-            <table class="table table-striped table-hover">
+            <div class="col-md-12 loading-container text-center" ng-show="loading">
+                <img class="img-loading-podcasts" src="/static/img/radio.svg" alt="">
+                <h4>Criando lista...</h4>
+            </div>
+
+
+            <table class="table table-striped table-hover" ng-show="tableListPodcasts">
                 <thead>
                     <tr>
                         <th>Podcast</th>
