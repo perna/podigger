@@ -14,7 +14,9 @@ class Configuration(object):
  class DevConfiguration(BaseConfiguration):
 
     SECRET_KEY = 'key development'
-    SQLALCHEMY_DATABASE_URI = 'postgresql://192.168.33.10/podigger'
+    SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://docker:docker@localhost/podigger'
 
-    CELERY_BROKER_URL = 'redis://192.168.33.10:6379/0'
-    CELERY_RESULT_BACKEND = 'redis://192.168.33.10:6379/0'
+    CELERY_BROKER_URL = 'redis://localhost:6379/0'
+    CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+    WTF_CSRF_ENABLED = True
+    WTF_CSRF_SECRET_KEY = 'key development'

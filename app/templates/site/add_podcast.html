@@ -1,0 +1,56 @@
+{% extends "site/index.html" %}
+{% block body %}
+<div class="container">
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-7">
+                  <h2>Cadastre o seu podcast</h2>
+                  <h4>Veja como é fácil adicionar um novo feed:</h4>
+                  <div class="well">
+                      <ul>
+                        <li>Pode ser que seu podcast já tenha sido adicionado por um ouvinte ou podcaster. Já
+                            verificou em <a href="#/list-podcasts"><strong>nossa lista?</strong></a></li>
+                        <li><span class="label label-danger">Verifique se o feed não possui erros</span>, utilizando a <a
+                                href="https://validator.w3.org/feed/"><strong>ferramenta de validação do W3C</strong></a>;</li>
+                        <li>Se estiver tudo ok, preencha o formulário com o nome e o feed do podcast;</li>
+                        <li>Em instantes, o <strong>Podigger</strong> irá indexar todos os episódios listados no feed;</li>
+                        <li>Diariamente o <strong>Podigger</strong> verifica atualizações em todos os feeds cadastrados.</li>
+                      </ul>
+                  </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-7">
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                        <div class="alert alert-{{category}} alert-dismissible" role="alert">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <p>{{ message }}</p>
+                        </div>
+                        {% endfor %}
+                    {% endif %}
+                    {% endwith %}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-7">
+                    <form name="addFeedForm" method="POST" action="{{url_for('site.add_podcast')}}">
+                         {{ form.hidden_tag() }}
+                        <div class="form-group">
+                            {{ form.name.label }}
+                            {{form.name(placeholder="Meu Podcast", class="form-control")}}
+                        </div>
+                        <div class="form-group">
+                            {{ form.feed.label }}
+                            {{form.feed(placeholder="http://meufeed.feed.com.br", class="form-control")}}
+                        </div>
+                        <button type="submit" class="btn btn-success">Enviar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,82 @@
+{% extends "site/index.html" %}
+{% block body %}
+<div class="container">
+    <div class="row">
+        <div class="col-lg-10 col-lg-offset-1 form-search-container">
+          <div class="row">
+              <div class="well">
+                <form class="form-horizontal" method="GET" action="{{url_for('site.search')}}">
+                   <div class="form-group">
+                       <div class="col-md-12 col-sm-12">
+                           <div class="input-group">
+                               <input type="text" name="term" placeholder="digite o termo da busca"
+                                      class="form-control">
+                               <span class="input-group-btn">
+                                   <button type="submit" class="btn btn-primary"><i class="fa fa-search"
+                                                                               aria-hidden="true"></i>
+                                       Buscar</button>
+                               </span>
+                           </div>
+                       </div>
+                   </div>
+                </form>
+              </div>
+          </div>
+        </div>
+    </div>
+
+    {% if episodes %}
+    <div class="row">
+        <div class="col-md-10 col-lg-offset-1">
+            {% for message in get_flashed_messages() %}
+            <h3>{{ message }}</h3>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="row">
+        {% for episode in episodes.items %}
+        <div class="well well-lg col-md-10 col-lg-offset-1 episode-box">
+            <h4>{{episode.podcast.name}}</h4>
+            <h5><i class="fa fa-link" aria-hidden="true"> </i> <a href="{{episode.link}}">{{episode.title}}</a></h6>
+            <h6><i class="fa fa-clock-o" aria-hidden="true"></i> <strong>publicado há</strong>
+                <span class="datetime-published">{{episode.published}}</span></h6>
+            <p>{{episode.description}}</p>
+            <p class="clearfix"><i class="fa fa-tags" aria-hidden="true"></i><strong>Tags:</strong>
+                {% for tag in episode.tags %}
+                <span
+                    class="label label-success label-tag">{{tag.name}}
+                </span>
+                {% endfor %}
+            </p>
+            <div>
+                <a href="{{episode.enclosure}}"><i class="fa fa-download" aria-hidden="true"></i> download</a>
+                <audio controls preload="none" src="{{episode.enclosure}}" type="audio/mpeg"></audio>
+            </div>
+        </div>
+        {% endfor %}
+
+        {% if episodes.items %}
+        <div class="row">
+            <div class="col-lg-10 col-lg-offset-1">
+                <nav>
+                    <ul class="pager">
+
+                        {% if episodes.has_prev %}
+                        <li class="nav-search"><a
+                                href="{{ url_for('site.search', term=request.args.get('term'), page=episodes.prev_num) }}">Resultados Anteriores
+                        </a></li>
+                        {% endif %}
+                        {% if episodes.has_next %}
+                        <li class="nav-search"><a
+                                href="{{ url_for('site.search', term=request.args.get('term'), page=episodes.next_num) }}">Próximos Resultados</a></li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    {% endif %}
+</div>
+{% endblock %}

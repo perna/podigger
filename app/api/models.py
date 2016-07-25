@@ -17,7 +17,7 @@ tags = db.Table(
 class Base(db.Model):
     __abstract__ = True
 
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True, index=True)
     created_at = db.Column(db.DateTime, default=datetime.datetime.now)
     updated_at = db.Column(db.DateTime, onupdate=datetime.datetime.now)
 
@@ -95,3 +95,18 @@ class PopularTerm(Base):
 
     def __repr__(self):
         return '<id {}>'.format(self.id)
+
+
+class TopicSuggestion(Base):
+    __tablename__ = 'topic_suggestion'
+
+    title = db.Column(db.String(), nullable=False, index=True)
+    description = db.Column(db.Text())
+    is_recorded = db.Column(db.Boolean(), nullable=False, default=False)
+
+    def __init__(self, title, description):
+        self.title = title
+        self.description = description
+
+    def __repr__(self):
+        return '<id {}> <title {}>'.format(self.id, self.title)

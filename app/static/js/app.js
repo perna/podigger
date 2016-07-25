@@ -27,6 +27,10 @@ angular.module('podigger',['ngRoute','ngAnimate','ngMessages','angularMoment','a
                 templateUrl: 'static/partials/trends.html',
                 controller: 'TrendController'
             })
+            .when('/topic-suggestions', {
+                templateUrl: 'static/partials/add_topic_suggestion.html',
+                controller: 'TopicSuggestionController'
+            })
             .otherwise({
                 redirectTo: '/'
             });

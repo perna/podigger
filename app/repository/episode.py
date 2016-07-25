@@ -1,14 +1,13 @@
-from sqlalchemy import asc
+from sqlalchemy import desc
 from app.api.models import Episode, Podcast, db
 
 class EpisodeRepository:
 
     def search_by_term(self, term):
 
-        query = Episode.query.search(term).with_entities(Episode.to_json).order_by(asc(Episode.published))
+        query = Episode.query.search(term).with_entities(Episode.to_json).order_by(desc(Episode.published))
         episodes = []
-        for q in query:
-            row = q
+        for row in query:
             episodes.append(row)
 
         return episodes
@@ -22,11 +21,6 @@ class EpisodeRepository:
         query = Episode.query.join(Podcast).filter(Podcast.id == id).all()
         episodes = []
 
-        podcast = {
-            "name": query[0].podcast.name,
-            "feed": query[0].podcast.feed,
-        }
-
         for episode in query:
             ep = {
                 "title": episode.title,
@@ -37,11 +31,13 @@ class EpisodeRepository:
             }
             episodes.append(ep)
 
-        podcast["episodes"] = episodes
+        return episodes
 
-        return podcast
+    def result_search_paginate(self, term, page_num, num_per_page):
 
+        result_query = Episode.query.search(term).order_by(desc(Episode.published)).paginate(page=page_num, per_page=num_per_page)
 
+        return result_query
 
 
 

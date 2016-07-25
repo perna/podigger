@@ -39,8 +39,14 @@ class PodcastListAPI(Resource):
         super(PodcastListAPI, self).__init__()
 
     def get(self):
-        podcasts = PodcastRepository()
-        return podcasts.get_all(), 200
+        podcast = PodcastRepository()
+        query = podcast.get_all()
+        podcasts = []
+        for q in query:
+            row = {"id": q.id, "name": q.name, "feed": q.feed, "total_episodes": q.episodes.count()}
+            podcasts.append(row)
+
+        return podcasts, 200
 
     def post(self):
         args = self.parser.parse_args()
@@ -67,9 +73,9 @@ class TermListAPI(Resource):
 
 class EpisodeAPI(Resource):
 
-    def get(self, id_episode):
+    def get(self, podcast_id):
         episode = EpisodeRepository()
-        episodes = episode.get_all_by_podcast(id_episode)
+        episodes = episode.get_all_by_podcast(podcast_id)
 
         return episodes, 200
 

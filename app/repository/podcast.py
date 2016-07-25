@@ -38,15 +38,8 @@ class PodcastRepository:
             return data
 
     def get_all(self):
-
         query = Podcast.query.all()
-        podcasts = []
-
-        for q in query:
-            row = {"name": q.name, "feed": q.feed, "total_episodes": q.episodes.count()}
-            podcasts.append(row)
-
-        return podcasts
+        return query
 
     def get_by_id(self, id):
         query = Podcast.query.get(id)
@@ -77,7 +70,10 @@ class PodcastRepository:
 
         return message
 
-
     def count_all():
         count = db.session.query(Podcast).count()
         return count
+
+    def search(self, term):
+        result = Podcast.query.filter(Podcast.name.ilike('%'+str(term)+'%'))
+        return result

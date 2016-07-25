@@ -1,6 +1,7 @@
 from app import app
 import sendgrid
 
+
 class SendMail():
     def __init__(self):
         self.sg = sendgrid.SendGridClient(app.config['SENDGRID_API_KEY'])

@@ -198,5 +198,42 @@ angular.module('podigger')
         getSevenMostSearchedTerms();
         getFifteenMostSearchedTerms();
         getThirtyMostSearchedTerms();
+    })
+    .controller('TopicSuggestionController', function($scope, $http){
+        $scope.topic = {};
+        $scope.successMessage = false;
+        $scope.errorMessage = false;
+        $scope.loading = false;
 
+        $scope.submitForm = function(){
+
+            $scope.successMessage = false;
+            $scope.errorMessage = false;
+
+            var url = '/api/topics/';
+            var params = {
+                title: $scope.topic.title,
+                description: $scope.topic.description
+            };
+
+            if($scope.addFeedForm.$valid) {
+
+                $scope.loading = true;
+
+                $http.post(url, params)
+                    .success(function(response){
+
+                        $scope.loading = false;
+                        var data = JSON.parse(response);
+
+                        if(data.status === 'error') {
+                            $scope.errorMessage = true;
+                        } else {
+                            $scope.successMessage = true;
+                        }
+                        $scope.topic.title = '';
+                        $scope.topic.description = '';
+                });
+            }
+        };
     });

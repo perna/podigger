@@ -76,10 +76,10 @@ notable changes.
 ### Added
 - "Why should I care?" section mentioning The Changelog podcast.
 
-## [0.0.2] - 2014-07-10
+## [0.1.2] - 2014-07-10
 ### Added
 - Explanation of the recommended reverse chronological release ordering.
 
-## 0.0.1 - 2014-05-31
+## 0.0.1 - 2016-06-19
 ### Added
-- Primeira versão em produção.
+- Primeira versão em lançada.

@@ -1,8 +1,7 @@
 from app import app, celery
 from app.parser.updater import EpisodeUpdater
 from app.api.models import Podcast
-from .email import SendMail
-
+import requests
 
 @celery.task()
 def add_episode(feed):
@@ -14,8 +13,7 @@ def add_episode(feed):
 @celery.task(name='update_base')
 def update_base():
     with app.app_context():
-        email = SendMail()
         feeds = Podcast.query.with_entities(Podcast.feed).all()
         episodes = EpisodeUpdater(feeds)
         episodes.populate()
-        email.send('celery task update_base', 'Atualizando a base de episódios {}'.format(feeds))
+        requests.get("https://hchk.io/a6f9d3b8-fa0d-4af5-8563-a793a67a9db1")
