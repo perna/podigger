@@ -2,12 +2,13 @@ import json
 from flask import Blueprint, render_template, request, flash, redirect
 from app.repository.episode import EpisodeRepository
 from app.repository.podcast import PodcastRepository
+from app.repository.topic_suggestion import TopicSuggestionRepository
 from app.repository.term import TermRepository
-from .forms import PodcastForm, PodcastSearchForm
+from .forms import PodcastForm, PodcastSearchForm, TopicSuggestionForm
 from app.api.models import Podcast
+from app import cache
 
-
-site = Blueprint('site', __name__)
+site = Blueprint('site', __name__, template_folder='../templates/site')
 
 
 @site.context_processor
@@ -18,9 +19,10 @@ def counter():
     return dict(counter=counter)
 
 
+@cache.cached(timeout=60)
 @site.route("/")
 def index():
-    return render_template("site/home.html")
+    return render_template("home.html")
 
 
 @site.route('/search')
@@ -30,15 +32,18 @@ def search(page=1):
     term = request.args.get('term')
 
     if term:
+        new_term = TermRepository()
+        new_term.create_or_update(term)
+
         episode = EpisodeRepository()
         query = episode.result_search_paginate(term, page, 10)
         if query.total > 0:
             flash('{} resultados para {}'.format(query.total, term))
         else:
             flash( 'Nenhum resultado encontrado.')
-        return render_template('site/search.html', episodes=query, page="search")
+        return render_template('search.html', episodes=query, page="search")
     else:
-        return render_template('site/search.html', page="search")
+        return render_template('search.html', page="search")
 
 
 @site.route('/add_podcast', methods=['GET', 'POST'])
@@ -49,12 +54,12 @@ def add_podcast():
             podcast = PodcastRepository()
             podcast.create_or_update(form.name.data, form.feed.data)
             flash('Podcast cadastrado com sucesso.', 'success')
-            return render_template("site/add_podcast.html", form=form)
+            return render_template("add_podcast.html", form=form)
         else:
             flash('Erro ao cadastrar o podcast. Verifique os dados e tente novamente', 'danger')
             return render_template("site/add_podcast.html", form=form)
     else:
-        return render_template("site/add_podcast.html", form=form)
+        return render_template("add_podcast.html", form=form, page="add_podcast")
 
 
 @site.route('/podcasts', methods=['GET','POST'])
@@ -64,24 +69,49 @@ def list_podcasts(page=1):
     if request.method == 'POST':
         if form.validate_on_submit():
             podcast = PodcastRepository()
-            print(form.term.data)
             podcasts = podcast.search(form.term.data)
             result = podcasts.paginate(page=1, per_page=10)
-            return render_template( "site/list_podcasts.html", podcasts=result, form=form)
+            return render_template("list_podcasts.html", podcasts=result, form=form)
         else:
             podcasts = None
             flash('Termo não encontrado')
-            return render_template( "site/list_podcasts.html", podcasts=podcasts, form=form)
+            return render_template("list_podcasts.html", podcasts=podcasts, form=form)
     else:
         podcasts = Podcast.query.paginate(page, per_page=10)
-        return render_template("site/list_podcasts.html", podcasts=podcasts, form=form)
+        return render_template("list_podcasts.html", podcasts=podcasts, form=form)
 
 
+@site.route('/topic_suggestions')
+def list_topic_suggestion():
+    topic = TopicSuggestionRepository()
+    topics = topic.list_topics()
+    return render_template("list_topic_suggestions.html", topics=topics)
+
+
+@site.route('/add_topic_suggestion', methods=['GET', 'POST'])
+def add_topic_suggestion():
+    form = TopicSuggestionForm(request.form)
+    if form.validate_on_submit():
+        topic = TopicSuggestionRepository()
+        topic.create(form.title.data, form.description.data)
+        flash('Sugestão adicionada com sucesso.')
+        return render_template("add_topic_suggestion.html", form=form)
+    return render_template("add_topic_suggestion.html", form=form)
+
+
+@cache.cached(timeout=1800)
+@site.route('/trends')
+def trends():
+    return render_template("trends.html")
+
+@cache.cached(timeout=60)
 @site.route('/about')
 def about():
-    return render_template("site/about.html", page="about")
+    return render_template("about.html", page="about")
 
 
+@cache.cached(timeout=60)
 @site.route('/contact')
 def contact():
-    return render_template("site/contact.html", page="contact")
+    return render_template("contact.html", page="contact")
+

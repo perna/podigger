@@ -1,5 +1,6 @@
 from app.api.models import Podcast, db
 from app.utils.tasks import add_episode
+from app import cache
 import feedparser
 import json
 
@@ -70,6 +71,7 @@ class PodcastRepository:
 
         return message
 
+    @cache.memoize(timeout=300)
     def count_all():
         count = db.session.query(Podcast).count()
         return count

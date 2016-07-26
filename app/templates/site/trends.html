@@ -1,37 +1,45 @@
+{% extends "site/index.html" %}
+{% block body %}
 <div class="container">
     <div class="panel panel-primary">
-         <div class="panel-heading">Termos mais procurados</div>
+         <div class="panel-heading">Termos mais procurados<sup>*</sup></div>
         <div class="panel-body">
             <div class="row">
                 <div class="col-md-6 text-center">
                     <div class="well well-lg">
-                        <canvas class="chart chart-bar" chart-data="data" chart-labels="labels">
+                        <canvas id="chart_today">
                         </canvas>
                         <h4>Hoje</h4>
                     </div>
                 </div>
                 <div class="col-md-6 text-center">
                     <div class="well well-lg">
-                        <canvas class="chart chart-bar" chart-data="data7" chart-labels="labels7">
+                        <canvas id="chart_seven_days">
                         </canvas>
                         <h4>Últimos 7 dias</h4>
                     </div>
                 </div>
                 <div class="col-md-6 text-center">
                     <div class="well well-lg">
-                        <canvas class="chart chart-bar" chart-data="data15" chart-labels="labels15">
+                        <canvas id="chart_fifteen_days">
                         </canvas>
                         <h4>Últimos 15 dias</h4>
                     </div>
                 </div>
                 <div class="col-md-6 text-center">
                     <div class="well well-lg">
-                        <canvas class="chart chart-bar" chart-data="data30" chart-labels="labels30">
+                        <canvas id="chart_thirty_days">
                         </canvas>
                         <h4>Últimos 30 dias</h4>
                     </div>
                 </div>
             </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <h5>*Atualização a cada 30 minutos</h5>
+                </div>
+            </div>
         </div>
     </div>
 </div>
+{% endblock %}

@@ -66,3 +66,4 @@ config/config.py
 .idea
 app.db
 celerybeat-schedule
+app/static/node_modules

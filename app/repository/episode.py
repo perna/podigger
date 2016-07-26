@@ -1,10 +1,10 @@
 from sqlalchemy import desc
 from app.api.models import Episode, Podcast, db
+from app import cache
 
 class EpisodeRepository:
 
     def search_by_term(self, term):
-
         query = Episode.query.search(term).with_entities(Episode.to_json).order_by(desc(Episode.published))
         episodes = []
         for row in query:
@@ -12,6 +12,7 @@ class EpisodeRepository:
 
         return episodes
 
+    @cache.memoize(timeout=300)
     def count_all():
         count = db.session.query(Episode).count()
         return count
@@ -34,9 +35,7 @@ class EpisodeRepository:
         return episodes
 
     def result_search_paginate(self, term, page_num, num_per_page):
-
         result_query = Episode.query.search(term).order_by(desc(Episode.published)).paginate(page=page_num, per_page=num_per_page)
-
         return result_query
 
 
