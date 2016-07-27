@@ -10,10 +10,8 @@ def get_episodes(url):
 
     if 'title' in d.feed:
         podcast['title'] = d.feed.title
-        print(podcast['title'])
     else:
         podcast['title'] = 'sem título'
-        print(podcast['title'])
 
     podcast['items'] = []
 
@@ -23,7 +21,12 @@ def get_episodes(url):
             global item
             item = {}
             tags = []
-            item['title'] = entry.title
+
+            if 'title' in entry:
+                item['title'] = entry.title
+            else:
+                item['title'] = "No Title"
+
             item['link'] = entry.link
             item['published'] = entry.published
 

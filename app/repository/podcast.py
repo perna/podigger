@@ -42,8 +42,8 @@ class PodcastRepository:
         query = Podcast.query.all()
         return query
 
-    def get_by_id(self, id):
-        query = Podcast.query.get(id)
+    def get_by_id(self, id_podcast):
+        query = Podcast.query.get(id_podcast)
         if query is not None:
             podcast = {"name": query.name, "feed": query.feed}
             return json.dumps(podcast)
@@ -51,17 +51,23 @@ class PodcastRepository:
             message = {"message": 'podcast não encontrado'}
             return json.dumps(message)
 
-    def edit(self, id, name=None, feed=None):
-        query = Podcast.query.get(id)
+    def edit(self, id_podcast, name=None, feed=None):
+        query = Podcast.query.get(id_podcast)
         if query is not None:
-            podcast = {"name": query.name, "feed": query.feed}
-            return podcast
+            if query.name == name and query.feed == feed:
+                data = json.dumps({'id': query.id, 'message': 'este podcast já foi adicionado', 'status': 'none'})
+                return data
+            else:
+                query.name = name
+                query.feed = feed
+                db.session.commit()
+                return {'id': query.id, 'status': 'updated'}
         else:
             message = {"message": 'podcast não encontrado'}
             return message
 
-    def delete(self, id):
-        query = Podcast.query.get(id)
+    def delete(self, id_podcast):
+        query = Podcast.query.get(id_podcast)
         if query is not None:
             db.session.delete(query)
             db.session.commit()

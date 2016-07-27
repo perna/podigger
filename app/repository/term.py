@@ -1,5 +1,5 @@
 from datetime import date
-from sqlalchemy import desc, and_
+from sqlalchemy import desc
 from sqlalchemy.sql import func
 from app.api.models import PopularTerm, db
 

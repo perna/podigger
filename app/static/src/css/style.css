@@ -1,8 +1,8 @@
-
 html {
   position: relative;
   min-height: 100%;
 }
+
 body {
   /* Margin bottom by footer height */
   margin-bottom: 100px;
@@ -72,6 +72,7 @@ footer a {color:#c0ff10;}
 .nav-search a{background-color:#2c3e50!important;}
 .nav-search a:hover{background-color:#0f7864!important;}
 
+.link-add-suggestion{color:#fff!important;}
 
 @media only screen and (max-width : 480px) {
 

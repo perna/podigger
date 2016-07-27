@@ -14,18 +14,17 @@ class PodcastAPI(Resource):
         self.repository = PodcastRepository()
         super(PodcastAPI, self).__init__()
 
-    def get(self, id):
-        result = self.repository.get_by_id(id)
+    def get(self, podcast_id):
+        result = self.repository.get_by_id(podcast_id)
         return result, 200
 
-    def put(self, id):
+    def put(self, podcast_id):
         args = self.parser.parse_args()
-        result = self.repository.edit(id, args['name'], args['feed'])
+        result = self.repository.edit(podcast_id, args['name'], args['feed'])
         return result, 200
 
-    def delete(self, id):
-        args = self.parser.parse_args()
-        result = self.repository.delete(id)
+    def delete(self, podcast_id):
+        result = self.repository.delete(podcast_id)
         return result
 
 

@@ -13,7 +13,7 @@ class EpisodeRepository:
         return episodes
 
     @cache.memoize(timeout=300)
-    def count_all():
+    def count_all(self):
         count = db.session.query(Episode).count()
         return count
 
@@ -37,7 +37,3 @@ class EpisodeRepository:
     def result_search_paginate(self, term, page_num, num_per_page):
         result_query = Episode.query.search(term).order_by(desc(Episode.published)).paginate(page=page_num, per_page=num_per_page)
         return result_query
-
-
-
-

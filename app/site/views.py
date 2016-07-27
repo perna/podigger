@@ -1,5 +1,4 @@
-import json
-from flask import Blueprint, render_template, request, flash, redirect
+from flask import Blueprint, render_template, request, flash, redirect, Markup
 from app.repository.episode import EpisodeRepository
 from app.repository.podcast import PodcastRepository
 from app.repository.topic_suggestion import TopicSuggestionRepository
@@ -40,7 +39,8 @@ def search(page=1):
         if query.total > 0:
             flash('{} resultados para {}'.format(query.total, term))
         else:
-            flash( 'Nenhum resultado encontrado.')
+            message = Markup('<span>Nenhum resultado encontrado.</span> <a class="link-add-suggestion" href="/add_topic_suggestion">Gostaria de sugerir o tema?</a>')
+            flash(message)
         return render_template('search.html', episodes=query, page="search")
     else:
         return render_template('search.html', page="search")
@@ -114,4 +114,3 @@ def about():
 @site.route('/contact')
 def contact():
     return render_template("contact.html", page="contact")
-
