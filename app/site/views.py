@@ -12,8 +12,10 @@ site = Blueprint('site', __name__, template_folder='../templates/site')
 
 @site.context_processor
 def counter():
-    podcast_count = PodcastRepository.count_all()
-    episode_count = EpisodeRepository.count_all()
+    podcast = PodcastRepository()
+    episode = EpisodeRepository()
+    podcast_count = podcast.count_all()
+    episode_count = episode.count_all()
     counter = {'podcasts': podcast_count, 'episodes': episode_count}
     return dict(counter=counter)
 

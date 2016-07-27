@@ -3,10 +3,7 @@ var APP = APP || {};
 APP.Trends = (function($){
 
     function init() {
-        getTodayMostSearchedTerms(0, 'chart_today', 'blue');
-        getTodayMostSearchedTerms(7, 'chart_seven_days', 'green');
-        getTodayMostSearchedTerms(15, 'chart_fifteen_days', 'orange');
-        getTodayMostSearchedTerms(30, 'chart_thirty_days', 'red');
+        loadCharts();
     }
 
 
@@ -76,6 +73,17 @@ APP.Trends = (function($){
                 type: 'bar',
                 data:data_source
             });
+        }
+
+        function loadCharts() {
+
+            if ($('#chart_today').length) {
+                getTodayMostSearchedTerms(0, 'chart_today', 'blue');
+                getTodayMostSearchedTerms(7, 'chart_seven_days', 'green');
+                getTodayMostSearchedTerms(15, 'chart_fifteen_days', 'orange');
+                getTodayMostSearchedTerms(30, 'chart_thirty_days', 'red');
+            }
+
         }
 
 

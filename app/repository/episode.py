@@ -2,6 +2,7 @@ from sqlalchemy import desc
 from app.api.models import Episode, Podcast, db
 from app import cache
 
+
 class EpisodeRepository:
 
     def search_by_term(self, term):

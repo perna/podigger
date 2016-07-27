@@ -78,7 +78,7 @@ class PodcastRepository:
         return message
 
     @cache.memoize(timeout=300)
-    def count_all():
+    def count_all(self):
         count = db.session.query(Podcast).count()
         return count
 

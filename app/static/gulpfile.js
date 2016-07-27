@@ -33,8 +33,10 @@ gulp.task('concat-js',['jshint'], function(){
                         './src/js/lib/jquery.min.js',
                         './src/js/lib/bootstrap.min.js',
                         './src/js/lib/moment-with-locales.min.js',
+                        './src/js/lib/sweetalert2.min.js',
                         './src/js/lib/Chart.min.js',
                         './src/js/modules/trends.js',
+                        './src/js/modules/widgets.js',
                         './src/js/modules/main.js'
                     ])
         .pipe(concat('app.js',{newLine: ';'}))
