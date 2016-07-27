@@ -79,7 +79,7 @@ def list_podcasts(page=1):
             flash('Termo não encontrado')
             return render_template("list_podcasts.html", podcasts=podcasts, form=form)
     else:
-        podcasts = Podcast.query.paginate(page, per_page=10)
+        podcasts = Podcast.query.order_by(Podcast.name).paginate(page, per_page=10)
         return render_template("list_podcasts.html", podcasts=podcasts, form=form)
 
 
