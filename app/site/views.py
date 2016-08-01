@@ -20,7 +20,7 @@ def counter():
     return dict(counter=counter)
 
 
-@cache.cached(timeout=60)
+@cache.cached(timeout=600)
 @site.route("/")
 def index():
     return render_template("home.html")
@@ -64,6 +64,7 @@ def add_podcast():
         return render_template("add_podcast.html", form=form, page="add_podcast")
 
 
+@cache.cached(timeout=600)
 @site.route('/podcasts', methods=['GET','POST'])
 @site.route('/podcasts/<int:page>')
 def list_podcasts(page=1):
@@ -106,13 +107,13 @@ def add_topic_suggestion():
 def trends():
     return render_template("trends.html")
 
-@cache.cached(timeout=60)
+@cache.cached(timeout=3600)
 @site.route('/about')
 def about():
     return render_template("about.html", page="about")
 
 
-@cache.cached(timeout=60)
+@cache.cached(timeout=3600)
 @site.route('/contact')
 def contact():
     return render_template("contact.html", page="contact")
