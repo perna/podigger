@@ -1,7 +1,7 @@
 import datetime
 import json
 from sqlalchemy.dialects.postgresql import JSON
-from flask.ext.sqlalchemy import BaseQuery
+from flask_sqlalchemy import BaseQuery
 from sqlalchemy_searchable import SearchQueryMixin
 from sqlalchemy_utils.types import TSVectorType
 from sqlalchemy_searchable import make_searchable
@@ -27,6 +27,7 @@ class Podcast(Base):
 
     name = db.Column(db.String(128), unique=True, nullable=False, index=True)
     feed = db.Column(db.String(), unique=True, nullable=False, index=True)
+    language = db.Column(db.String(5), nullable=True, default='pt-br')
     episodes = db.relationship('Episode', backref='podcast', lazy='dynamic')
 
     def __init__(self, name, feed):

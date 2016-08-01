@@ -1,5 +1,5 @@
 from datetime import date
-from flask.ext.restful import Resource, reqparse
+from flask_restful import Resource, reqparse
 from app.repository.podcast import PodcastRepository
 from app.repository.episode import EpisodeRepository
 from app.repository.term import TermRepository

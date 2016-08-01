@@ -8,45 +8,48 @@ def get_episodes(url):
     d = feedparser.parse(url)
     no_tag = re.compile((r'(<!--.*?-->|<[^>]*>)'))
 
-    if 'title' in d.feed:
-        podcast['title'] = d.feed.title
-    else:
-        podcast['title'] = 'sem título'
+    try:
+        if 'title' in d.feed:
+            podcast['title'] = d.feed.title
+            podcast['language'] = d.feed.language.lower()
+            podcast['items'] = []
 
-    podcast['items'] = []
+            print(d.feed.title)
+            print(d.feed.language.lower())
 
-    for entry in d.entries:
 
-        if 'link' in entry:
-            global item
-            item = {}
-            tags = []
+        for entry in d.entries:
 
-            if 'title' in entry:
-                item['title'] = entry.title
-            else:
-                item['title'] = "No Title"
+            if 'link' in entry:
+                global item
+                item = {}
+                tags = []
 
-            item['link'] = entry.link
-            item['published'] = entry.published
+                if 'title' in entry:
+                    item['title'] = entry.title
 
-            description = no_tag.sub('', entry.description)
+                item['link'] = entry.link
+                item['published'] = entry.published
 
-            item['description'] = description
+                description = no_tag.sub('', entry.description)
 
-        if 'tags' in entry:
-            for t in entry.tags:
-                tags.append(t.term)
+                item['description'] = description
 
-            item['tags'] = tags
+                if 'tags' in entry:
+                    for t in entry.tags:
+                        tags.append(t.term)
 
-        if hasattr(entry, 'enclosures'):
-            if len(entry.enclosures) > 0:
-                item['enclosure'] = entry.enclosures[0].href
+                    item['tags'] = tags
 
-        podcast['items'].append(item)
+                if hasattr(entry, 'enclosures'):
+                    if len(entry.enclosures) > 0:
+                        item['enclosure'] = entry.enclosures[0].href
 
-    return json.dumps(podcast)
+            podcast['items'].append(item)
+
+        return json.dumps(podcast)
+    except:
+        pass
 
 
 def is_valid_feed(url):

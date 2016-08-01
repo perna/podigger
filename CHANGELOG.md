@@ -1,6 +1,14 @@
 # Change Log
 
-## [0.1.2] - 2014-07-10
+## [0.2.3] - 2014-07-10
+
+### Added
+- Painel administrativo
+
+### Fixed
+- Correção do parâmetro id no consumo de recursos da API (ainda em construção)
+
+## [0.1.2] - 2016-07-27
 
 ### Added
 - Adição do Gulp no stack para a otimização do css e js do projeto;
