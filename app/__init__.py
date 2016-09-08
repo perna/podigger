@@ -6,6 +6,7 @@ from flask_restful import Api
 from celery import Celery
 from flask_debugtoolbar import DebugToolbarExtension
 from config.config import DevConfiguration
+from app.site.momentjs import Momentjs
 
 app = Flask(__name__)
 app.config.from_object(DevConfiguration)
@@ -15,7 +16,7 @@ CORS(app)
 apx = Api(app)
 cache = Cache(app)
 toolbar = DebugToolbarExtension(app)
-
+app.jinja_env.globals['momentjs'] = Momentjs
 
 celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'], backend=app.config['CELERY_RESULT_BACKEND'])
 celery.conf.update(app.config)

@@ -1,7 +1,7 @@
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 from app import app, db
-from app.api.models import Podcast, Episode, TopicSuggestion, PopularTerm, Tag
+from app.api.models import Podcast, Episode, TopicSuggestion, PopularTerm, Tag, PodcastLanguage
 
 
 class PodcastView(ModelView):
@@ -22,3 +22,4 @@ admin.add_view(EpisodeView(Episode, db.session))
 admin.add_view(ModelView(TopicSuggestion, db.session))
 admin.add_view(ModelView(PopularTerm, db.session))
 admin.add_view(ModelView(Tag, db.session))
+admin.add_view(ModelView(PodcastLanguage, db.session))

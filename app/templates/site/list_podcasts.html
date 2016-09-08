@@ -41,8 +41,8 @@
                 <tbody>
                     {% for podcast in podcasts.items %}
                     <tr>
-                        <td>{{podcast.name}}</td>
-                        <td class="text-center">{{podcast.episodes.count()}}</td>
+                        <td><span>{{podcast.name}}</span></td>
+                        <td class="text-center">{{podcast.total_episodes}}</td>
                         <td class="text-center"><a href="{{podcast.feed}}" alt="{{podcast.name}}"><i
                                 class="fa fa-rss-square fa-2x" aria-hidden="true"></i></a></td>
                     </tr>
@@ -51,16 +51,10 @@
             </table>
             {% endif %}
         </div>
-        <nav>
-            <ul class="pager">
-                {% if podcasts.has_prev %}
-                <li><a href="{{ url_for('site.list_podcasts', page=podcasts.prev_num) }}">Anterior</a></li>
-                {% endif %}
-                {% if podcasts.has_next %}
-                <li><a href="{{ url_for('site.list_podcasts', page=podcasts.next_num) }}">Próximo</a></li>
-                {% endif %}
-            </ul>
-        </nav>
+        <div class="text-center">
+            {% from 'pagination.html' import render_pagination %}
+            {{ render_pagination(podcasts) }}
+        </div>
     </div>
 </div>
 {% endblock %}

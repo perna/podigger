@@ -5,6 +5,7 @@ APP.Widgets = (function($){
      function init() {
 
         showApiAlert();
+        
 
      }
 

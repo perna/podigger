@@ -1,5 +1,7 @@
 {% extends "site/index.html" %}
 {% block body %}
+<script src="{{ url_for('static', filename='dist/js/moment-with-locales.min.js')}}"></script>
+<script>moment.locale('pt-br');</script>
 <div class="container">
     <div class="row">
         <div class="col-lg-10 col-lg-offset-1 form-search-container">
@@ -39,7 +41,7 @@
             <h4>{{episode.podcast.name}}</h4>
             <h5><i class="fa fa-link" aria-hidden="true"> </i> <a href="{{episode.link}}">{{episode.title}}</a></h6>
             <h6><i class="fa fa-clock-o" aria-hidden="true"></i> <strong>publicado há</strong>
-                <span class="datetime-published">{{episode.published}}</span></h6>
+                <span class="datetime-published">{{ momentjs(episode.published).from_now()}}</span></h6>
             <p>{{episode.description}}</p>
             <p class="clearfix"><i class="fa fa-tags" aria-hidden="true"></i><strong>Tags:</strong>
                 {% for tag in episode.tags %}
@@ -55,26 +57,10 @@
         </div>
         {% endfor %}
 
-        {% if episodes.items %}
-        <div class="row">
-            <div class="col-lg-10 col-lg-offset-1">
-                <nav>
-                    <ul class="pager">
-
-                        {% if episodes.has_prev %}
-                        <li class="nav-search"><a
-                                href="{{ url_for('site.search', term=request.args.get('term'), page=episodes.prev_num) }}">Resultados Anteriores
-                        </a></li>
-                        {% endif %}
-                        {% if episodes.has_next %}
-                        <li class="nav-search"><a
-                                href="{{ url_for('site.search', term=request.args.get('term'), page=episodes.next_num) }}">Próximos Resultados</a></li>
-                        {% endif %}
-                    </ul>
-                </nav>
-            </div>
+        <div class="text-center">
+            {% from 'pagination.html' import render_pagination with context %}
+            {{ render_pagination(episodes) }}
         </div>
-        {% endif %}
     </div>
 
     {% endif %}

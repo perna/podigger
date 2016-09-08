@@ -1,7 +1,8 @@
 from flask_wtf import Form
-from wtforms import StringField, TextAreaField
+from wtforms import StringField, TextAreaField, SelectField
 from wtforms.validators import DataRequired, Length, URL
 from wtforms.widgets import TextArea
+#from app.api.models import PodcastLanguage
 
 class SearchForm(Form):
     term = StringField('Termo', validators=[DataRequired(), Length(min=3)])
@@ -14,8 +15,8 @@ class PodcastForm(Form):
 
 class PodcastSearchForm(Form):
     term = StringField('Termo', validators=[DataRequired()])
-
-
+    
+    
 class TopicSuggestionForm(Form):
     title = StringField('Título', validators=[DataRequired(message="campo obrigatório")])
     description = TextAreaField('Descrição', widget=TextArea(), validators=[DataRequired()])

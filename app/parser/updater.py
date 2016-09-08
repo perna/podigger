@@ -1,5 +1,4 @@
 from sqlalchemy import exists
-import json
 from . parser import get_episodes
 from app.api.models import Tag, Episode, Podcast, db
 
@@ -15,7 +14,7 @@ class EpisodeUpdater(object):
             for link in self.feeds:
                 try:
                     pod = Podcast.query.filter_by(feed=link).first()
-                    podcast = json.loads(get_episodes(link[0]))
+                    podcast = get_episodes(link[0])
 
                     for item in podcast['items']:
                         episode = {}

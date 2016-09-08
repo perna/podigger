@@ -1,5 +1,13 @@
 # Change Log
 
+## [0.2.5] - 2014-07-31
+
+## [0.2.4] - 2014-07-31
+
+### Changed
+- ajustes no tempo de cache das paginas estáticas;
+- atualização dos pacotes.
+
 ## [0.2.3] - 2014-07-31
 
 ### Added
@@ -7,7 +15,7 @@
 - Melhorias no parser
 
 ### Fixed
-- Correção do parâmetro id no consumo de recursos da API (ainda em construção) 
+- Correção do parâmetro id no consumo de recursos da API (ainda em construção)
 
 ## [0.1.2] - 2016-07-27
 

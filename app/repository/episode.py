@@ -1,4 +1,4 @@
-from sqlalchemy import desc
+from sqlalchemy import desc, func
 from app.api.models import Episode, Podcast, db
 from app import cache
 
@@ -13,9 +13,9 @@ class EpisodeRepository:
 
         return episodes
 
-    @cache.memoize(timeout=300)
+    @cache.memoize(timeout=600)
     def count_all(self):
-        count = db.session.query(Episode).count()
+        count = db.session.query(func.count(Episode.id)).scalar()
         return count
 
 

@@ -10,6 +10,7 @@ var cleanCSS     = require('gulp-clean-css');
 var imagemin = require('gulp-imagemin');
 var pngquant = require('imagemin-pngquant');
 var sourcemaps = require('gulp-sourcemaps');
+var babel = require('gulp-babel');
 
 gulp.task('js-complexity', function(){
     gulp.src(['./src/js/modules/*.js'])
@@ -32,7 +33,6 @@ gulp.task('concat-js',['jshint'], function(){
     return gulp.src([
                         './src/js/lib/jquery.min.js',
                         './src/js/lib/bootstrap.min.js',
-                        './src/js/lib/moment-with-locales.min.js',
                         './src/js/lib/sweetalert2.min.js',
                         './src/js/lib/Chart.min.js',
                         './src/js/modules/trends.js',
@@ -43,6 +43,15 @@ gulp.task('concat-js',['jshint'], function(){
         .pipe(gulp.dest('./dist/js/'));
 });
 
+
+gulp.task('babel', function(){
+    return gulp.src('.src/modules/main2.js')
+            .pipe(sourcemaps.init())
+            .pipe(babel({
+                presets: ['es2015']
+            }))
+            .pipe(gulp.dest('.src/modules/app2.js'));
+});
 
 gulp.task('minify-js', ['concat-js'], function(){
     return gulp.src('./dist/js/app.js')

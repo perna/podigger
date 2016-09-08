@@ -11,12 +11,11 @@ def get_episodes(url):
     try:
         if 'title' in d.feed:
             podcast['title'] = d.feed.title
-            podcast['language'] = d.feed.language.lower()
+            podcast['language'] = d.feed.language.lower() or None
             podcast['items'] = []
 
-            print(d.feed.title)
-            print(d.feed.language.lower())
-
+        if 'image' in d.feed:
+            podcast['image'] = d.feed.image.href or '/static/dist/img/podcast-banner.png'
 
         for entry in d.entries:
 
@@ -47,7 +46,7 @@ def get_episodes(url):
 
             podcast['items'].append(item)
 
-        return json.dumps(podcast)
+        return podcast
     except:
         pass
 
@@ -57,6 +56,7 @@ def is_valid_feed(url):
     if d.bozo == 0:
         return True
     else:
-        error = d.bozo_exception
-        error_message = {'error': error.getMessage(), 'line': error.getLineNumber()}
-        return json.dumps(error_message)
+        #error = d.bozo_exception
+        #error_message = {'error': error.getMessage(), 'line': error.getLineNumber()}
+        #return json.dumps(error_message)
+        return False

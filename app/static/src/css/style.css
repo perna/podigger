@@ -74,6 +74,8 @@ footer a {color:#c0ff10;}
 
 .link-add-suggestion{color:#fff!important;}
 
+.image-podcast{width: 75px; height: auto; margin-right:10px;}
+
 @media only screen and (max-width : 480px) {
 
     body{margin-bottom:145px;}

@@ -27,17 +27,35 @@ class Podcast(Base):
 
     name = db.Column(db.String(128), unique=True, nullable=False, index=True)
     feed = db.Column(db.String(), unique=True, nullable=False, index=True)
-    language = db.Column(db.String(5), nullable=True, default='pt-br')
-    episodes = db.relationship('Episode', backref='podcast', lazy='dynamic')
+    image = db.Column(db.String(), nullable=True)
+    language_id = db.Column(db.Integer, db.ForeignKey('podcast_language.id'))
+    episodes = db.relationship('Episode', backref='podcast', primaryjoin='Podcast.id==Episode.podcast_id', lazy='joined')
 
-    def __init__(self, name, feed):
+    def __init__(self, name, feed, image='/', language_id=1):
         self.name = name
         self.feed = feed
+        self.image = image
+        self.language_id = language_id
 
     def __repr__(self):
         return '<id {}>'.format(self.id)
 
 
+class PodcastLanguage(Base):
+    __tablename__= 'podcast_language'
+
+    code = db.Column(db.String(10), nullable=True, default='pt')
+    name = db.Column(db.String(60), nullable=True, default='português')
+
+    def __init__(self, code=None, name=None):
+        self.code = code
+        self.name = name
+
+    def __repr__(self):
+        return '<id {} - code {} - nome {}>'.format(self.id, self.code, self.name)
+
+
+#implementação do full-text search
 make_searchable()
 
 class EpisodeQuery(BaseQuery, SearchQueryMixin):

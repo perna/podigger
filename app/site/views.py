@@ -1,15 +1,16 @@
-from flask import Blueprint, render_template, request, flash, redirect, Markup
+from flask import Blueprint, render_template, request, flash, Markup
+from sqlalchemy import func
 from app.repository.episode import EpisodeRepository
 from app.repository.podcast import PodcastRepository
 from app.repository.topic_suggestion import TopicSuggestionRepository
 from app.repository.term import TermRepository
 from .forms import PodcastForm, PodcastSearchForm, TopicSuggestionForm
-from app.api.models import Podcast
+from app.api.models import Podcast, Episode, db
 from app import cache
 
 site = Blueprint('site', __name__, template_folder='../templates/site')
 
-
+@cache.cached(timeout=300)
 @site.context_processor
 def counter():
     podcast = PodcastRepository()
@@ -20,12 +21,12 @@ def counter():
     return dict(counter=counter)
 
 
-@cache.cached(timeout=600)
+@cache.cached(timeout=3600)
 @site.route("/")
 def index():
     return render_template("home.html")
 
-
+@cache.cached(timeout=3600)
 @site.route('/search')
 @site.route('/search/<int:page>')
 def search(page=1):
@@ -37,13 +38,13 @@ def search(page=1):
         new_term.create_or_update(term)
 
         episode = EpisodeRepository()
-        query = episode.result_search_paginate(term, page, 10)
-        if query.total > 0:
-            flash('{} resultados para {}'.format(query.total, term))
+        episodes = episode.result_search_paginate(term, page, 10)
+        if episodes.total:
+            flash('{} resultados para {}'.format(episodes.total, term))
         else:
             message = Markup('<span>Nenhum resultado encontrado.</span> <a class="link-add-suggestion" href="/add_topic_suggestion">Gostaria de sugerir o tema?</a>')
             flash(message)
-        return render_template('search.html', episodes=query, page="search")
+        return render_template('search.html', episodes=episodes, page="search")
     else:
         return render_template('search.html', page="search")
 
@@ -64,23 +65,23 @@ def add_podcast():
         return render_template("add_podcast.html", form=form, page="add_podcast")
 
 
-@cache.cached(timeout=600)
-@site.route('/podcasts', methods=['GET','POST'])
+@site.route('/podcasts', methods=['GET', 'POST'])
 @site.route('/podcasts/<int:page>')
 def list_podcasts(page=1):
     form = PodcastSearchForm(request.form)
     if request.method == 'POST':
         if form.validate_on_submit():
             podcast = PodcastRepository()
-            podcasts = podcast.search(form.term.data)
-            result = podcasts.paginate(page=1, per_page=10)
-            return render_template("list_podcasts.html", podcasts=result, form=form)
-        else:
-            podcasts = None
-            flash('Termo não encontrado')
-            return render_template("list_podcasts.html", podcasts=podcasts, form=form)
+            podcasts = podcast.search(form.term.data).paginate(page, per_page=10)
+
+            if podcasts.items:
+                return render_template("list_podcasts.html", podcasts=podcasts, form=form)
+            else:
+                flash('Podcast não encontrado')
+                return render_template("list_podcasts.html", form=form)
     else:
-        podcasts = Podcast.query.order_by(Podcast.name).paginate(page, per_page=10)
+        podcasts = Podcast.query.with_entities(Podcast.name, Podcast.feed, func.count(Episode.id).label('total_episodes')).\
+           join(Episode).group_by(Podcast.name, Podcast.feed).order_by(Podcast.name).paginate(page, per_page=10)
         return render_template("list_podcasts.html", podcasts=podcasts, form=form)
 
 

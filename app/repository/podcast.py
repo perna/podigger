@@ -1,4 +1,5 @@
-from app.api.models import Podcast, db
+from sqlalchemy import func
+from app.api.models import Podcast, Episode, db
 from app.utils.tasks import add_episode
 from app import cache
 import feedparser
@@ -29,8 +30,7 @@ class PodcastRepository:
                 db.session.add(podcast)
                 db.session.commit()
                 feed = (podcast.feed,)
-                sync_episodes = [feed]
-                add_episode.delay(sync_episodes)
+                add_episode.delay(feed)
                 data = json.dumps({'id': podcast.id})
                 return data
         else:
@@ -77,11 +77,16 @@ class PodcastRepository:
 
         return message
 
-    @cache.memoize(timeout=300)
+
     def count_all(self):
-        count = db.session.query(Podcast).count()
+        count = db.session.query(func.count(Podcast.id)).scalar()
         return count
 
     def search(self, term):
-        result = Podcast.query.filter(Podcast.name.ilike('%'+str(term)+'%'))
+        result = Podcast.query.with_entities(
+                Podcast.name, Podcast.feed, func.count(Episode.id).label('total_episodes')
+                ).join(Episode).filter(Podcast.name.ilike('%'+str(term)+'%')).\
+                group_by(Podcast.name, Podcast.feed).order_by(Podcast.name)
         return result
+
+
