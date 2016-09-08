@@ -23,7 +23,6 @@ celery.conf.update(app.config)
 
 from app.site.views import site
 from app.utils.views import utils
-from app.admin.views import admin
 from app.api.resources import PodcastAPI, PodcastListAPI, TermListAPI, EpisodeAPI, PopularTermAPI
 
 apx.add_resource(PodcastAPI, '/api/podcasts/<int:podcast_id>', endpoint="podcast")

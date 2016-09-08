@@ -1,11 +1,11 @@
 from flask import Blueprint, render_template, request, flash, Markup
 from sqlalchemy import func
-from app.repository.episode import EpisodeRepository
-from app.repository.podcast import PodcastRepository
-from app.repository.topic_suggestion import TopicSuggestionRepository
-from app.repository.term import TermRepository
+from ..repository.episode import EpisodeRepository
+from ..repository.podcast import PodcastRepository
+from ..repository.topic_suggestion import TopicSuggestionRepository
+from ..repository.term import TermRepository
 from .forms import PodcastForm, PodcastSearchForm, TopicSuggestionForm
-from app.api.models import Podcast, Episode, db
+from ..api.models import Podcast, Episode, db
 from app import cache
 
 site = Blueprint('site', __name__, template_folder='../templates/site')
