@@ -5,7 +5,7 @@ from ..repository.podcast import PodcastRepository
 from ..repository.topic_suggestion import TopicSuggestionRepository
 from ..repository.term import TermRepository
 from .forms import PodcastForm, PodcastSearchForm, TopicSuggestionForm
-from ..api.models import Podcast, Episode, db
+from ..api.models import Podcast, Episode
 from app import cache
 
 site = Blueprint('site', __name__, template_folder='../templates/site')

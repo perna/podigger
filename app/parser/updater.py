@@ -1,6 +1,6 @@
 from sqlalchemy import exists
 from . parser import get_episodes
-from app.api.models import Tag, Episode, Podcast, db
+from ..api.models import Tag, Episode, Podcast, db
 
 
 class EpisodeUpdater(object):

@@ -1,15 +1,21 @@
 # Change Log
 
 ## [0.2.5] - 2014-07-31
+### Fixed
+- Removendo alguns 'smells' do código
+- Formatação apresentação do tempo de publicação do episódio
+
+### Changed
+- Refatoração da paginação de busca e lista de podcasts
+- Refatoração da paginação e listagem
+- Refatoração do parser
 
 ## [0.2.4] - 2014-07-31
-
 ### Changed
 - ajustes no tempo de cache das paginas estáticas;
 - atualização dos pacotes.
 
 ## [0.2.3] - 2014-07-31
-
 ### Added
 - Painel administrativo
 - Melhorias no parser
@@ -18,7 +24,6 @@
 - Correção do parâmetro id no consumo de recursos da API (ainda em construção)
 
 ## [0.1.2] - 2016-07-27
-
 ### Added
 - Adição do Gulp no stack para a otimização do css e js do projeto;
 - Favicon;
