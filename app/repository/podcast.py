@@ -38,10 +38,12 @@ class PodcastRepository:
             data = json.dumps({'status': 'error', 'message': exc.getMessage(), 'line': exc.getLineNumber()})
             return data
 
+    @cache.memoize(50)
     def get_all(self):
         query = Podcast.query.all()
         return query
 
+    @cache.memoize(50)
     def get_by_id(self, id_podcast):
         query = Podcast.query.get(id_podcast)
         if query is not None:
@@ -77,11 +79,12 @@ class PodcastRepository:
 
         return message
 
-
+    @cache.memoize(50)
     def count_all(self):
         count = db.session.query(func.count(Podcast.id)).scalar()
         return count
 
+    @cache.memoize(50)
     def search(self, term):
         result = Podcast.query.with_entities(
                 Podcast.name, Podcast.feed, func.count(Episode.id).label('total_episodes')

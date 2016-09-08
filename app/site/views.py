@@ -50,6 +50,7 @@ def search(page=1):
 
 
 @site.route('/add_podcast', methods=['GET', 'POST'])
+@cache.memoize(50)
 def add_podcast():
     form = PodcastForm(request.form)
     if request.method == 'POST':
@@ -67,6 +68,7 @@ def add_podcast():
 
 @site.route('/podcasts', methods=['GET', 'POST'])
 @site.route('/podcasts/<int:page>')
+@cache.memoize(60)
 def list_podcasts(page=1):
     form = PodcastSearchForm(request.form)
     if request.method == 'POST':
@@ -86,6 +88,7 @@ def list_podcasts(page=1):
 
 
 @site.route('/topic_suggestions')
+@cache.memoize(50)
 def list_topic_suggestion():
     topic = TopicSuggestionRepository()
     topics = topic.list_topics()
@@ -93,6 +96,7 @@ def list_topic_suggestion():
 
 
 @site.route('/add_topic_suggestion', methods=['GET', 'POST'])
+@cache.cached(timeout=1800)
 def add_topic_suggestion():
     form = TopicSuggestionForm(request.form)
     if form.validate_on_submit():
@@ -103,18 +107,18 @@ def add_topic_suggestion():
     return render_template("add_topic_suggestion.html", form=form)
 
 
-@cache.cached(timeout=1800)
 @site.route('/trends')
+@cache.cached(timeout=1800)
 def trends():
     return render_template("trends.html")
 
-@cache.cached(timeout=3600)
 @site.route('/about')
+@cache.cached(timeout=3600)
 def about():
     return render_template("about.html", page="about")
 
 
-@cache.cached(timeout=3600)
 @site.route('/contact')
+@cache.cached(timeout=3600)
 def contact():
     return render_template("contact.html", page="contact")

@@ -1,6 +1,6 @@
 # Change Log
 
-## [0.2.5] - 2014-07-31
+## [0.2.5] - 2016-09-08
 ### Fixed
 - Removendo alguns 'smells' do código
 - Formatação apresentação do tempo de publicação do episódio
@@ -10,12 +10,12 @@
 - Refatoração da paginação e listagem
 - Refatoração do parser
 
-## [0.2.4] - 2014-07-31
+## [0.2.4] - 2016-07-31
 ### Changed
 - ajustes no tempo de cache das paginas estáticas;
 - atualização dos pacotes.
 
-## [0.2.3] - 2014-07-31
+## [0.2.3] - 2014-06-31
 ### Added
 - Painel administrativo
 - Melhorias no parser
