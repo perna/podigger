@@ -1,6 +1,6 @@
 from sqlalchemy import exists
 from . parser import get_episodes
-from ..api.models import Tag, Episode, Podcast, db
+from ..api.models import Tag, Episode, Podcast, PodcastLanguage, db
 
 
 class EpisodeUpdater(object):
@@ -10,11 +10,20 @@ class EpisodeUpdater(object):
         self.episodes = {}
 
     def populate(self):
-
             for link in self.feeds:
                 try:
                     pod = Podcast.query.filter_by(feed=link).first()
                     podcast = get_episodes(link[0])
+                    pod.image = podcast['image']
+                    language = PodcastLanguage.query.filter_by(code=podcast['language']).first()
+
+                    if language is not None:
+                        pod.language_id = language.id
+                        db.session.add(pod)
+                    else:
+                        language.code = podcast=['language']
+                        db.session.add(language)
+                    db.session.commit()
 
                     for item in podcast['items']:
                         episode = {}

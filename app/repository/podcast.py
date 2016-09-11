@@ -79,17 +79,12 @@ class PodcastRepository:
 
         return message
 
-    @cache.memoize(50)
+    @cache.memoize(600)
     def count_all(self):
         count = db.session.query(func.count(Podcast.id)).scalar()
         return count
 
-    @cache.memoize(50)
     def search(self, term):
-        result = Podcast.query.with_entities(
-                Podcast.name, Podcast.feed, func.count(Episode.id).label('total_episodes')
-                ).join(Episode).filter(Podcast.name.ilike('%'+str(term)+'%')).\
-                group_by(Podcast.name, Podcast.feed).order_by(Podcast.name)
+        result = Podcast.query.with_entities(Podcast.name, Podcast.feed).\
+        filter(Podcast.name.ilike('%'+str(term)+'%')).order_by(Podcast.name)
         return result
-
-

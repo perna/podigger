@@ -1,5 +1,12 @@
 # Change Log
 
+## [0.2.6] - 2016-09-08
+### Fixed
+- Formatação apresentação do tempo de publicação do episódio
+
+### Removed
+- Remoção do total de episodios indexados na lista de podcasts
+
 ## [0.2.5] - 2016-09-08
 ### Fixed
 - Removendo alguns 'smells' do código

@@ -1,6 +1,6 @@
 from flask.ext.script import Manager
 from flask.ext.migrate import Migrate, MigrateCommand
-from .app import app, db
+from app import app, db
 from config.config import DevConfiguration
 
 app.config.from_object(DevConfiguration)

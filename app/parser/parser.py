@@ -11,14 +11,16 @@ def get_episodes(url):
     try:
         if 'title' in d.feed:
             podcast['title'] = d.feed.title
-            podcast['language'] = d.feed.language.lower() or None
-            podcast['items'] = []
-
+        if 'language' in d.feed:
+            podcast['language'] = d.feed.language.lower()
         if 'image' in d.feed:
-            podcast['image'] = d.feed.image.href or '/static/dist/img/podcast-banner.png'
+            podcast['image'] = d.feed.image.href
+        else:
+            podcast['image'] = '/static/dist/img/podcast-banner.png'
+
+        podcast['items'] = []
 
         for entry in d.entries:
-
             if 'link' in entry:
                 global item
                 item = {}

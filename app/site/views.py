@@ -10,7 +10,6 @@ from app import cache
 
 site = Blueprint('site', __name__, template_folder='../templates/site')
 
-@cache.cached(timeout=300)
 @site.context_processor
 def counter():
     podcast = PodcastRepository()
@@ -50,7 +49,6 @@ def search(page=1):
 
 
 @site.route('/add_podcast', methods=['GET', 'POST'])
-@cache.memoize(50)
 def add_podcast():
     form = PodcastForm(request.form)
     if request.method == 'POST':
@@ -68,27 +66,24 @@ def add_podcast():
 
 @site.route('/podcasts', methods=['GET', 'POST'])
 @site.route('/podcasts/<int:page>')
-@cache.memoize(60)
 def list_podcasts(page=1):
-    form = PodcastSearchForm(request.form)
     if request.method == 'POST':
+        form = PodcastSearchForm(request.form)
         if form.validate_on_submit():
             podcast = PodcastRepository()
             podcasts = podcast.search(form.term.data).paginate(page, per_page=10)
-
             if podcasts.items:
                 return render_template("list_podcasts.html", podcasts=podcasts, form=form)
             else:
                 flash('Podcast não encontrado')
-                return render_template("list_podcasts.html", form=form)
+                return render_template("list_podcasts.html", podcasts=podcasts, form=form)
     else:
-        podcasts = Podcast.query.with_entities(Podcast.name, Podcast.feed, func.count(Episode.id).label('total_episodes')).\
-           join(Episode).group_by(Podcast.name, Podcast.feed).order_by(Podcast.name).paginate(page, per_page=10)
+        form = PodcastSearchForm()
+        podcasts = Podcast.query.with_entities(Podcast.name, Podcast.feed).order_by(Podcast.name).paginate(page, per_page=10)
         return render_template("list_podcasts.html", podcasts=podcasts, form=form)
 
 
 @site.route('/topic_suggestions')
-@cache.memoize(50)
 def list_topic_suggestion():
     topic = TopicSuggestionRepository()
     topics = topic.list_topics()
@@ -96,7 +91,6 @@ def list_topic_suggestion():
 
 
 @site.route('/add_topic_suggestion', methods=['GET', 'POST'])
-@cache.cached(timeout=1800)
 def add_topic_suggestion():
     form = TopicSuggestionForm(request.form)
     if form.validate_on_submit():
