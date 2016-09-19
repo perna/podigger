@@ -1,11 +1,10 @@
 from flask import Blueprint, render_template, request, flash, Markup
-from sqlalchemy import func
-from ..repository.episode import EpisodeRepository
-from ..repository.podcast import PodcastRepository
-from ..repository.topic_suggestion import TopicSuggestionRepository
-from ..repository.term import TermRepository
+from app.repository.episode import EpisodeRepository
+from app.repository.podcast import PodcastRepository
+from app.repository.topic_suggestion import TopicSuggestionRepository
+from app.repository.term import TermRepository
 from .forms import PodcastForm, PodcastSearchForm, TopicSuggestionForm
-from ..api.models import Podcast, Episode
+from app.api.models import Podcast
 from app import cache
 
 site = Blueprint('site', __name__, template_folder='../templates/site')
@@ -23,7 +22,9 @@ def counter():
 @cache.cached(timeout=3600)
 @site.route("/")
 def index():
-    return render_template("home.html")
+    podcast = PodcastRepository()
+    last_podcasts = podcast.get_last_podcasts_thumbs()
+    return render_template("home.html", podcasts=last_podcasts)
 
 @cache.cached(timeout=3600)
 @site.route('/search')
@@ -37,7 +38,7 @@ def search(page=1):
         new_term.create_or_update(term)
 
         episode = EpisodeRepository()
-        episodes = episode.result_search_paginate(term, page, 10)
+        episodes = episode.result_search_paginate(term, page, 20)
         if episodes.total:
             flash('{} resultados para {}'.format(episodes.total, term))
         else:
@@ -71,7 +72,7 @@ def list_podcasts(page=1):
         form = PodcastSearchForm(request.form)
         if form.validate_on_submit():
             podcast = PodcastRepository()
-            podcasts = podcast.search(form.term.data).paginate(page, per_page=10)
+            podcasts = podcast.search(form.term.data).paginate(page, per_page=20)
             if podcasts.items:
                 return render_template("list_podcasts.html", podcasts=podcasts, form=form)
             else:
@@ -79,7 +80,7 @@ def list_podcasts(page=1):
                 return render_template("list_podcasts.html", podcasts=podcasts, form=form)
     else:
         form = PodcastSearchForm()
-        podcasts = Podcast.query.with_entities(Podcast.name, Podcast.feed).order_by(Podcast.name).paginate(page, per_page=10)
+        podcasts = Podcast.query.with_entities(Podcast.name, Podcast.feed, Podcast.total_episodes).order_by(Podcast.name).paginate(page, per_page=20)
         return render_template("list_podcasts.html", podcasts=podcasts, form=form)
 
 

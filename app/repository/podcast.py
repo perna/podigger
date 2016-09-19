@@ -1,5 +1,5 @@
-from sqlalchemy import func
-from app.api.models import Podcast, Episode, db
+from sqlalchemy import func, desc
+from app.api.models import Podcast, db
 from app.utils.tasks import add_episode
 from app import cache
 import feedparser
@@ -79,7 +79,7 @@ class PodcastRepository:
 
         return message
 
-    @cache.memoize(600)
+    @cache.memoize(60)
     def count_all(self):
         count = db.session.query(func.count(Podcast.id)).scalar()
         return count
@@ -88,3 +88,8 @@ class PodcastRepository:
         result = Podcast.query.with_entities(Podcast.name, Podcast.feed).\
         filter(Podcast.name.ilike('%'+str(term)+'%')).order_by(Podcast.name)
         return result
+
+
+    def get_last_podcasts_thumbs(self):
+        podcasts = Podcast.query.with_entities(Podcast.name, Podcast.feed, Podcast.image).order_by(desc(Podcast.id)).limit(6)
+        return podcasts

@@ -35,10 +35,14 @@ body > .container {
 
 .listeners-content h3,
 .podcasters-content h3,
+.last-casts-content h3,
 .users-content h3{
     text-align: center;
     color: #fff;
 }
+
+
+.last-casts h6{color:#fff;}
 
 .listeners-content a,
 .podcasters-content a {color:#fff;}

@@ -34,6 +34,7 @@
                 <thead>
                     <tr>
                         <th>Podcast</th>
+                        <th class="text-center">Total de episódios<br> indexados</th>
                         <th class="text-center">Feed</th>
                     </tr>
                 </thead>
@@ -41,6 +42,7 @@
                     {% for podcast in podcasts.items %}
                     <tr>
                         <td><span>{{podcast.name}}</span></td>
+                        <td class="text-center">{{podcast.total_episodes}}</td>
                         <td class="text-center"><a href="{{podcast.feed}}" alt="{{podcast.name}}"><i
                                 class="fa fa-rss-square fa-2x" aria-hidden="true"></i></a></td>
                     </tr>

@@ -17,12 +17,14 @@ class EpisodeUpdater(object):
                     pod.image = podcast['image']
                     language = PodcastLanguage.query.filter_by(code=podcast['language']).first()
 
+                    print('language ' + str(language))
+
                     if language is not None:
                         pod.language_id = language.id
                         db.session.add(pod)
                     else:
-                        language.code = podcast=['language']
-                        db.session.add(language)
+                        new_language = PodcastLanguage(code=podcast['language'])
+                        db.session.add(new_language)
                     db.session.commit()
 
                     for item in podcast['items']:

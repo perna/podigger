@@ -1,0 +1,6 @@
+exclude_paths:
+- "migrations/"
+- "celerybeat-schedule"
+- "app/static/src/js/lib"
+- "app/static/node_modules"
+- "app/static/dist"

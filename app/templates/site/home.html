@@ -30,5 +30,18 @@
             <p>O uso do Podigger é grátis e qualquer pessoa pode adicionar o feed dos seus podcasts favoritos.<br> Quanto mais os ouvintes, podcasters e entusiastas da midia utilizam o Podigger, mais legal ele fica! \o/</p>
         </div>
     </div>
+    <div class="row">
+        <div class="col-md-12 last-casts-content">
+            <h3><i class="fa fa-headphones" aria-hidden="true"></i> Últimos podcasts adicionados</h3>
+        {% for podcast in podcasts %}
+        <div class="col-md-2 text-center last-casts">
+            <a href="{{podcast.feed}}" title="{{podcast.name}}">
+                <img class="img-responsive img-rounded" src="{{podcast.image}}" alt="{{podcast.name}}">
+                <h6>{{podcast.name}}</h6>
+            </a>
+        </div>
+        {% endfor %}
+        </div>
+    </div>
 </div>
 {% endblock %}

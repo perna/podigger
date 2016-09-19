@@ -27,15 +27,14 @@ class Podcast(Base):
 
     name = db.Column(db.String(128), unique=True, nullable=False, index=True)
     feed = db.Column(db.String(), unique=True, nullable=False, index=True)
-    image = db.Column(db.String(), nullable=True)
-    language_id = db.Column(db.Integer, db.ForeignKey('podcast_language.id'))
-    episodes = db.relationship('Episode', backref='podcast', primaryjoin='Podcast.id==Episode.podcast_id', lazy='dynamic')
+    image = db.Column(db.String(), nullable=True, default='/static/dist/img/podcast-banner.png')
+    language_id = db.Column(db.Integer, db.ForeignKey('podcast_language.id'), default=1)
+    total_episodes = db.Column(db.Integer, default=0)
+    episodes = db.relationship('Episode', backref='podcast', lazy='dynamic')
 
-    def __init__(self, name, feed, image='/static/dist/img/podcast-banner.png', language_id=1):
+    def __init__(self, name, feed):
         self.name = name
         self.feed = feed
-        self.image = image
-        self.language_id = language_id
 
     def __repr__(self):
         return '<id {}>'.format(self.id)

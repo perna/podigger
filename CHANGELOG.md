@@ -1,5 +1,19 @@
 # Change Log
 
+## [0.3.0] - 2016-09-19
+
+### Added
+- Adição de thumbnails dos último adics podcastsionados;
+- Adição da captura de imagens e idioma do podcast;
+- Remoção de podcasts com nenhum episódio cadastradado por mais de uma semana.
+
+### Changed
+- Aumento do número de ocorrências por página.
+
+### Fixed
+- Correção da sincronização de episódios. 
+
+
 ## [0.2.6] - 2016-09-08
 ### Fixed
 - Formatação apresentação do tempo de publicação do episódio
