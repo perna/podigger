@@ -85,7 +85,7 @@ class PodcastRepository:
         return count
 
     def search(self, term):
-        result = Podcast.query.with_entities(Podcast.name, Podcast.feed).\
+        result = Podcast.query.with_entities(Podcast.name, Podcast.feed, Podcast.total_episodes).\
         filter(Podcast.name.ilike('%'+str(term)+'%')).order_by(Podcast.name)
         return result
 

@@ -1,3 +1,13 @@
+engines:
+  pep8:
+    enabled: true
+  radon:
+    enabled:
+  duplication:
+    enabled: true
+    config:
+      languages:
+        - python
 exclude_paths:
 - "migrations/"
 - "celerybeat-schedule"

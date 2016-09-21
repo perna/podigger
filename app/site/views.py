@@ -19,14 +19,14 @@ def counter():
     return dict(counter=counter)
 
 
-@cache.cached(timeout=3600)
+@cache.cached(timeout=60)
 @site.route("/")
 def index():
     podcast = PodcastRepository()
     last_podcasts = podcast.get_last_podcasts_thumbs()
     return render_template("home.html", podcasts=last_podcasts)
 
-@cache.cached(timeout=3600)
+@cache.cached(timeout=60)
 @site.route('/search')
 @site.route('/search/<int:page>')
 def search(page=1):
@@ -103,17 +103,17 @@ def add_topic_suggestion():
 
 
 @site.route('/trends')
-@cache.cached(timeout=1800)
+@cache.cached(timeout=60)
 def trends():
     return render_template("trends.html")
 
 @site.route('/about')
-@cache.cached(timeout=3600)
+@cache.cached(timeout=60)
 def about():
     return render_template("about.html", page="about")
 
 
 @site.route('/contact')
-@cache.cached(timeout=3600)
+@cache.cached(timeout=60)
 def contact():
     return render_template("contact.html", page="contact")
