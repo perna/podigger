@@ -1,3 +1,4 @@
+import time
 from sqlalchemy import exists
 from . parser import get_episodes
 from ..api.models import Tag, Episode, Podcast, PodcastLanguage, db
@@ -36,6 +37,12 @@ class EpisodeUpdater(object):
                         episode['link'] = item['link']
                         episode['description'] = item['description']
                         episode['published'] = item['published']
+
+                        try:
+                            test_time = item['published']
+                            time.strptime(test_time[:25], '%a, %d %b %Y %H:%M:%S')
+                        except ValueError:
+                            continue
 
                         if 'tags' in item:
                             episode['tags'] = item['tags']

@@ -1,6 +1,5 @@
 import feedparser
 import re
-import json
 
 
 def get_episodes(url):
