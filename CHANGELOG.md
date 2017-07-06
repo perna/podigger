@@ -3,7 +3,7 @@
 ## [0.3.0] - 2016-09-19
 
 ### Added
-- Adição de thumbnails dos último adics podcastsionados;
+- Adição de thumbnails dos últimos podcasts adicionados;
 - Adição da captura de imagens e idioma do podcast;
 - Remoção de podcasts com nenhum episódio cadastradado por mais de uma semana.
 
