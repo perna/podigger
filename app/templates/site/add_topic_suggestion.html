@@ -1,0 +1,57 @@
+{% extends "site/index.html" %}
+{% block body %}
+<div class="container">
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-7">
+                  <h2>Sugestão de pauta</h2>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-7">
+                    {% if form.errors %}
+                    <div class="alert alert-danger">
+                        <p>Erro ao cadastrar sugestão</p>
+                        <ul class="errors">
+                        {% for field_name, field_errors in form.errors|dictsort if field_errors %}
+                            {% for error in field_errors %}
+                            <li>{{ form[field_name].label }}: {{ error }}</li>
+                            {% endfor %}
+                        {% endfor %}
+                        </ul>
+                    </div>
+                    {% else %}
+                        {% with messages = get_flashed_messages() %}
+                        {% if messages %}
+                        <div class="alert alert-success alert-dismissible" role="alert">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            {% for message in messages %}
+                            <p>{{ message }}</p>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        {% endwith %}
+                    {% endif %}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-7">
+                    <form name="addTopicSuggestion" method="POST" action="{{url_for('site.add_topic_suggestion')}}">
+                        {{ form.hidden_tag() }}
+                        <div class="form-group">
+                            {{ form.title.label }}
+                            {{ form.title(placeholder="Minha sugestão", class="form-control") }}
+                        </div>
+                        <div class="form-group">
+                            {{ form.description.label }}
+                            {{ form.description(placeholder="Descrição da sugestão", class="form-control", rows="8") }}
+                        </div>
+                        <button type="submit" class="btn btn-success">Enviar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,60 @@
+{% extends "site/index.html" %}
+{% block body %}
+<div class="container">
+    <div class="panel panel-default">
+        <div class="panel-heading clearfix">
+            <form class="form-inline pull-left" method="POST" action="{{url_for('site.list_podcasts')}}">
+                {{ form.csrf_token }}
+                <div class="form-group">
+                    <div class="input-group">
+                        {{form.term(placeholder="Filtrar pelo nome", required=true, class="form-control")}}
+                        <span class="input-group-btn">
+                          <button type="submit" class="btn btn-primary"><i class="fa fa-search" aria-hidden="true"></i>
+                                       Buscar</button>
+                        </span>
+                    </div>
+                </div>
+            </form>
+            <a class="btn btn-default pull-right" href="{{url_for('site.add_podcast')}}"><i class="fa fa-plus-circle"
+                                                                       aria-hidden="true"></i> Adicionar podcast</a>
+        </div>
+        <div class="panel-body">
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-danger alert-dismissible" role="alert">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <p>{{ message }}</p>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            {% if podcasts %}
+            <table class="table table-striped table-hover table-responsive">
+                <thead>
+                    <tr>
+                        <th>Podcast</th>
+                        <th class="text-center">Total de episódios<br> indexados</th>
+                        <th class="text-center">Feed</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for podcast in podcasts.items %}
+                    <tr>
+                        <td><span>{{podcast.name}}</span></td>
+                        <td class="text-center">{{podcast.total_episodes}}</td>
+                        <td class="text-center"><a href="{{podcast.feed}}" alt="{{podcast.name}}"><i
+                                class="fa fa-rss-square fa-2x" aria-hidden="true"></i></a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% endif %}
+        </div>
+        <div class="text-center">
+            {% from 'pagination.html' import render_pagination %}
+            {{ render_pagination(podcasts) }}
+        </div>
+    </div>
+</div>
+{% endblock %}

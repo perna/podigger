@@ -1,0 +1,22 @@
+class Configuration(object):
+    DEBUG = True
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    CELERY_TIMEZONE = 'America/Sao_Paulo'
+
+    CELERYBEAT_SCHEDULE = {
+        'update_base': {
+            'task': 'update_base',
+            'schedule': crontab(hour=4, minute=00)
+        }
+    }
+
+
+ class DevConfiguration(BaseConfiguration):
+
+    SECRET_KEY = 'key development'
+    SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://docker:docker@localhost/podigger'
+
+    CELERY_BROKER_URL = 'redis://localhost:6379/0'
+    CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+    WTF_CSRF_ENABLED = True
+    WTF_CSRF_SECRET_KEY = 'key development'
