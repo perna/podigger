@@ -1,49 +1,17 @@
 {% extends "site/index.html" %}
 {% block body %}
-<div class="container">
-    <div class="jumbotron clearfix">
-        <div class="col-md-3 text-center header-logo">
-            <h1 class="text-center"><img class="img-responsive" src="static/dist/img/logo.png" alt="podigger"></h1>
-        </div>
-        <div class="col-md-9 header-content">
-            <h2>Motor de busca para podcasts</h2>
-            <p>Procurando podcasts sobre os assuntos do momento?</p>
-            <p>Quer conhecer novos podcasts sobre os assuntos que você gosta?</p>
-            <div class="col-xs-12 col-md-8">
-            <a href="/search" class="btn btn-info pull-left btn-search"><i class="fa fa-search" aria-hidden="true"></i> Experimente a busca</a>
-            <a href="/add_podcast" class="btn btn-warning pull-right btn-add-podcast"><i class="fa fa-rss" aria-hidden="true"></i> Adicione o seu podcast</a>
-        </div>
-    </div>
-        </div>
-    <div class="row">
-        <div class="col-md-4 listeners-content text-center">
-            <h3><i class="fa fa-volume-up" aria-hidden="true"></i> Ouvinte</h3>
-            <p><strong><a href="/search">Encontre facílmente episódios</a></strong> que falam sobre os assuntos do momento (ou não). Depois é só clicar no player ou fazer o download do episódio.</p>
-        </div>
-        <div class="col-md-4 podcasters-content text-center">
-            <h3><i class="fa fa-volume-up" aria-hidden="true"></i> Podcaster</h3>
-            <p><strong><a href="/add_podcast">Cadastre o seu podcast</a></strong>, o resto é por nossa conta.<br>
-            Em breve você poderá acompanhar quais termos são os mais procurados pelos usuários e ouvintes.</p>
-        </div>
-        <div class="col-md-4 users-content text-center">
-            <h3><i class="fa fa-users" aria-hidden="true"></i> Comunidade</h3>
-            <p>O uso do Podigger é grátis e qualquer pessoa pode adicionar o feed dos seus podcasts favoritos.<br> Quanto mais os ouvintes, podcasters e entusiastas da midia utilizam o Podigger, mais legal ele fica! \o/</p>
-        </div>
-    </div>
-    <div class="row">
-        {% cache 60*5 %}
-        <div class="col-md-12 last-casts-content">
-            <h3><i class="fa fa-headphones" aria-hidden="true"></i> Últimos podcasts adicionados</h3>
-        {% for podcast in podcasts %}
-        <div class="col-md-2 text-center last-casts">
-            <a href="{{podcast.feed}}" title="{{podcast.name}}">
-                <img class="img-responsive img-rounded" src="{{podcast.image}}" alt="{{podcast.name}}">
-                <h6>{{podcast.name}}</h6>
-            </a>
-        </div>
-        {% endfor %}
-        </div>
-        {% endcache %}
-    </div>
+<div class="is-mobile is-centered">
+  <div class="column is-half is-offset-one-quarter">
+      <form method="GET" action="{{url_for('site.search')}}">
+          <div class="field has-addons is-centered">
+            <div class="control">
+              <input class="input" type="text" name="term" placeholder="Find a repository">
+            </div>
+            <div class="control">
+              <a class="button is-info">Search</a>
+            </div>
+          </div>
+        </form>
+  </div>
 </div>
 {% endblock %}

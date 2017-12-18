@@ -9,22 +9,12 @@ from app import cache
 
 site = Blueprint('site', __name__, template_folder='../templates/site')
 
-@site.context_processor
-def counter():
-    podcast = PodcastRepository()
-    episode = EpisodeRepository()
-    podcast_count = podcast.count_all()
-    episode_count = episode.count_all()
-    counter = {'podcasts': podcast_count, 'episodes': episode_count}
-    return dict(counter=counter)
-
-
 @cache.cached(timeout=60)
 @site.route("/")
 def index():
     podcast = PodcastRepository()
     last_podcasts = podcast.get_last_podcasts_thumbs()
-    return render_template("home.html", podcasts=last_podcasts)
+    return render_template("home.html")
 
 @cache.cached(timeout=60)
 @site.route('/search')
