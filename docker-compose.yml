@@ -15,7 +15,7 @@ services:
     environment:
       - POSTGRES_PASSWORD=docker
       - POSTGRES_USER=docker
-      - POSTGRES_DB=podigger
+      - POSTGRES_DB=podigger_ng
     volumes:
       - data:/var/lib/postgresql/data
 
