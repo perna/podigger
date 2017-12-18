@@ -61,14 +61,12 @@ target/
 #Ipython Notebook
 .ipynb_checkpoints
 
-config/config.py
-
 .idea
 .vscode
-app.db
-celerybeat-schedule
-celerybeat.pid
-app/static/node_modules
+
+web/static/web/node_modules
+podigger/.env
+
 .travis.yml
 .landscape.yml
 .codeclimate.yml

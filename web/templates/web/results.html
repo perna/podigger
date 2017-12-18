@@ -1,0 +1,32 @@
+{% extends 'web/layout.html' %}
+{% block title%}Titulo da busca{% endblock %}
+
+{% block content %}
+<div class="">
+  <form action="">
+    <input type="text" name="" id="" required>
+    <button type="submit">Search</button>
+  </form>
+</div>
+
+<p>Resultados para...</p>
+
+<div itemscope itemtype="http://schema.org/RadioSeries">
+  <h4 itemprop="name"></h4>
+  <div itemprop="episode" itemscope itemtype="http://schema.org/RadioEpisode">
+    <a itemprop="url" href="http://www.bbc.co.uk/programmes/b03ggc19">
+      <span itemprop="name">Ordinary Language Philosophy</span>
+    </a>
+    <div itemprop="publication" itemscope itemtype="http://schema.org/OnDemandEvent">
+      <span itemprop="startDate" content="2013-11-07T09:45:00+01:00">09:45 on the same day</span>.
+    </div>
+    <div itemprop="description">Phil and Luke take over Thanksgiving duties.</div>
+    <div>tags</div>
+    <div class="audio-content" itemprop="publication" itemscope itemtype="http://schema.org/OnDemandEvent">
+      <a itemprop="url" href="http://www.bbc.co.uk/programmes/b03ggc19">
+        <audio src=""></audio>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
