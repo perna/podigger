@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.postgres.field import ArrayField
+from django.contrib.postgres.fields import ArrayField
 from django.utils import timezone
 
 class BaseModel(models.Model):
@@ -33,6 +33,7 @@ class Episode(BaseModel):
     published_at = models.DateField("published at", blank=True)
     permalink = models.URLField("permalink")
     tags = ArrayField(models.CharField(max_length=128), blank=True)
+    podcast = models.ForeignKey(Podcast, on_delete=models.CASCADE, db_index=False)
 
     class Meta:
         db_table = 'episode'
