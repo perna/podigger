@@ -1,0 +1,26 @@
+{% extends 'web/layout-hero.html' %}
+
+{% block content %}
+  <div class="container">
+    <div class="columns is-centered">
+        <div class="column has-text-centered">
+            <h1 class="title">Podigger</h1>
+            <h2 class="subtitle">Search Engine for Podcasts Episodes</h2>
+        </div>
+      </div>  
+      <div class="columns is-centered">
+        <div class="column is-half">
+            <form action="" class="form-search-home">
+              <div class="field has-addons">
+                  <div class="control is-expanded">
+                      <input class="input" type="text" name="term" placeholder="Ex. 'How to create a podcast'" required>
+                  </div>
+                  <div class="control">
+                      <button class="button is-primary" type="submit"><i class="fas fa-search"></i> Search</button>
+                  </div>
+              </div>
+              </form>
+          </div>
+      </div>  
+  </div>
+{% endblock %}

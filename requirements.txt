@@ -1,9 +1,14 @@
+amqp==2.2.2
+billiard==3.5.0.3
+celery==4.1.0
 cffi==1.11.2
-Django==2.0.1
+Django==2.0.2
 django-environ==0.4.4
 environ==1.0
 greenlet==0.4.12
+kombu==4.1.0
 psycopg2cffi==2.7.7
-pytz==2017.3
+pytz==2018.3
 readline==6.2.4.1
 six==1.11.0
+vine==1.1.4

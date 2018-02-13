@@ -1,0 +1,32 @@
+{% extends 'web/layout-hero.html' %}
+
+{% block title %}- Add a podcast {% endblock %}
+
+{% block content %}
+  <div class="container">
+    <div class="columns is-centered">
+        <div class="column is-half">
+            <form action="{% url 'add-podcast' %}" method="POST">
+                {% csrf_token %}
+                <div class="field">
+                  <label for="name" class="label">Name</label>
+                  <div class="control">
+                      <input class="input" type="text" name="name" id="name">
+                  </div>
+                </div>
+                <div class="field">
+                  <label for="feed" class="label">Feed</label>
+                  <div class="control">
+                      <input class="input" type="url" name="feed">
+                  </div>
+                </div> 
+                <div class="field">
+                  <div class="control">
+                      <button class="button is-success">Submit</button>
+                  </div>
+                </div>
+            </form>
+        </div>
+    </div>
+  </div>
+{% endblock %}
