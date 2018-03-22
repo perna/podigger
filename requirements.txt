@@ -2,7 +2,7 @@ amqp==2.2.2
 billiard==3.5.0.3
 celery==4.1.0
 cffi==1.11.2
-Django==2.0.2
+Django==2.0.3
 django-environ==0.4.4
 environ==1.0
 greenlet==0.4.12
