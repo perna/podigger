@@ -1,5 +1,17 @@
 version: '3'
+
 services:
+  web:
+    restart: always
+    build: .
+    volumes:
+      - .:/code
+    ports:
+      - "8001:8000"
+    depends_on:
+      - redis
+      - db
+    command: pypy3 manage.py runserver 0.0.0.0:8000
 
   redis:
     image: "redis:alpine"
