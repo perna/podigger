@@ -70,3 +70,4 @@ podigger/.env
 .travis.yml
 .landscape.yml
 .codeclimate.yml
+conf/
