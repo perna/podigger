@@ -8,9 +8,13 @@ services:
       - .:/code
     ports:
       - "8001:8000"
+    links:
+      - rabbitmq
+      - db
     depends_on:
       - redis
       - db
+      - rabbitmq
     command: pypy3 manage.py runserver 0.0.0.0:8000
 
   redis:
@@ -22,15 +26,36 @@ services:
 
   db:
     image: postgres
-    ports:
-      - "5432:5432"
     environment:
       - POSTGRES_PASSWORD=docker
       - POSTGRES_USER=docker
       - POSTGRES_DB=podigger_ng
+      - TZ=GMT-3
+    
+    ports:
+      - "5432:5432"
     volumes:
       - data:/var/lib/postgresql/data
 
+  rabbitmq:
+    image: rabbitmq:management
+    hostname: rabbit1
+    environment:
+      - RABBITMQ_DEFAULT_USER=mqadmin
+      - RABBITMQ_DEFAULT_PASS=mq123
+      - RABBITMQ_ERLANG_COOKIE=secret_cookie
+    ports:
+      - "5673:5672"
+      - "15672:15672"
+    labels:
+      NAME: "rabbitmq1"
+    volumes:
+      - rabbit1:/var/lib/rabbitmq
+      - ./conf/:/etc/rabbitmq/
+      - ./enabled_plugins:/etc/rabbitmq/enabled_plugins"
+    command: bash -c "chmod 666 /etc/rabbitmq/* && rabbitmq-plugins enable --offline rabbitmq_mqtt rabbitmq_federation_management rabbitmq_stomp && rabbitmq-server"
 volumes:
   data:
+    driver: local
+  rabbit1:
     driver: local
