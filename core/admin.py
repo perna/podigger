@@ -5,7 +5,8 @@ class PodcastAdmin(admin.ModelAdmin):
     pass
 
 class EpisodeAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('title', 'podcast', 'published_at')
+    list_filter = ('podcast', 'published_at')
 
 admin.site.register(Podcast, PodcastAdmin)
 admin.site.register(Episode, EpisodeAdmin)
