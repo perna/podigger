@@ -1,3 +1,4 @@
+import datetime
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
 from django.utils import timezone
@@ -13,6 +14,7 @@ class BaseModel(models.Model):
 class Podcast(BaseModel):
     name = models.CharField("name", max_length=128)
     feed = models.URLField("feed", unique=True)
+    language = models.CharField("language", blank=True, default="", max_length=64)
     image = models.CharField("thumbnail", max_length=200, \
                                 default="/static/dist/img/podcast-banner.png")
     last_feed_update = models.DateTimeField("Last update", default=timezone.now)
@@ -28,17 +30,20 @@ class Podcast(BaseModel):
 
 class Episode(BaseModel):
     title = models.CharField("title", max_length=255)
-    permalink = models.URLField("permalink")
+    permalink = models.URLField("permalink", blank=True)
     description = models.TextField("description")
-    published_at = models.DateField("published at", blank=True)
-    permalink = models.URLField("permalink")
+    published_at = models.DateField("published at", blank=True, default=datetime.date.today)
+    enclosure = models.URLField("enclosure", blank=True)
     tags = ArrayField(models.CharField(max_length=128), blank=True)
-    podcast = models.ForeignKey(Podcast, on_delete=models.CASCADE, db_index=False)
+    podcast = models.ForeignKey(Podcast, on_delete=models.CASCADE, related_name='episodes')
 
     class Meta:
         db_table = 'episode'
         verbose_name = "Episode"
         verbose_name_plural = "Episodes"
+
+    def __str__(self):
+        return "{} - {}".format(self.podcast.name, self.title)
 
 
 class PopularTerm(BaseModel):
@@ -54,6 +59,3 @@ class PopularTerm(BaseModel):
 
     def __str__(self):
         return self.term
-
-
-

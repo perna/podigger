@@ -1,15 +1,13 @@
 {% extends 'web/layout.html' %}
-{% block title%}Titulo da busca{% endblock %}
-
+{% block title%}| Resultados para {{ term }}{% endblock %}
 {% block content %}
-<div class="">
+<div class="container">
   <form action="">
     <input type="text" name="" id="" required>
     <button type="submit">Search</button>
   </form>
 </div>
-
-<p>Resultados para...</p>
+<p>Resultados para... {{ term }}</p>
 
 <div itemscope itemtype="http://schema.org/RadioSeries">
   <h4 itemprop="name"></h4>

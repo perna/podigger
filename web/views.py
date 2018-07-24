@@ -20,3 +20,8 @@ def add_podcast(request):
     else:
         form = PodcastForm()
         return render(request, 'web/add_podcast.html', {'form': form})
+
+def search(request):
+    term = request.GET['term']
+    context = {'term': term}
+    return render(request, 'web/results.html', context)

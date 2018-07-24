@@ -1,26 +1,21 @@
-{% extends 'web/layout-hero.html' %}
 
+{% extends 'web/index.html' %}
 {% block content %}
-  <div class="container">
-    <div class="columns is-centered">
-        <div class="column has-text-centered">
-            <h1 class="title">Podigger</h1>
-            <h2 class="subtitle">Search Engine for Podcasts Episodes</h2>
-        </div>
-      </div>  
-      <div class="columns is-centered">
-        <div class="column is-half">
-            <form action="" class="form-search-home">
-              <div class="field has-addons">
-                  <div class="control is-expanded">
-                      <input class="input" type="text" name="term" placeholder="Ex. 'How to create a podcast'" required>
-                  </div>
-                  <div class="control">
-                      <button class="button is-primary" type="submit"><i class="fas fa-search"></i> Search</button>
-                  </div>
-              </div>
-              </form>
+  <div class="jumbotron">
+    <div class="container">
+      <h1 class="display-4 text-center">Podigger</h1>
+      <h2 class="lead text-center">Search Engine for Podcasts Episodes</h2>
+
+      <div class="row">
+        <div class="col-md text-center">
+          <form action="/search" method="GET" class="form-inline">
+            <div class="input-group mb-2 mr-sm-2">
+              <input class="form-control" type="text" name="term" placeholder="Ex. 'How to create a podcast'" required>
+            </div>
+            <button class="btn btn-success mb-2 mr-sm-2" type="submit"><i class="fas fa-search"></i> Search</button>
+          </form>
           </div>
-      </div>  
+      </div>
+    </div>  
   </div>
 {% endblock %}
