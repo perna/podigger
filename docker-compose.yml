@@ -8,6 +8,7 @@ services:
       - .:/code
     ports:
       - "8001:8000"
+      - "5550:5555"
     links:
       - redis
       - db
@@ -28,7 +29,6 @@ services:
     environment:
       - POSTGRES_PASSWORD=docker
       - POSTGRES_USER=docker
-      - POSTGRES_DB=podigger_ng
       - TZ=GMT-3
     
     ports:
