@@ -11,7 +11,7 @@ class PodcastParser:
         self.url = url
         self.podcast = {}
         self.parsed_feed = self.parse_feed(self.url) 
-        self.feed = feed = self.parsed_feed.feed
+        self.feed = self.parsed_feed.feed
 
 
     def get_podcast_data(self):
