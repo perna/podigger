@@ -1,5 +1,7 @@
 from celery import shared_task
+from .updater import EpisodeUpdater
 
 @shared_task
-def hello_task():
-    return 'hello rabbitmq'
+def updateEpisodes(podcast):
+    updater = EpisodeUpdater(podcast.feed)
+    updater.populate()
