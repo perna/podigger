@@ -1,6 +1,7 @@
 import datetime
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
+from django.contrib.postgres.search import SearchVectorField
 from django.utils import timezone
 
 class BaseModel(models.Model):
@@ -30,12 +31,13 @@ class Podcast(BaseModel):
 
 class Episode(BaseModel):
     title = models.CharField("title", max_length=255)
-    permalink = models.URLField("permalink", blank=True)
+    permalink = models.URLField("permalink", blank=True, unique=True)
     description = models.TextField("description")
     published_at = models.DateField("published at", blank=True, default=datetime.date.today)
-    enclosure = models.URLField("enclosure", blank=True)
+    enclosure = models.URLField("enclosure", blank=True, unique=True)
     tags = ArrayField(models.CharField(max_length=128), blank=True)
     podcast = models.ForeignKey(Podcast, on_delete=models.CASCADE, related_name='episodes')
+    search_vector = SearchVectorField(null=True)
 
     class Meta:
         db_table = 'episode'
@@ -47,7 +49,7 @@ class Episode(BaseModel):
 
 
 class PopularTerm(BaseModel):
-    term = models.TextField("Term searched")
+    term = models.TextField("Term searched", unique=True)
     times = models.IntegerField("number of times", default=1)
     date_search = models.DateTimeField("Date of search", auto_now_add=True)
 
