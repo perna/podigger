@@ -1,30 +1,45 @@
 {% extends 'web/layout.html' %}
 {% block title%}| Resultados para {{ term }}{% endblock %}
 {% block content %}
-<div class="container">
-  <form action="">
-    <input type="text" name="" id="" required>
-    <button type="submit">Search</button>
-  </form>
-</div>
-<p>Resultados para... {{ term }}</p>
+  <div class="container">
+    <form action="/search">
+      <input type="text" name="term" required>
+      <button type="submit">Search</button>
+    </form>
+  </div>
+  <p>Resultados para... {{ term }}</p>
 
-<div itemscope itemtype="http://schema.org/RadioSeries">
-  <h4 itemprop="name"></h4>
+  <ul>
+    {% for episode in episodes %}
+      <li>
+        <div itemscope itemtype="http://schema.org/RadioSeries">
+  <h4 itemprop="name">{{ episode.podcast__name }}</h4>
   <div itemprop="episode" itemscope itemtype="http://schema.org/RadioEpisode">
-    <a itemprop="url" href="http://www.bbc.co.uk/programmes/b03ggc19">
-      <span itemprop="name">Ordinary Language Philosophy</span>
+    <a itemprop="url" href="{{ episode.permalink}}">
+      <span itemprop="name">{{ episode.title }}</span>
     </a>
     <div itemprop="publication" itemscope itemtype="http://schema.org/OnDemandEvent">
       <span itemprop="startDate" content="2013-11-07T09:45:00+01:00">09:45 on the same day</span>.
     </div>
-    <div itemprop="description">Phil and Luke take over Thanksgiving duties.</div>
-    <div>tags</div>
+    <div itemprop="description">{{ episode.description }}</div>
+    <div>
+      Tags:
+      {% for tag in episode.tags %}
+        <a href="{% url 'search-tag' %}?tag={{ tag }}">
+          <span class="badge badge-info">{{ tag }}</span>
+        </a>
+      {% endfor%}
+    </div>
     <div class="audio-content" itemprop="publication" itemscope itemtype="http://schema.org/OnDemandEvent">
-      <a itemprop="url" href="http://www.bbc.co.uk/programmes/b03ggc19">
-        <audio src=""></audio>
+      <a itemprop="url" href="{{ episode.enclosure }}">Download</a>
+        <audio src="{{ episode.enclosure }}" type="audio/mpeg" controls></audio>
       </div>
     </div>
   </div>
 </div>
+      </li>
+    {% endfor %}
+  </ul>
+
+
 {% endblock %}

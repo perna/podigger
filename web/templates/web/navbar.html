@@ -1,0 +1,29 @@
+<div class="hero-head">
+  <nav class="navbar">
+    <div class="container">
+      <div class="navbar-brand">
+        <a class="navbar-item" href="{% url 'index' %}">
+          <img src="https://bulma.io/images/bulma-type-white.png" alt="Logo">
+        </a>
+        <span class="navbar-burger burger" data-target="navbarMenuHeroB">
+          <span></span>
+          <span></span>
+          <span></span>
+        </span>
+      </div>
+
+      <div class="navbar-menu">
+        <div class="navbar-end">
+          <a class="navbar-item is-active" href="{% url 'add-podcast' %}">Add a podcast</a>
+          <a class="navbar-item">About</a>
+          <span class="navbar-item">
+            <a class="button is-info" href="https://github.com/perna/podigger">
+              <span class="icon"><i class="fab fa-github"></i></span> 
+              <span>Github</span>
+            </a>
+          </span>
+        </div>
+      </div>
+    </div>
+  </nav>
+</div>

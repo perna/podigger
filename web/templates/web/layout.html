@@ -1,0 +1,20 @@
+{% extends 'web/index.html' %}
+
+{% block layout %}
+  {% include 'web/navbar.html' %}
+
+  <section class="section">
+    {% block content %}
+    {% endblock %}
+
+    <footer class="footer">
+      <div class="container">
+        <div class="content has-text-centered">
+          <p class="has-text-centered">
+            Crafted with <i class="fas fa-heart icon-heart"></i> and <a href="https://www.python.org">Python</a>
+          </p>
+        </div>
+      </div>
+    </footer>
+  </section>
+{% endblock %}
