@@ -1,8 +1,8 @@
 import os
 import environ
 
-from psycopg2cffi import compat
-compat.register()
+#from psycopg2cffi import compat
+#compat.register()
 
 root = environ.Path(__file__) - 1
 env = environ.Env(DEBUG=(bool, False))

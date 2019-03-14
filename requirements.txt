@@ -15,6 +15,7 @@ humanize==0.5.1
 kombu==4.2.1
 maya==0.5.0
 pendulum==1.5.1
+psycopg2==2.7.7
 psycopg2cffi==2.7.7
 python-dateutil==2.7.3
 pytz==2018.4
@@ -27,4 +28,3 @@ snaptime==0.2.4
 tornado==5.1
 tzlocal==1.5.1
 vine==1.1.4
-whitenoise==4.1.2
