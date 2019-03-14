@@ -2,7 +2,7 @@ amqp==2.3.2
 Babel==2.6.0
 billiard==3.5.0.3
 celery==4.2.0
-cffi==1.11.5
+cffi==1.12.0
 dateparser==0.7.0
 Django==2.1.7
 django-celery-results==1.0.1
@@ -27,3 +27,4 @@ snaptime==0.2.4
 tornado==5.1
 tzlocal==1.5.1
 vine==1.1.4
+whitenoise==4.1.2
