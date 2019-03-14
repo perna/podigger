@@ -140,3 +140,7 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 #CELERY_TASK_SERIALIZER = env('CELERY_TASK_SERIALIZER')
 #CELERY_RESULT_SERIALIZER = env('CELERY_RESULT_SERIALIZER')
 #CELERY_TIMEZONE = env('CELERY_TIMEZONE')
+
+# Configure Django App for Heroku.
+import django_heroku
+django_heroku.settings(locals())
