@@ -138,13 +138,13 @@ CELERY_RESULT_BACKEND = environ.get('CELERY_RESULT_BACKEND')
 CELERY_ACCEPT_CONTENT= ['application/json']
 CELERY_TASK_SERIALIZER = environ.get('CELERY_TASK_SERIALIZER')
 CELERY_RESULT_SERIALIZER = environ.get('CELERY_RESULT_SERIALIZER')
-CELERY_TIMEZONE = env('CELERY_TIMEZONE')
+CELERY_TIMEZONE = environ.get('CELERY_TIMEZONE')
 
 #Cache
 CACHES = {
     "default": {
         "BACKEND": "redis_cache.RedisCache",
-        "LOCATION": os.environ.get('REDIS_URL'),
+        "LOCATION": environ.get('REDIS_URL'),
     }
 }
 
