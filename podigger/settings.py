@@ -12,12 +12,10 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = env('SECRET_KEY')
-#SECRET_KEY = 'm&=(ly9vz3g@yio^9=0h_4&k0v=!od6zu8g+-l1jnq16#p51_a'
+SECRET_KEY = environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env('DEBUG')
-TEMPLATE_DEBUG = DEBUG
+DEBUG = environ.get('DEBUG')
 
 ALLOWED_HOSTS = []
 
@@ -73,7 +71,14 @@ WSGI_APPLICATION = 'podigger.wsgi.application'
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 
 DATABASES = {
-    'default': env.db()
+    'default': {
+        'ENGINE': environ.get('DATABASE_ENGINE'),
+        'NAME': environ.get('DATABASE_NAME'),
+        'USER': environ.get('DATABASE_USER'),
+        'PASSWORD': environ.get('DATABASE_PASSWORD'),
+        'HOST': environ.get('DATABASE_HOST'),
+        'PORT': environ.get('DATABASE_PORT'),
+    }
 }
 
 
@@ -126,14 +131,22 @@ STATICFILES_DIRS = (
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 #CELERY
-#CELERY_RESULT_BACKEND = 'django-db'
+CELERY_RESULT_BACKEND = 'django-db'
 
-#CELERY_BROKER_URL = env('CELERY_BROKER_URL')
-#CELERY_RESULT_BACKEND = env('CELERY_RESULT_BACKEND')
-#CELERY_ACCEPT_CONTENT= ['application/json']
-#CELERY_TASK_SERIALIZER = env('CELERY_TASK_SERIALIZER')
-#CELERY_RESULT_SERIALIZER = env('CELERY_RESULT_SERIALIZER')
-#CELERY_TIMEZONE = env('CELERY_TIMEZONE')
+CELERY_BROKER_URL = environ.get('CELERY_BROKER_URL')
+CELERY_RESULT_BACKEND = environ.get('CELERY_RESULT_BACKEND')
+CELERY_ACCEPT_CONTENT= ['application/json']
+CELERY_TASK_SERIALIZER = environ.get('CELERY_TASK_SERIALIZER')
+CELERY_RESULT_SERIALIZER = environ.get('CELERY_RESULT_SERIALIZER')
+CELERY_TIMEZONE = env('CELERY_TIMEZONE')
+
+#Cache
+CACHES = {
+    "default": {
+        "BACKEND": "redis_cache.RedisCache",
+        "LOCATION": os.environ.get('REDIS_URL'),
+    }
+}
 
 # Configure Django App for Heroku.
 import django_heroku
