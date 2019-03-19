@@ -2,6 +2,8 @@ version: '3'
 
 services:
   web:
+    env_file:
+      - .env
     restart: always
     build: .
     volumes:
@@ -15,7 +17,7 @@ services:
     depends_on:
       - redis
       - db
-    command: pypy3 manage.py runserver 0.0.0.0:8000
+    command: python3 manage.py runserver 0.0.0.0:8000
 
   redis:
     image: "redis:alpine"
