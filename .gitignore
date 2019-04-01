@@ -66,6 +66,7 @@ target/
 
 web/static/web/node_modules
 podigger/.env
+.env
 
 .travis.yml
 .landscape.yml
