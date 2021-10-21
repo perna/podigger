@@ -3,7 +3,7 @@ amqp==2.0.3
 aniso8601==1.1.0
 anyjson==0.3.3
 arrow==0.8.0
-Babel==2.3.4
+Babel==2.9.1
 backports-abc==0.4
 billiard==3.3.0.23
 blinker==1.4
