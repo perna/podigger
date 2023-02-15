@@ -69,6 +69,6 @@ tornado==4.4.1
 urllib3==1.16
 validators==0.10.3
 vine==1.1.1
-Werkzeug==0.15.3
+Werkzeug==2.2.3
 wrapt==1.10.8
 WTForms==2.1
