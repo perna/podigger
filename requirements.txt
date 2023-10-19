@@ -67,7 +67,7 @@ SQLAlchemy-Utils==0.32.9
 strict-rfc3339==0.7
 tornado==4.4.1
 urllib3==1.16
-validators==0.10.3
+validators==0.21.0
 vine==1.1.1
 Werkzeug==0.15.3
 wrapt==1.10.8
