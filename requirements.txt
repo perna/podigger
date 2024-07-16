@@ -72,3 +72,4 @@ vine==1.1.1
 Werkzeug==0.15.3
 wrapt==1.10.8
 WTForms==2.1
+setuptools>=70.0.0 # not directly required, pinned by Snyk to avoid a vulnerability
