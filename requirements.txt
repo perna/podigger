@@ -65,7 +65,7 @@ SQLAlchemy==1.2.18
 SQLAlchemy-Searchable==0.10.1
 SQLAlchemy-Utils==0.32.9
 strict-rfc3339==0.7
-tornado==4.4.1
+tornado==6.4.2
 urllib3==1.16
 validators==0.10.3
 vine==1.1.1
