@@ -31,7 +31,7 @@ Flask-WTF==0.12
 flower==0.9.1
 gevent==1.1.1
 greenlet==0.4.9
-gunicorn==19.4.5
+gunicorn==23.0.0
 inflection==0.3.1
 itsdangerous==0.24
 Jinja2==2.11.3
