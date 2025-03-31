@@ -29,7 +29,7 @@ Flask-Security==1.7.5
 Flask-SQLAlchemy==2.1
 Flask-WTF==0.12
 flower==0.9.1
-gevent==1.1.1
+gevent==23.9.0
 greenlet==0.4.9
 gunicorn==19.4.5
 inflection==0.3.1
