@@ -71,4 +71,4 @@ validators==0.10.3
 vine==1.1.1
 Werkzeug==0.15.3
 wrapt==1.10.8
-WTForms==2.1
+WTForms==2.3.0
