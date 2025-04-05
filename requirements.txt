@@ -41,9 +41,8 @@ kombu==3.0.35
 lazy-object-proxy==1.2.1
 Mako==1.2.2
 MarkupSafe==0.23
-passlib==1.6.5
-psutil==5.6.7
 passlib==1.7.3
+psutil==5.6.6
 psycogreen==1.0
 psycopg2==2.6.1
 py-bcrypt==0.4
@@ -73,3 +72,5 @@ vine==1.1.1
 Werkzeug==0.15.3
 wrapt==1.10.8
 WTForms==3.0.0a1
+setuptools>=70.0.0 # not directly required, pinned by Snyk to avoid a vulnerability
+zipp>=3.19.1 # not directly required, pinned by Snyk to avoid a vulnerability
