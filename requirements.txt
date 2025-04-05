@@ -28,8 +28,8 @@ Flask-Script==2.0.5
 Flask-Security==1.7.5
 Flask-SQLAlchemy==2.1
 Flask-WTF==0.12
+gevent==1.2a1
 flower==1.2.0
-gevent==1.1.1
 greenlet==0.4.9
 gunicorn==19.4.5
 inflection==0.3.1
@@ -41,7 +41,6 @@ kombu==3.0.35
 lazy-object-proxy==1.2.1
 Mako==1.2.2
 MarkupSafe==0.23
-passlib==1.6.5
 psutil==5.6.7
 passlib==1.7.3
 psycogreen==1.0
