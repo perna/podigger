@@ -8,6 +8,7 @@ backports-abc==0.4
 billiard==3.3.0.23
 blinker==1.4
 celery==5.2.2
+certifi>=2023.7.22 # not directly required, pinned by Snyk to avoid a vulnerability
 cleo==2.0.0
 click==6.6
 croniter==0.3.12
