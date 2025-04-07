@@ -18,7 +18,7 @@ feedparser==5.2.1
 Flask==2.3.2
 Flask-Admin==1.5.3
 Flask-Cache==0.13.1
-Flask-Cors==2.1.2
+Flask-Cors==4.0.1
 Flask-DebugToolbar==0.10.0
 Flask-Login==0.3.2
 Flask-Mail==0.9.1
