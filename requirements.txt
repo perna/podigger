@@ -74,3 +74,4 @@ Werkzeug==3.0.1
 wrapt==1.10.8
 WTForms==3.0.0a1
 setuptools>=65.5.1 # not directly required, pinned by Snyk to avoid a vulnerability
+zipp>=3.19.1 # not directly required, pinned by Snyk to avoid a vulnerability
