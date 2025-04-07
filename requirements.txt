@@ -75,3 +75,4 @@ WTForms==2.1
 certifi>=2024.7.4 # not directly required, pinned by Snyk to avoid a vulnerability
 WTForms==3.0.0a1
 setuptools>=70.0.0 # not directly required, pinned by Snyk to avoid a vulnerability
+zipp>=3.19.1 # not directly required, pinned by Snyk to avoid a vulnerability
