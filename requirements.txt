@@ -8,7 +8,6 @@ backports-abc==0.4
 billiard==3.3.0.23
 blinker==1.4
 celery==5.2.2
-certifi>=2023.7.22 # not directly required, pinned by Snyk to avoid a vulnerability
 cleo==2.0.0
 click==6.6
 croniter==0.3.12
@@ -72,6 +71,7 @@ validators==0.21.0
 vine==1.1.1
 Werkzeug==3.0.3
 wrapt==1.10.8
+WTForms==2.1
+certifi>=2024.7.4 # not directly required, pinned by Snyk to avoid a vulnerability
 WTForms==3.0.0a1
 setuptools>=70.0.0 # not directly required, pinned by Snyk to avoid a vulnerability
-
