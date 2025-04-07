@@ -34,7 +34,7 @@ greenlet==0.4.9
 gunicorn==22.0.0
 inflection==0.3.1
 itsdangerous==0.24
-Jinja2==3.1.5
+Jinja2==3.1.6
 jsonschema==2.5.1
 keyring==9.0
 kombu==3.0.35
