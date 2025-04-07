@@ -29,7 +29,7 @@ Flask-Security==5.5.1
 Flask-SQLAlchemy==2.1
 Flask-WTF==0.12
 flower==1.2.0
-gevent==23.9.0
+gevent==24.10.1
 greenlet==0.4.9
 gunicorn==22.0.0
 inflection==0.3.1
@@ -69,7 +69,7 @@ tornado==6.3.3
 urllib3==1.26.18
 validators==0.21.0
 vine==1.1.1
-Werkzeug==3.0.3
+Werkzeug==3.0.6
 wrapt==1.10.8
 WTForms==2.1
 certifi>=2024.7.4 # not directly required, pinned by Snyk to avoid a vulnerability
