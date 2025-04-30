@@ -1,3 +1,5 @@
-[![Code Health](https://landscape.io/github/perna/podigger/master/landscape.svg?style=flat)](https://landscape.io/github/perna/podigger/master)
 # podigger
-search engine for podcasts subjects
+
+Search Engine for Podcasts Subjects
+
+🚨 This project is on hold for now. I plan to replace the Flask implementation with Django in the future, but I don't have time to refactor for now. Stay tuned.
