@@ -34,6 +34,11 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r backend/requirements.txt
 
+      - name: Run ruff (lint)
+        run: |
+          # ruff is installed from requirements.txt
+          ruff check backend
+
       - name: Wait for Postgres
         run: |
           for i in {1..30}; do
