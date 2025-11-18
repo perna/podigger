@@ -9,10 +9,8 @@ WORKDIR /app
 
 # Python deps
 COPY requirements.txt /app/requirements.txt
-# Install uv (Astral) so it's available in the image for developers, but install packages
-# using pip (more permissive resolver) to ensure compatibility on Python 3.14 in the container.
-RUN pip install --no-cache-dir uv \
-    && pip install --no-cache-dir -r /app/requirements.txt
+# Install Python dependencies with pip
+RUN pip install --no-cache-dir -r /app/requirements.txt
 
 # Copy project (will be overridden by bind-mount in development)
 COPY . /app

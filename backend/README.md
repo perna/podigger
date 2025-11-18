@@ -12,22 +12,18 @@ docker compose -f ../docker-compose.django.yml up --build
 
 2. The Django dev server will be available at http://localhost:8000 (after `manage.py` and migrations run).
 
-Using uv as package manager
+Dependency installation
 
-- This project is configured to use `uv` (Astral) as the Python package manager inside the Docker image.
-- The Dockerfile installs `uv` and runs `uv pip sync /app/requirements.txt` to install locked dependencies.
-- If you want to work locally without Docker, install `uv` using the installer:
-
-```bash
-curl -LsSf https://astral.sh/uv/install.sh | sh
-```
-
-Then you can create a venv and sync dependencies:
+- The Docker image installs Python packages using pip and the `backend/requirements.txt` file.
+- To work locally, create and activate a virtual environment and install dependencies with pip:
 
 ```bash
-uv venv
-uv pip sync requirements.txt
+python -m venv .venv
+source .venv/bin/activate
+pip install -r backend/requirements.txt
 ```
+
+If you'd prefer a modern project manager (Poetry, PDM, etc.) we can add that later; for now we stick to the conventional pip workflow to keep the development flow simple.
 
 
 Notes:
