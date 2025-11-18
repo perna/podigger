@@ -4,6 +4,8 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     initial = True
+    # CREATE INDEX CONCURRENTLY cannot run inside a transaction; disable atomic
+    atomic = False
 
     dependencies = []
 
