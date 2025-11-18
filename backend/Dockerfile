@@ -11,7 +11,7 @@ WORKDIR /app
 COPY requirements.txt /app/requirements.txt
 # Install uv (Astral) and use it as the package manager to sync dependencies
 RUN pip install --no-cache-dir uv \
-    && uv pip sync /app/requirements.txt
+    && uv pip sync --system /app/requirements.txt
 
 # Copy project (will be overridden by bind-mount in development)
 COPY . /app
