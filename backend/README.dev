@@ -48,8 +48,33 @@ env:
 - Rotate and manage secrets centrally (vault, cloud secrets manager) for production.
 
 6) Using DATABASE_URL and GitHub Secrets
---------------------------------------
 It's often convenient to provide a single `DATABASE_URL` instead of separate DB host/user/password env vars. The expected format is:
+
+7) Seeding the database (dev)
+--------------------------------
+To populate the database with example data for frontend development, use the management commands provided.
+
+- To create a small seeded dataset (10 podcasts × 5 episodes):
+
+```bash
+docker compose -f docker-compose.django.yml exec web python manage.py seed_fake_podcasts --podcasts 10 --episodes 5 --force
+```
+
+- To create the larger default dataset (100×100) you can run the same command without overriding counts, but it requires `--force` and may take significant time and disk space.
+
+- To dump the current `podcasts` data to a fixture file (so other devs can `loaddata`):
+
+```bash
+docker compose -f docker-compose.django.yml exec web python manage.py dumpdata podcasts --indent 2 > backend/podcasts/fixtures/initial_fake_seed.json
+```
+
+- To remove recently seeded fake data (safe cleanup), the `clear_fake_seed` command will delete records created within the last N minutes (default 60):
+
+```bash
+docker compose -f docker-compose.django.yml exec web python manage.py clear_fake_seed --minutes 60
+# use --dry-run to preview
+```
+
 
 ```
 postgres://<USER>:<PASSWORD>@<HOST>:<PORT>/<DBNAME>
