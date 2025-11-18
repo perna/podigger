@@ -1,0 +1,48 @@
+Development environment and secrets
+=================================
+
+This file explains how to set up local environment variables for the Django backend without committing secrets to the repository.
+
+1) Create a local `.env`
+-------------------------
+Copy `backend/.env.example` to `backend/.env` and fill real values (do NOT commit this file):
+
+```bash
+cp backend/.env.example backend/.env
+# edit backend/.env and replace placeholders with real credentials
+```
+
+2) What belongs in `.env`
+-------------------------
+- `DJANGO_SECRET_KEY`: Django secret key (keep secret).
+- `DJANGO_DEBUG`: `True` for local dev, `False` in production.
+- DB/Redis connection values used by `config.settings`.
+
+3) Using environment variables locally
+-------------------------------------
+- You can load `.env` with your shell or use a library such as `django-environ`.
+- Alternatively export variables in your shell session:
+
+```bash
+export $(grep -v '^#' backend/.env | xargs)
+python backend/manage.py runserver
+```
+
+4) CI and production
+---------------------
+- Do NOT store secrets in the repository. Use GitHub Secrets (Repository → Settings → Secrets) for CI.
+- Reference secrets in GitHub Actions using `${{ secrets.NAME }}` and pass them as env variables in the workflow.
+
+Example snippet for the workflow (do not hardcode values):
+
+```yaml
+env:
+  DATABASE_USER: ${{ secrets.DB_USER }}
+  DATABASE_PASSWORD: ${{ secrets.DB_PASSWORD }}
+  DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+```
+
+5) Additional notes
+-------------------
+- Keep `backend/.env` in `.gitignore` (already added).
+- Rotate and manage secrets centrally (vault, cloud secrets manager) for production.
