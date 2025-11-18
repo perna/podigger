@@ -29,10 +29,10 @@ class EpisodeViewSet(viewsets.ModelViewSet):
         if not q:
             return qs
 
-    # Full-text search across title and description using Portuguese config.
-    # Use the same text search configuration as the index so Postgres can use the GIN index.
-    vector = SearchVector('title', weight='A', config='portuguese') + SearchVector('description', weight='B', config='portuguese')
-    query = SearchQuery(q, config='portuguese')
+        # Full-text search across title and description using Portuguese config.
+        # Use the same text search configuration as the index so Postgres can use the GIN index.
+        vector = SearchVector('title', weight='A', config='portuguese') + SearchVector('description', weight='B', config='portuguese')
+        query = SearchQuery(q, config='portuguese')
 
         # Annotate rank and trigram similarity (for partial matches)
         annotated = qs.annotate(
