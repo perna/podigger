@@ -75,6 +75,14 @@ docker compose -f docker-compose.django.yml exec web python manage.py clear_fake
 # use --dry-run to preview
 ```
 
+- To remove exactly the records present in a fixture file (deterministic):
+
+```bash
+docker compose -f docker-compose.django.yml exec web python manage.py remove_fixture backend/podcasts/fixtures/initial_fake_seed.json --dry-run
+```
+
+Remove without `--dry-run` to perform the deletion.
+
 
 ```
 postgres://<USER>:<PASSWORD>@<HOST>:<PORT>/<DBNAME>
