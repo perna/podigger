@@ -1,0 +1,4 @@
+FROM scratch
+# Deprecated: moved to backend/Dockerfile. Kept for reference.
+LABEL deprecated="moved to backend/Dockerfile"
+
