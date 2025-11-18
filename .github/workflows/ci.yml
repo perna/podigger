@@ -13,6 +13,9 @@ jobs:
       postgres:
         image: postgres:15-alpine
         env:
+          # These default values are used by the service. You can override
+          # them by setting the corresponding GitHub Secrets in your repo
+          # (Settings → Secrets) and updating the job env below.
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
           POSTGRES_DB: podigger
@@ -46,12 +49,15 @@ jobs:
           done
 
       - name: Run migrations
+        # Pass secrets from GitHub Secrets into the step. If you haven't set
+        # them yet, the settings.py will fall back to sensible defaults.
         env:
           DATABASE_HOST: localhost
           DATABASE_PORT: 5432
           DATABASE_NAME: podigger
-          DATABASE_USER: postgres
-          DATABASE_PASSWORD: postgres
+          DATABASE_USER: ${{ secrets.DB_USER }}
+          DATABASE_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
           DJANGO_SETTINGS_MODULE: config.settings
         run: |
           python backend/manage.py migrate --noinput
@@ -61,8 +67,9 @@ jobs:
           DATABASE_HOST: localhost
           DATABASE_PORT: 5432
           DATABASE_NAME: podigger
-          DATABASE_USER: postgres
-          DATABASE_PASSWORD: postgres
+          DATABASE_USER: ${{ secrets.DB_USER }}
+          DATABASE_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
           DJANGO_SETTINGS_MODULE: config.settings
         run: |
           python backend/manage.py test -v 2
