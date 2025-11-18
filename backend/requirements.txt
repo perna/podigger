@@ -1,6 +1,7 @@
 Django==5.2.8
 # Allow a compatible DRF range for Python 3.14
-djangorestframework>=3.19.0,<4.0
+# Use a DRF version available for current Python; lock to a compatible lower bound
+djangorestframework>=3.16.1,<4.0
 psycopg2-binary==2.9.11
 django-cors-headers==4.0.0
 celery==5.2.7
