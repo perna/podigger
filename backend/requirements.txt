@@ -1,0 +1,13 @@
+Django==5.2.8
+# Allow a compatible DRF range for Python 3.14
+# Use a DRF version available for current Python; lock to a compatible lower bound
+djangorestframework>=3.16.1,<4.0
+psycopg2-binary==2.9.11
+django-cors-headers==4.0.0
+celery==5.2.7
+redis==4.4.4
+gunicorn>=20.1.0,<24.0
+uvicorn==0.22.0
+ruff==0.0.285
+django-environ>=0.10.0
+Faker==19.9.0

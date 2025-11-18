@@ -1,0 +1,2 @@
+# Deprecated: requirements moved to backend/requirements.txt (use backend/requirements.txt)
+

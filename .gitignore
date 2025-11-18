@@ -67,3 +67,7 @@ config/config.py
 app.db
 celerybeat-schedule
 app/static/node_modules
+
+# Local environment files
+.env
+backend/.env
