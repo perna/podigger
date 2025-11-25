@@ -8,6 +8,8 @@ Este é um projeto de podcasts em **migração do Flask para Django**:
 - **Frontend**: React com TypeScript (Vite) - em desenvolvimento
 - **Infraestrutura**: Docker e Docker Compose
 - **Banco de Dados**: PostgreSQL com migrações Alembic (Flask) e Django migrations
+- **Package Manager**: UV (local development) e pip (CI/deployment)
+- **Python Version**: 3.12.7
 
 ## ⚠️ Status da Migração
 
@@ -62,9 +64,14 @@ projeto/
 ├── migrations/                   # ⚠️ Alembic (Flask) - manter até migração completa
 │   └── versions/
 │
-├── docker-compose.yml           # Orquestração principal
-├── docker-compose.django.yml    # Django específico
+├── docker-compose.yml           # Full stack deployment
+├── docker-compose.local.yml     # Local services only (Postgres + Redis)
+├── Makefile                     # Development automation
+├── scripts/                     # Setup scripts
+│   └── setup-uv.sh             # UV installation
+├── .python-version              # Python 3.12.7 for UV
 ├── GEMINI.md                    # Este arquivo
+├── README.dev.md                # Local development guide
 └── CHANGELOG.md                 # Histórico de mudanças
 ```
 
@@ -178,6 +185,52 @@ projeto/
    - Isole serviços em networks customizadas
    - Comunicação entre containers por nome de serviço
 
+## Ambiente de Desenvolvimento Local
+
+### Setup com UV (Recomendado)
+
+O projeto usa **UV** como package manager para desenvolvimento local, proporcionando:
+- Instalação rápida de dependências
+- Gerenciamento automático de versões Python
+- Ambiente virtual isolado
+- Melhor performance que pip
+
+**Quick Start:**
+```bash
+# Setup completo (instala UV, cria venv, instala Python 3.12.7 e dependências)
+make setup
+
+# Ativar ambiente virtual
+source .venv/bin/activate
+
+# Iniciar serviços locais (Postgres + Redis)
+make services
+
+# Rodar migrações
+make migrate
+
+# Iniciar servidor de desenvolvimento
+make dev
+```
+
+**Comandos Make Disponíveis:**
+```bash
+make help           # Ver todos os comandos
+make setup          # Setup inicial
+make install        # Instalar/atualizar dependências
+make dev            # Iniciar dev server + services
+make services       # Iniciar apenas Postgres + Redis
+make services-stop  # Parar services
+make migrate        # Rodar migrations
+make test           # Rodar testes
+make lint           # Linting com Ruff
+make format         # Formatação com Ruff
+make shell          # Django shell
+make clean          # Limpar venv e cache
+```
+
+**Documentação Completa:** Veja [README.dev.md](file:///home/perna/workspace/projects/podigger/README.dev.md) para guia detalhado.
+
 ## Comandos Úteis
 
 ### Django
@@ -238,10 +291,11 @@ npm run lint:fix
 
 ### Docker
 ```bash
-# Django stack
-docker-compose -f docker-compose.django.yml up --build
+# Local services only (Postgres + Redis) - Recomendado para desenvolvimento
+docker-compose -f docker-compose.local.yml up -d
+docker-compose -f docker-compose.local.yml down
 
-# Stack completo (se disponível)
+# Full stack deployment (backend, frontend, db, redis, celery)
 docker-compose up --build
 
 # Stop
@@ -276,7 +330,7 @@ docker-compose down -v
 ```toml
 [tool.ruff]
 line-length = 88
-target-version = "py314"
+target-version = "py312"
 
 [tool.ruff.lint]
 select = [
