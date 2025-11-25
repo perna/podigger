@@ -11,3 +11,9 @@ uvicorn==0.22.0
 ruff==0.0.285
 django-environ>=0.10.0
 Faker==19.9.0
+django-filter>=23.2
+pytest>=7.0.0
+pytest-django>=4.0.0
+pytest-mock>=3.10.0
+feedparser>=6.0.10
+requests>=2.31.0
