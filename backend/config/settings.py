@@ -72,16 +72,22 @@ WSGI_APPLICATION = 'config.wsgi.application'
 ASGI_APPLICATION = 'config.asgi.application'
 
 # Database
-# Support a DATABASE_URL or individual vars; default matches the CI
-# Postgres service used in GitHub Actions.
-DATABASES = {
-    'default': env.db(
-        'DATABASE_URL',
-        default=os.environ.get(
-            'DATABASE_URL', 'postgres://postgres:postgres@localhost:5432/podigger'
-        ),
-    )
-}
+# Support DATABASE_URL (preferred) or fall back to individual DATABASE_* env vars
+# so the Docker Compose `DATABASE_HOST=db` configuration is respected.
+database_url = os.environ.get('DATABASE_URL') or env('DATABASE_URL', default=None)
+if database_url:
+    DATABASES = {'default': env.db('DATABASE_URL', default=database_url)}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': env('DATABASE_NAME', default=os.environ.get('DATABASE_NAME', 'podigger')),
+            'USER': env('DATABASE_USER', default=os.environ.get('DATABASE_USER', 'docker')),
+            'PASSWORD': env('DATABASE_PASSWORD', default=os.environ.get('DATABASE_PASSWORD', 'docker')),
+            'HOST': env('DATABASE_HOST', default=os.environ.get('DATABASE_HOST', 'localhost')),
+            'PORT': env('DATABASE_PORT', default=os.environ.get('DATABASE_PORT', '5432')),
+        }
+    }
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
