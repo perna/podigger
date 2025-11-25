@@ -1,0 +1,101 @@
+[tool.commitizen]
+name = "cz_conventional_commits"
+version = "0.1.0"
+tag_format = "v$version"
+update_changelog_on_bump = true
+version_scheme = "semver"
+bump_message = "bump: version $current_version → $new_version"
+
+# Version files to update
+version_files = [
+    "backend/config/__version__.py:__version__",
+    "backend/pyproject.toml:version"
+]
+
+# Changelog configuration
+changelog_file = "CHANGELOG.md"
+changelog_incremental = true
+changelog_start_rev = "v0.3.0"
+
+# Allowed commit types and scopes
+[tool.commitizen.customize]
+schema = """
+<type>(<scope>): <subject>
+<BLANK LINE>
+<body>
+<BLANK LINE>
+<footer>
+"""
+
+schema_pattern = "^(feat|fix|docs|style|refactor|perf|test|chore|ci|build|revert)(\\(\\w+\\))?(!)?:.*"
+
+bump_pattern = "^(feat|fix|perf|refactor)"
+bump_map = {"^feat" = "MINOR", "^fix" = "PATCH", "^perf" = "PATCH", "^refactor" = "PATCH"}
+
+# Commit types
+[[tool.commitizen.customize.questions]]
+type = "list"
+name = "type"
+message = "Select the type of change you are committing"
+choices = [
+    {value = "feat", name = "feat: A new feature"},
+    {value = "fix", name = "fix: A bug fix"},
+    {value = "docs", name = "docs: Documentation only changes"},
+    {value = "style", name = "style: Code style changes (formatting, etc)"},
+    {value = "refactor", name = "refactor: Code refactoring"},
+    {value = "perf", name = "perf: Performance improvements"},
+    {value = "test", name = "test: Adding or updating tests"},
+    {value = "chore", name = "chore: Maintenance tasks"},
+    {value = "ci", name = "ci: CI/CD changes"},
+    {value = "build", name = "build: Build system changes"},
+    {value = "revert", name = "revert: Revert a previous commit"}
+]
+
+# Scopes
+[[tool.commitizen.customize.questions]]
+type = "list"
+name = "scope"
+message = "Select the scope of this change (optional)"
+choices = [
+    {value = "", name = "none"},
+    {value = "backend", name = "backend: Django backend"},
+    {value = "frontend", name = "frontend: React frontend"},
+    {value = "api", name = "api: REST API"},
+    {value = "models", name = "models: Database models"},
+    {value = "parser", name = "parser: Feed parser"},
+    {value = "ci", name = "ci: CI/CD"},
+    {value = "docs", name = "docs: Documentation"},
+    {value = "deps", name = "deps: Dependencies"}
+]
+
+# Subject
+[[tool.commitizen.customize.questions]]
+type = "input"
+name = "subject"
+message = "Write a short description of the change"
+
+# Body
+[[tool.commitizen.customize.questions]]
+type = "input"
+name = "body"
+message = "Provide additional contextual information (optional)"
+
+# Breaking change
+[[tool.commitizen.customize.questions]]
+type = "confirm"
+name = "is_breaking"
+message = "Is this a BREAKING CHANGE?"
+default = false
+
+# Breaking change description
+[[tool.commitizen.customize.questions]]
+type = "input"
+name = "breaking"
+message = "Describe the breaking change"
+filter = "lambda x, answers: x if answers['is_breaking'] else ''"
+
+# Footer
+[[tool.commitizen.customize.questions]]
+type = "input"
+name = "footer"
+message = "Footer (e.g., fixes #123, closes #456)"
