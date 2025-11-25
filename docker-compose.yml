@@ -1,26 +1,70 @@
-version: '2'
 services:
-  web:
-    build: .
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    command: python manage.py runserver 0.0.0.0:8000
     ports:
-      - "80:80"
-    depends_on:
-      - redis
-      - db
+      - "8000:8000"
     volumes:
-      - ~/.postgresql:/var/lib/postgresql/data
+      - ./backend:/app
+    depends_on:
+      - db
+      - redis
+    environment:
+      - DJANGO_SETTINGS_MODULE=config.settings
+      - DATABASE_HOST=db
+      - DATABASE_PORT=5432
+      - DATABASE_NAME=podigger
+      - DATABASE_USER=docker
+      - DATABASE_PASSWORD=docker
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
 
   db:
-    image: postgres
+    image: postgres:15-alpine
     environment:
-      - POSTGRES_PASSWORD=docker
-      - POSTGRES_USER=docker
-      - POSTGRES_DB=podigger
-      - PGDATA=/data
+      POSTGRES_PASSWORD: docker
+      POSTGRES_USER: docker
+      POSTGRES_DB: podigger
+      PGDATA: /data
+    volumes:
+      - pgdata:/var/lib/postgresql/data
     ports:
       - "5432:5432"
 
   redis:
-      image: redis
-      ports:
-        - "6379:6379"
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  celery:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    command: celery -A config worker --loglevel=info
+    depends_on:
+      - redis
+      - db
+    volumes:
+      - ./backend:/app
+    environment:
+      - DJANGO_SETTINGS_MODULE=config.settings
+      - DATABASE_HOST=db
+      - DATABASE_PORT=5432
+      - DATABASE_NAME=podigger
+      - DATABASE_USER=docker
+      - DATABASE_PASSWORD=docker
+
+volumes:
+  pgdata:
