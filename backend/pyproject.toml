@@ -1,8 +1,57 @@
+[project]
+name = "podigger-backend"
+version = "0.1.0"
+description = "Podigger Django Backend"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "Django==5.2.8",
+    "djangorestframework>=3.16.1,<4.0",
+    "psycopg2-binary==2.9.11",
+    "django-cors-headers==4.0.0",
+    "celery==5.2.7",
+    "redis==4.4.4",
+    "gunicorn>=20.1.0,<24.0",
+    "uvicorn==0.22.0",
+    "ruff>=0.8.0,<0.9.0",
+    "django-environ>=0.10.0",
+    "django-redis>=5.4.0",
+    "Faker==19.9.0",
+    "django-filter>=23.2",
+    "pytest>=7.0.0",
+    "pytest-django>=4.0.0",
+    "pytest-mock>=3.10.0",
+    "feedparser>=6.0.10",
+    "requests>=2.31.0",
+]
+
 [tool.ruff]
 line-length = 88
+target-version = "py312"
+
+[tool.ruff.lint]
 select = ["E", "F", "W", "I", "C901", "B", "D"]
 extend-ignore = ["E203"]
-target-version = "py314"
 
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint.per-file-ignores]
 "tests/*" = ["D"]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "config.settings"
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-v --tb=short --strict-markers"
+testpaths = ["podcasts/tests"]
+
+[tool.commitizen]
+name = "cz_conventional_commits"
+version = "0.1.0"
+version_files = [
+    "config/__version__.py:__version__",
+    "pyproject.toml:version"
+]
+update_changelog_on_bump = true
+tag_format = "v$version"
+changelog_file = "../CHANGELOG.md"
+changelog_incremental = true
+changelog_start_rev = "HEAD"
