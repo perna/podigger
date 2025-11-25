@@ -1,15 +1,47 @@
-from rest_framework import viewsets
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import viewsets, filters
 from rest_framework.response import Response
 from django.db.models import F
 from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank, TrigramSimilarity
 
-from .models import Podcast, Episode, TopicSuggestion
-from .serializers import PodcastSerializer, EpisodeSerializer, TopicSuggestionSerializer
+from .models import Podcast, Episode, TopicSuggestion, PopularTerm
+from .serializers import PodcastSerializer, EpisodeSerializer, TopicSuggestionSerializer, PopularTermSerializer
 
+
+from rest_framework.decorators import action
+from rest_framework import status
+from .tasks import add_episode
 
 class PodcastViewSet(viewsets.ModelViewSet):
     queryset = Podcast.objects.all().order_by('-id')
     serializer_class = PodcastSerializer
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['name']
+
+    def create(self, request, *args, **kwargs):
+        name = request.data.get('name')
+        feed = request.data.get('feed')
+
+        if not name or not feed:
+             return Response({'message': 'o nome e o feed são obrigatórios'}, status=status.HTTP_400_BAD_REQUEST)
+
+        if Podcast.objects.filter(feed=feed).exists():
+             podcast = Podcast.objects.get(feed=feed)
+             return Response({'id': podcast.id, 'message': 'este podcast já foi adicionado', 'status': 'none'}, status=status.HTTP_200_OK)
+        
+        # Create initial object
+        podcast = Podcast.objects.create(name=name, feed=feed)
+        
+        # Trigger async task
+        add_episode.delay(feed)
+        
+        return Response({'id': podcast.id, 'status': 'created'}, status=status.HTTP_201_CREATED)
+
+    @action(detail=False, methods=['get'])
+    def recent(self, request):
+        recent_podcasts = Podcast.objects.order_by('-id')[:6]
+        serializer = self.get_serializer(recent_podcasts, many=True)
+        return Response(serializer.data)
 
 
 class EpisodeViewSet(viewsets.ModelViewSet):
@@ -22,6 +54,8 @@ class EpisodeViewSet(viewsets.ModelViewSet):
 
     queryset = Episode.objects.all().order_by('-published')
     serializer_class = EpisodeSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['podcast']
 
     def get_queryset(self):
         qs = super().get_queryset()
@@ -53,3 +87,8 @@ class EpisodeViewSet(viewsets.ModelViewSet):
 class TopicSuggestionViewSet(viewsets.ModelViewSet):
     queryset = TopicSuggestion.objects.all().order_by('-id')
     serializer_class = TopicSuggestionSerializer
+
+
+class PopularTermViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = PopularTerm.objects.all().order_by('-times')
+    serializer_class = PopularTermSerializer
