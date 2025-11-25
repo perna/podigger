@@ -96,6 +96,26 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# Redis Cache Configuration
+# Supports both local development (localhost) and Docker (redis service)
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': env('REDIS_URL', default=os.environ.get('REDIS_URL', 'redis://localhost:6379/1')),
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+        }
+    }
+}
+
+# Celery Configuration
+CELERY_BROKER_URL = env('CELERY_BROKER_URL', default=os.environ.get('CELERY_BROKER_URL', 'redis://localhost:6379/0'))
+CELERY_RESULT_BACKEND = env('CELERY_RESULT_BACKEND', default=os.environ.get('CELERY_RESULT_BACKEND', 'redis://localhost:6379/0'))
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = TIME_ZONE
+
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
