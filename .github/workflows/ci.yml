@@ -13,16 +13,26 @@ jobs:
       postgres:
         image: postgres:15-alpine
         env:
-          # These default values are used by the service. You can override
-          # them by setting the corresponding GitHub Secrets in your repo
-          # (Settings → Secrets) and updating the job env below.
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
           POSTGRES_DB: podigger
         ports:
           - 5432:5432
         options: >-
-          --health-cmd "pg_isready -U postgres -d podigger" --health-interval 10s --health-timeout 5s --health-retries 5
+          --health-cmd "pg_isready -U postgres -d podigger" 
+          --health-interval 10s 
+          --health-timeout 5s 
+          --health-retries 5
+
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
       - uses: actions/checkout@v4
@@ -30,7 +40,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.14'
+          python-version: '3.11'
 
       - name: Install dependencies
         run: |
@@ -39,37 +49,48 @@ jobs:
 
       - name: Run ruff (lint)
         run: |
-          # ruff is installed from requirements.txt
-          ruff check backend
+          cd backend
+          ruff check .
 
-      - name: Wait for Postgres
+      - name: Wait for services
         run: |
+          # Wait for Postgres
           for i in {1..30}; do
             pg_isready -h localhost -p 5432 -U postgres -d podigger && break || sleep 1
           done
+          # Wait for Redis
+          for i in {1..30}; do
+            redis-cli -h localhost -p 6379 ping && break || sleep 1
+          done
+
+      - name: Enable PostgreSQL extensions
+        env:
+          PGPASSWORD: postgres
+        run: |
+          psql -h localhost -U postgres -d podigger -c "CREATE EXTENSION IF NOT EXISTS pg_trgm;"
 
       - name: Run migrations
-        # Pass secrets from GitHub Secrets into the step. If you haven't set
-        # them yet, the settings.py will fall back to sensible defaults.
         env:
           DATABASE_HOST: localhost
           DATABASE_PORT: 5432
           DATABASE_NAME: podigger
-          DATABASE_USER: ${{ secrets.DB_USER }}
-          DATABASE_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+          DATABASE_USER: ${{ secrets.DB_USER || 'postgres' }}
+          DATABASE_PASSWORD: ${{ secrets.DB_PASSWORD || 'postgres' }}
+          DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY || 'test-secret-key-for-ci-only' }}
           DJANGO_SETTINGS_MODULE: config.settings
         run: |
-          python backend/manage.py migrate --noinput
+          cd backend
+          python manage.py migrate --noinput
 
       - name: Run tests
         env:
           DATABASE_HOST: localhost
           DATABASE_PORT: 5432
           DATABASE_NAME: podigger
-          DATABASE_USER: ${{ secrets.DB_USER }}
-          DATABASE_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+          DATABASE_USER: ${{ secrets.DB_USER || 'postgres' }}
+          DATABASE_PASSWORD: ${{ secrets.DB_PASSWORD || 'postgres' }}
+          DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY || 'test-secret-key-for-ci-only' }}
           DJANGO_SETTINGS_MODULE: config.settings
         run: |
-          python backend/manage.py test -v 2
+          cd backend
+          pytest -v --tb=short --strict-markers
