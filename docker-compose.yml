@@ -1,3 +1,10 @@
+# Docker Compose for Full Stack Deployment
+# This file includes all services: backend, frontend, database, redis, and celery
+# For local development with UV, use docker-compose.local.yml instead
+#
+# Usage:
+#   docker-compose up --build
+
 services:
   backend:
     build:
