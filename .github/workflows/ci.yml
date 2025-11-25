@@ -40,12 +40,26 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.14'
+          python-version: '3.12'
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r backend/requirements.txt
+
+      - name: Validate commit messages
+        if: github.event_name == 'pull_request'
+        run: |
+          pip install commitizen>=3.13.0
+          cd backend
+          # Validate commits in PR
+          cz check --rev-range origin/${{ github.base_ref }}..HEAD || {
+            echo "❌ Commit messages do not follow Conventional Commits format"
+            echo "Please use the format: type(scope): subject"
+            echo "Types: feat, fix, docs, style, refactor, test, chore"
+            echo "Example: feat(backend): add user authentication"
+            exit 1
+          }
 
       - name: Run ruff (lint)
         run: |
