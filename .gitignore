@@ -74,3 +74,7 @@ app/static/node_modules
 # Local environment files
 .env
 backend/.env
+
+# UV package manager
+uv.lock
+.uv/
