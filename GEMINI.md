@@ -276,7 +276,7 @@ docker-compose down -v
 ```toml
 [tool.ruff]
 line-length = 88
-target-version = "py311"
+target-version = "py314"
 
 [tool.ruff.lint]
 select = [
