@@ -78,3 +78,6 @@ backend/.env
 # UV package manager
 uv.lock
 .uv/
+
+# Editor directories
+.vscode/
