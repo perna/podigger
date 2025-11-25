@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Podcast, Episode, Tag, TopicSuggestion
+from .models import Podcast, Episode, Tag, TopicSuggestion, PopularTerm
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -28,3 +28,9 @@ class TopicSuggestionSerializer(serializers.ModelSerializer):
     class Meta:
         model = TopicSuggestion
         fields = ['id', 'title', 'description', 'is_recorded']
+
+
+class PopularTermSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PopularTerm
+        fields = ['term', 'times']
