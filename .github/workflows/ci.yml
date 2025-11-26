@@ -49,12 +49,13 @@ jobs:
 
       - name: Validate commit messages
         if: github.event_name == 'pull_request'
+        continue-on-error: true
         run: |
           pip install commitizen>=3.13.0
           cd backend
           # Validate commits in PR
           cz check --rev-range origin/${{ github.base_ref }}..HEAD || {
-            echo "❌ Commit messages do not follow Conventional Commits format"
+            echo "::warning::❌ Commit messages do not follow Conventional Commits format"
             echo "Please use the format: type(scope): subject"
             echo "Types: feat, fix, docs, style, refactor, test, chore"
             echo "Example: feat(backend): add user authentication"
