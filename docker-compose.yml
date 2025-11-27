@@ -44,7 +44,6 @@ services:
       POSTGRES_PASSWORD: docker
       POSTGRES_USER: docker
       POSTGRES_DB: podigger
-      PGDATA: /data
     volumes:
       - pgdata:/var/lib/postgresql/data
     ports:
