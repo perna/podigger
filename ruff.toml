@@ -5,7 +5,7 @@
 line-length = 88
 
 # Versão do Python alvo
-target-version = "py311"
+target-version = "py312"
 
 # Diretórios a serem excluídos
 exclude = [
