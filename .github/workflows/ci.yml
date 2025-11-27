@@ -78,11 +78,6 @@ jobs:
             redis-cli -h localhost -p 6379 ping && break || sleep 1
           done
 
-      - name: Enable PostgreSQL extensions
-        env:
-          PGPASSWORD: postgres
-        run: |
-          psql -h localhost -U postgres -d podigger -c "CREATE EXTENSION IF NOT EXISTS pg_trgm;"
 
       - name: Run migrations
         env:

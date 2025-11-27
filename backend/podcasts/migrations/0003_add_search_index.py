@@ -9,7 +9,7 @@ class Migration(migrations.Migration):
     atomic = False
 
     dependencies = [
-        ("podcasts", "0001_initial"),
+        ("podcasts", "0002_enable_pg_trgm"),
     ]
 
     operations = [
