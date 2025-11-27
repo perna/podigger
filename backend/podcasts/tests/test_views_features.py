@@ -7,6 +7,11 @@ from podcasts.models import Podcast
 @pytest.mark.django_db
 class TestPodcastViewSetFeatures:
     def setup_method(self):
+        """
+        Set up a Django REST Framework APIClient instance for test methods.
+        
+        Assigns an APIClient to self.client for making HTTP requests in each test.
+        """
         self.client = APIClient()
 
     def test_create_podcast(self, mocker):

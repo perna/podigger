@@ -13,6 +13,11 @@ def add_episode(feed):
 
 @celery.task(name='update_base')
 def update_base():
+    """
+    Performs a full update of episodes for all podcasts and refreshes each podcast's episode count.
+    
+    Fetches all podcast feed URLs, populates episodes for those feeds, updates and saves each podcast's total_episodes, and sends a heartbeat HTTP request when finished.
+    """
     with app.app_context():
         feeds = list(Podcast.objects.values_list('feed', flat=True))
         episodes = EpisodeUpdater(feeds)
@@ -23,6 +28,11 @@ def update_base():
 
 @celery.task(name='update_total_episodes')
 def update_total_episodes():
+    """
+    Update each Podcast's total_episodes to the current number of related episodes and persist the change.
+    
+    This function iterates all Podcast objects, sets each podcast's total_episodes to the count of its related episodes, saves the updated podcast, and issues an HTTP GET to a monitoring heartbeat URL.
+    """
     with app.app_context():
         podcasts = Podcast.objects.all()
         for podcast in podcasts:
@@ -33,6 +43,11 @@ def update_total_episodes():
 
 @celery.task(name='remove_podcasts')
 def remove_podcasts():
+    """
+    Delete podcasts that have no episodes and notify the monitoring heartbeat.
+    
+    Iterates over all Podcast records, deletes any podcast whose related episode count is zero, and then performs an HTTP GET to the monitoring heartbeat URL.
+    """
     with app.app_context():
         podcasts = Podcast.objects.all()
         for podcast in podcasts:

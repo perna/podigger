@@ -11,6 +11,15 @@ _TAG_RE = re.compile(r"(<!--.*?-->|<[^>]*>)", re.DOTALL)
 
 
 def _strip_html(text: str | None) -> str:
+    """
+    Remove HTML tags and comments from the given text and trim leading/trailing whitespace.
+    
+    Parameters:
+        text (str | None): The input text to clean; if falsy, an empty string is returned.
+    
+    Returns:
+        str: The input with HTML tags and comments removed and surrounding whitespace trimmed.
+    """
     if not text:
         return ""
     return _TAG_RE.sub("", text).strip()
@@ -19,12 +28,24 @@ def _strip_html(text: str | None) -> str:
 def parse_feed(
     url: str, default_image: str = "/static/dist/img/podcast-banner.png"
 ) -> dict[str, Any]:
-    """Parse an RSS/Atom feed and return a normalized dict.
-
-    Returns a dict with keys: title, language, image, items (list of dicts).
-    Each item has: title, link, published, description, tags, enclosure.
-
-    This is intentionally forgiving: on parse errors we return an empty dict and log the exception.
+    """
+    Parse an RSS/Atom feed URL and produce a normalized feed dictionary.
+    
+    The returned dictionary contains:
+    - title: feed title or empty string
+    - language: feed language lowercased or empty string
+    - image: feed image href or the provided default image
+    - items: list of item dictionaries, each with:
+      - title, link, published, description (HTML stripped)
+      - optional `tags`: list of tag strings when present
+      - optional `enclosure`: first enclosure href when present
+    
+    Parameters:
+        url (str): The feed URL to parse.
+        default_image (str): Fallback image URL used when the feed has no image.
+    
+    Returns:
+        dict[str, Any]: A normalized feed dictionary as described above. Returns an empty dict on parse errors (the exception is logged).
     """
     try:
         d = feedparser.parse(url)
@@ -87,7 +108,17 @@ def parse_feed(
 
 
 def is_valid_feed(url: str) -> bool:
-    """Return True if the feed parses without bozo errors."""
+    """
+    Check whether a feed URL parses without feedparser bozo errors.
+    
+    If parsing raises an exception, the feed is considered invalid.
+    
+    Parameters:
+        url (str): The feed URL to validate.
+    
+    Returns:
+        `true` if feedparser reports no bozo errors (`bozo == 0`), `false` otherwise.
+    """
     try:
         d = feedparser.parse(url)
         return getattr(d, "bozo", 1) == 0

@@ -28,6 +28,21 @@ class PodcastViewSet(viewsets.ModelViewSet):
     search_fields = ["name"]
 
     def create(self, request):
+        """
+        Create a Podcast from JSON request data and enqueue episode import.
+        
+        Parameters:
+            request (rest_framework.request.Request): Expect `request.data` to include `name` (string) and `feed` (URL or string).
+        
+        Returns:
+            rest_framework.response.Response:
+                - 201 with `{"id": <int>, "status": "created"}` when a new Podcast is created.
+                - 200 with `{"id": <int>, "message": "este podcast já foi adicionado", "status": "none"}` when a Podcast with the same `feed` already exists.
+                - 400 with `{"message": "o nome e o feed são obrigatórios"}` when `name` or `feed` is missing.
+        
+        Side effects:
+            Enqueues a background task to import episodes for the provided `feed`.
+        """
         name = request.data.get("name")
         feed = request.data.get("feed")
 
@@ -60,6 +75,12 @@ class PodcastViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=["get"])
     def recent(self, request):
+        """
+        Return the six most recently created podcasts.
+        
+        Returns:
+            Response: Serialized list of up to six Podcast objects ordered by descending `id`.
+        """
         _ = request
         recent_podcasts = Podcast.objects.order_by("-id")[:6]
         serializer = self.get_serializer(recent_podcasts, many=True)
@@ -80,6 +101,14 @@ class EpisodeViewSet(viewsets.ModelViewSet):
     filterset_fields = ["podcast"]
 
     def get_queryset(self):
+        """
+        Get the queryset of episodes, applying full-text search and relevance ordering when a search term is provided.
+        
+        If the "q" or "search" query parameter is present, returns episodes ranked by PostgreSQL full-text search (Portuguese configuration) using a weighted vector over title (weight A) and description (weight B). Results with positive text-search rank are ordered by rank then published date. If no text-search matches exist, falls back to trigram similarity on the title (threshold 0.1) and orders by trigram then published date.
+        
+        Returns:
+        	A Django QuerySet of Episode objects filtered and ordered according to the presence and relevance of the search term.
+        """
         qs = super().get_queryset()
         q = self.request.query_params.get("q") or self.request.query_params.get(
             "search"

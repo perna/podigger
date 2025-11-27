@@ -10,6 +10,15 @@ class Command(BaseCommand):
     help = "Remove records present in a fixture JSON file (careful: deletes by PK)."
 
     def add_arguments(self, parser):
+        """
+        Add command-line arguments used by the management command.
+        
+        Adds a positional optional `fixture` argument (path to the JSON fixture; defaults to
+        backend/podcasts/fixtures/initial_fake_seed.json) and a `--dry-run` flag to simulate deletions.
+        
+        Parameters:
+            parser (argparse.ArgumentParser): The parser to register the arguments on.
+        """
         parser.add_argument(
             "fixture",
             nargs="?",
@@ -23,6 +32,17 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
+        """
+        Remove database records listed in a JSON fixture file.
+        
+        Loads the fixture specified by options["fixture"], aggregates primary keys per model, determines a deletion order that minimizes foreign-key conflicts, and deletes the corresponding records inside a single database transaction. Reports the number of records found per model and supports a dry-run mode (options["dry_run"]) that reports what would be removed without performing any deletions. Unknown models present in the fixture are skipped with a warning; a missing fixture file causes the command to exit without changes.
+        
+        Parameters:
+            *args: Positional arguments passed by Django (unused).
+            options (dict): Command options; expected keys:
+                - "fixture" (str or Path): Path to the JSON fixture file containing objects with "model" and "pk".
+                - "dry_run" (bool): If true, do not perform deletions and only report actions.
+        """
         _ = args
         fixture_path = Path(options["fixture"])
         dry_run = options["dry_run"]

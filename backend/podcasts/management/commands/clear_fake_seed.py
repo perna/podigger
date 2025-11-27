@@ -13,6 +13,13 @@ class Command(BaseCommand):
     )
 
     def add_arguments(self, parser):
+        """
+        Register command-line options for the management command.
+        
+        Adds:
+        - `--minutes`: integer lookback window in minutes used to select data created since (default 60).
+        - `--dry-run`: flag that, when set, prints what would be deleted without performing deletions.
+        """
         parser.add_argument(
             "--minutes",
             type=int,
@@ -26,6 +33,20 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
+        """
+        Remove seeded podcast-related records created within the last `minutes` minutes.
+        
+        Computes a cutoff timestamp (now - minutes) and identifies Podcast, Episode, Tag, PopularTerm,
+        and TopicSuggestion records created since that cutoff. If `dry_run` is True, prints counts and
+        exits without performing deletions. Otherwise deletes episodes, then podcasts, removes tags
+        created in the window that are orphaned (no related episode), and deletes matching popular terms
+        and topic suggestions. Writes a summary of deleted counts to stdout.
+        
+        Parameters:
+        	options (dict): Command options; recognized keys:
+        		- minutes (int): lookback window in minutes used to select recently created records.
+        		- dry_run (bool): if True, only report what would be deleted and do not perform deletions.
+        """
         _ = args
         self.stdout.write("Cleaning up fake data...")
         minutes = options.get("minutes")

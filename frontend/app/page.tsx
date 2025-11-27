@@ -1,5 +1,10 @@
 import Image from "next/image";
 
+/**
+ * Render the default home page with a centered, responsive layout including logos, heading, resource links, and action buttons.
+ *
+ * @returns The homepage JSX containing a centered responsive container with the Next.js logo, an instructional heading, a descriptive paragraph with resource links, and two call-to-action buttons ("Deploy Now" and "Documentation").
+ */
 export default function Home() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
