@@ -23,7 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### Added
 - Adição de thumbnails dos últimos podcasts adicionados
 - Adição da captura de imagens e idioma do podcast
-- Remoção de podcasts com nenhum episódio cadastradado por mais de uma semana
+- Remoção de podcasts com nenhum episódio cadastrado por mais de uma semana
 
 #### Changed
 - Aumento do número de ocorrências por página
@@ -37,7 +37,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Formatação apresentação do tempo de publicação do episódio
 
 #### Removed
-- Remoção do total de episodios indexados na lista de podcasts
+- Remoção do total de episódios indexados na lista de podcasts
 
 ### [0.2.5] - 2016-09-08
 
@@ -53,10 +53,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### [0.2.4] - 2016-07-31
 
 #### Changed
-- Ajustes no tempo de cache das paginas estáticas
+- Ajustes no tempo de cache das páginas estáticas
 - Atualização dos pacotes
 
-### [0.2.3] - 2014-06-31
+### [0.2.3] - 2014-06-30
 
 #### Added
 - Painel administrativo
@@ -70,7 +70,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### Added
 - Adição do Gulp no stack para a otimização do css e js do projeto
 - Favicon
-- Implementação da funcionalidade "Trends" que traz os termos mais buscados nos ultimos 7, 15 e 30 dias
+- Implementação da funcionalidade "Trends" que traz os termos mais buscados nos últimos 7, 15 e 30 dias
 - Implementação da funcionalidade de criação e listagem de sugestões de pautas
 - Adição do Flask-Cache para realizar o cache das páginas estáticas
 
