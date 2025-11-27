@@ -15,6 +15,12 @@ class PodcastLanguage(BaseModel):
     name = models.CharField(max_length=60, default="português", blank=True, null=True)
 
     def __str__(self):
+        """
+        Format the language's display label as name followed by code in parentheses.
+        
+        Returns:
+            str: The language formatted as "<name> (<code>)".
+        """
         return f"{self.name} ({self.code})"
 
 
@@ -33,6 +39,12 @@ class Podcast(BaseModel):
     total_episodes = models.IntegerField(default=0)
 
     def __str__(self):
+        """
+        Provide the model instance's name as its string representation.
+        
+        Returns:
+            str: The value of the instance's `name` field.
+        """
         return self.name
 
 
@@ -40,6 +52,12 @@ class Tag(BaseModel):
     name = models.CharField(max_length=255, unique=True)
 
     def __str__(self):
+        """
+        Provide the model instance's name as its string representation.
+        
+        Returns:
+            str: The value of the instance's `name` field.
+        """
         return self.name
 
 
@@ -56,6 +74,12 @@ class Episode(models.Model):
     tags = models.ManyToManyField(Tag, related_name="episodes", blank=True)
 
     def __str__(self):
+        """
+        Represent the episode by its title.
+        
+        Returns:
+            str: The episode title used as the object's string representation.
+        """
         return self.title
 
 
@@ -65,6 +89,12 @@ class PopularTerm(BaseModel):
     date_search = models.DateField(default=timezone.now)
 
     def __str__(self):
+        """
+        Return a string representation of the popular term showing the term and its occurrence count.
+        
+        Returns:
+            str: String in the format "<term> (<times>)".
+        """
         return f"{self.term} ({self.times})"
 
 
@@ -74,4 +104,10 @@ class TopicSuggestion(BaseModel):
     is_recorded = models.BooleanField(default=False)
 
     def __str__(self):
+        """
+        Represent the episode by its title.
+        
+        Returns:
+            str: The episode title used as the object's string representation.
+        """
         return self.title

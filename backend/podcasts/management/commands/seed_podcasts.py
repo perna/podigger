@@ -16,6 +16,11 @@ class Command(BaseCommand):
     help = "Seed the database with example podcasts, episodes, tags and suggestions. Safe to run multiple times."
 
     def handle(self, *args, **options):
+        """
+        Seed the database with example podcasts, episodes, tags, popular terms, and topic suggestions.
+        
+        Creates or verifies records for Portuguese and English languages; tags "news", "tech", and "ai"; two podcasts with metadata; sample episodes linked to those podcasts with appropriate tag associations; popular terms ("python", "django"); and a topic suggestion. Operations are performed atomically and are safe to run multiple times (uses `get_or_create`). On success a confirmation message is written to stdout.
+        """
         _ = args
         _ = options
         now = timezone.now()

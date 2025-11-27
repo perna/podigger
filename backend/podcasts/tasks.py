@@ -15,7 +15,10 @@ logger = logging.getLogger(__name__)
 @shared_task
 def add_episode(feed_url):
     """
-    Task to populate episodes for a single feed.
+    Populate episodes for the podcast feed at the given URL.
+    
+    Parameters:
+        feed_url (str): URL of the podcast RSS/Atom feed to fetch and process.
     """
     logger.info("Starting add_episode task for feed: %s", feed_url)
     updater = EpisodeUpdater([feed_url])
@@ -26,7 +29,9 @@ def add_episode(feed_url):
 @shared_task(name="update_base")
 def update_base():
     """
-    Task to update all podcasts.
+    Update episodes for all podcasts by running EpisodeUpdater over every podcast feed.
+    
+    This enqueues the job that recalculates each podcast's total episode count and performs a legacy healthcheck HTTP GET (network errors are suppressed).
     """
     logger.info("Starting update_base task")
     feeds = list(Podcast.objects.values_list("feed", flat=True))
@@ -64,7 +69,9 @@ def update_total_episodes():
 @shared_task(name="remove_podcasts")
 def remove_podcasts():
     """
-    Task to remove podcasts with 0 episodes.
+    Delete Podcast records that have no associated episodes.
+    
+    This task removes podcasts whose related episode count is zero. It also performs a legacy healthcheck ping on completion.
     """
     logger.info("Starting remove_podcasts task")
     # Using filter directly is more efficient than iterating
