@@ -34,7 +34,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
       
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v6
         with:
           python-version: '3.12'
       
@@ -55,14 +55,14 @@ jobs:
           
           # Get current version
           CURRENT_VERSION=$(cz version --project)
-          echo "current_version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+          echo "current_version=$CURRENT_VERSION" >> "$GITHUB_OUTPUT"
           
           # Check if there are commits that require a version bump
           if cz bump --dry-run --yes 2>&1 | grep -q "No commits found"; then
-            echo "should_bump=false" >> $GITHUB_OUTPUT
+            echo "should_bump=false" >> "$GITHUB_OUTPUT"
             echo "No commits requiring version bump found"
           else
-            echo "should_bump=true" >> $GITHUB_OUTPUT
+            echo "should_bump=true" >> "$GITHUB_OUTPUT"
             echo "Commits requiring version bump found"
           fi
       
@@ -82,7 +82,7 @@ jobs:
           
           # Get new version
           NEW_VERSION=$(cz version --project)
-          echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
+          echo "new_version=$NEW_VERSION" >> "$GITHUB_OUTPUT"
           echo "Bumped version to $NEW_VERSION"
       
       - name: Push changes
@@ -108,7 +108,7 @@ jobs:
           
           # Save to file for multiline output
           echo "$CHANGELOG_CONTENT" > /tmp/changelog.txt
-          echo "changelog_file=/tmp/changelog.txt" >> $GITHUB_OUTPUT
+          echo "changelog_file=/tmp/changelog.txt" >> "$GITHUB_OUTPUT"
       
       - name: Create GitHub Release
         if: steps.check_bump.outputs.should_bump == 'true'
@@ -125,18 +125,18 @@ jobs:
       - name: Summary
         if: steps.check_bump.outputs.should_bump == 'true'
         run: |
-          echo "### 🚀 Release Summary" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Previous Version:** ${{ steps.check_bump.outputs.current_version }}" >> $GITHUB_STEP_SUMMARY
-          echo "**New Version:** ${{ steps.bump.outputs.new_version }}" >> $GITHUB_STEP_SUMMARY
-          echo "**Tag:** v${{ steps.bump.outputs.new_version }}" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "✅ Release created successfully!" >> $GITHUB_STEP_SUMMARY
+          echo "### 🚀 Release Summary" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "**Previous Version:** ${{ steps.check_bump.outputs.current_version }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "**New Version:** ${{ steps.bump.outputs.new_version }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "**Tag:** v${{ steps.bump.outputs.new_version }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "✅ Release created successfully!" >> "$GITHUB_STEP_SUMMARY"
       
       - name: No release needed
         if: steps.check_bump.outputs.should_bump == 'false'
         run: |
-          echo "### ℹ️ No Release Needed" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "No commits requiring a version bump were found." >> $GITHUB_STEP_SUMMARY
-          echo "Current version: ${{ steps.check_bump.outputs.current_version }}" >> $GITHUB_STEP_SUMMARY
+          echo "### ℹ️ No Release Needed" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "No commits requiring a version bump were found." >> "$GITHUB_STEP_SUMMARY"
+          echo "Current version: ${{ steps.check_bump.outputs.current_version }}" >> "$GITHUB_STEP_SUMMARY"
