@@ -80,6 +80,8 @@ unfixable = []
 "test_*.py" = ["ARG001", "ARG002"]
 "*/tests/*" = ["ARG001", "ARG002"]
 "conftest.py" = ["ARG001"]
+"manage.py" = ["PLC0415", "EM101"]
+"backend/podcasts/management/commands/seed_fake_podcasts.py" = ["PLR0915"]
 
 [lint.isort]
 # Configurações do isort
