@@ -1,11 +1,12 @@
 from rest_framework import serializers
-from .models import Podcast, Episode, Tag, TopicSuggestion, PopularTerm
+
+from .models import Episode, Podcast, PopularTerm, Tag, TopicSuggestion
 
 
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
-        fields = ['id', 'name']
+        fields = ["id", "name"]
 
 
 class EpisodeSerializer(serializers.ModelSerializer):
@@ -13,7 +14,17 @@ class EpisodeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Episode
-        fields = ['id', 'title', 'link', 'description', 'published', 'enclosure', 'to_json', 'podcast', 'tags']
+        fields = [
+            "id",
+            "title",
+            "link",
+            "description",
+            "published",
+            "enclosure",
+            "to_json",
+            "podcast",
+            "tags",
+        ]
 
 
 class PodcastSerializer(serializers.ModelSerializer):
@@ -21,16 +32,24 @@ class PodcastSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Podcast
-        fields = ['id', 'name', 'feed', 'image', 'language', 'total_episodes', 'episodes']
+        fields = [
+            "id",
+            "name",
+            "feed",
+            "image",
+            "language",
+            "total_episodes",
+            "episodes",
+        ]
 
 
 class TopicSuggestionSerializer(serializers.ModelSerializer):
     class Meta:
         model = TopicSuggestion
-        fields = ['id', 'title', 'description', 'is_recorded']
+        fields = ["id", "title", "description", "is_recorded"]
 
 
 class PopularTermSerializer(serializers.ModelSerializer):
     class Meta:
         model = PopularTerm
-        fields = ['term', 'times']
+        fields = ["term", "times"]

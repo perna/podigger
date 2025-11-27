@@ -1,6 +1,6 @@
 import logging
 import re
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import feedparser
 
@@ -10,13 +10,15 @@ logger = logging.getLogger(__name__)
 _TAG_RE = re.compile(r"(<!--.*?-->|<[^>]*>)", re.DOTALL)
 
 
-def _strip_html(text: Optional[str]) -> str:
+def _strip_html(text: str | None) -> str:
     if not text:
         return ""
     return _TAG_RE.sub("", text).strip()
 
 
-def parse_feed(url: str, default_image: str = "/static/dist/img/podcast-banner.png") -> Dict[str, Any]:
+def parse_feed(
+    url: str, default_image: str = "/static/dist/img/podcast-banner.png"
+) -> dict[str, Any]:
     """Parse an RSS/Atom feed and return a normalized dict.
 
     Returns a dict with keys: title, language, image, items (list of dicts).
@@ -27,24 +29,30 @@ def parse_feed(url: str, default_image: str = "/static/dist/img/podcast-banner.p
     try:
         d = feedparser.parse(url)
 
-        result: Dict[str, Any] = {
+        result: dict[str, Any] = {
             "title": d.feed.get("title", "") if hasattr(d, "feed") else "",
-            "language": d.feed.get("language", "").lower() if hasattr(d, "feed") and d.feed.get("language") else "",
-            "image": d.feed.get("image", {}).get("href") if hasattr(d, "feed") and d.feed.get("image") else default_image,
+            "language": d.feed.get("language", "").lower()
+            if hasattr(d, "feed") and d.feed.get("language")
+            else "",
+            "image": d.feed.get("image", {}).get("href")
+            if hasattr(d, "feed") and d.feed.get("image")
+            else default_image,
             "items": [],
         }
 
         entries = getattr(d, "entries", []) or []
         for entry in entries:
-            item: Dict[str, Any] = {}
+            item: dict[str, Any] = {}
 
             item["title"] = entry.get("title", "")
             item["link"] = entry.get("link", "")
             item["published"] = entry.get("published", "")
-            item["description"] = _strip_html(entry.get("description", "") or entry.get("summary", ""))
+            item["description"] = _strip_html(
+                entry.get("description", "") or entry.get("summary", "")
+            )
 
             # tags
-            tags: List[str] = []
+            tags: list[str] = []
             for t in entry.get("tags", []) or []:
                 # feedparser may expose tags as dicts with 'term' key
                 term = None
