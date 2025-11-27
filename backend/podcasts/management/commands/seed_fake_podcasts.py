@@ -113,9 +113,8 @@ class Command(BaseCommand):
                     )
                 )
 
-            Podcast.objects.bulk_create(podcasts)
-            # refresh list with ids
-            podcasts = list(Podcast.objects.order_by("-id")[:podcasts_count])
+            # bulk_create returns the created objects with IDs populated (Django 4.0+)
+            podcasts = Podcast.objects.bulk_create(podcasts)
 
             # Create episodes in chunks
             episodes = []
