@@ -23,6 +23,20 @@ class Command(BaseCommand):
     )
 
     def add_arguments(self, parser):
+        """
+        Register command-line options for the seed command.
+        
+        Parameters:
+            parser (argparse.ArgumentParser): Argument parser provided by Django; options added modify seeding behavior.
+        
+        Options:
+            --podcasts (int, default=100): Number of podcasts to create.
+            --episodes (int, default=100): Number of episodes to create per podcast.
+            --avg-tags (int, default=3): Average number of tags to attach to each episode.
+            --tag-pool (int, default=500): Number of unique tag names to pre-create for sampling.
+            --locale (str, default="pt_BR"): Faker locale to use for generated data (e.g., "pt_BR", "en_US").
+            --force (flag): Bypass the safety check that prevents large dataset creation.
+        """
         parser.add_argument(
             "--podcasts", type=int, default=100, help="Number of podcasts to create"
         )
@@ -46,6 +60,25 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
+        """
+        Seed the database with fake podcasts, episodes, tags, and related metadata based on command-line options.
+        
+        Performs all writes inside a single database transaction. If the estimated work is large (more than 2000 total episodes) and `force` is not set, the command prints a warning and exits without making changes.
+        
+        Parameters:
+            options (dict): Command options and their meanings:
+                - "podcasts": number of podcasts to create.
+                - "episodes": number of episodes to create per podcast.
+                - "avg_tags": target average number of tags per episode (used as the mean for Gaussian sampling; at least 1 tag is assigned).
+                - "tag_pool": number of unique tag names to pre-create.
+                - "locale": Faker locale to use for generated data.
+                - "force": boolean flag to bypass the safety check for large seeds.
+        
+        Side effects:
+            - Ensures PodcastLanguage entries for Portuguese ("pt") and English ("en") exist.
+            - Creates Tag, Podcast, Episode, through-model tag links, PopularTerm, and TopicSuggestion records in bulk.
+            - Uses bulk_create and chunked inserts for performance; ignores conflicts where appropriate.
+        """
         _ = args
         podcasts_count = options["podcasts"]
         episodes_per = options["episodes"]

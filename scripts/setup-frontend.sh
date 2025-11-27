@@ -14,19 +14,22 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 FRONTEND_DIR="${PROJECT_ROOT}/frontend"
 
+# echo_info prints a message to stdout prefixed with a green "[INFO]" tag.
 echo_info() {
     echo -e "${GREEN}[INFO]${NC} $1"
 }
 
+# echo_warn prints a warning message prefixed with a yellow [WARN] tag.
 echo_warn() {
     echo -e "${YELLOW}[WARN]${NC} $1"
 }
 
+# echo_error prints a message prefixed with "[ERROR]" in red to stderr-like output (uses colored formatting).
 echo_error() {
     echo -e "${RED}[ERROR]${NC} $1"
 }
 
-# Check if running on Linux or macOS
+# check_os verifies the script is running on Linux or macOS; exits with status 1 on unsupported systems.
 check_os() {
     if [[ "$OSTYPE" == "linux-gnu"* ]] || [[ "$OSTYPE" == "darwin"* ]]; then
         echo_info "Detected OS: $OSTYPE"
@@ -36,7 +39,7 @@ check_os() {
     fi
 }
 
-# Install NVM
+# install_nvm installs NVM into $NVM_DIR if not already present, loads `nvm.sh` and `bash_completion` into the current shell, and prints status messages.
 install_nvm() {
     if [ -d "$NVM_DIR" ]; then
         echo_warn "NVM already installed at $NVM_DIR"
@@ -56,7 +59,7 @@ install_nvm() {
     echo_info "NVM installed successfully"
 }
 
-# Load NVM if not already loaded
+# load_nvm loads NVM into the current shell by sourcing nvm.sh and bash_completion if present and exits with a non-zero status if `nvm` is not available.
 load_nvm() {
     export NVM_DIR="$HOME/.nvm"
     [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
@@ -68,7 +71,8 @@ load_nvm() {
     fi
 }
 
-# Install Node.js 24 LTS
+# install_node installs the configured Node.js LTS version using nvm and sets it as the default.
+# It prints the installed Node and npm versions.
 install_node() {
     echo_info "Installing Node.js ${NODE_VERSION} LTS..."
     
@@ -80,7 +84,7 @@ install_node() {
     echo_info "npm $(npm --version) installed successfully"
 }
 
-# Install pnpm
+# install_pnpm installs pnpm globally using npm unless pnpm is already installed, in which case it prints a warning and returns successfully.
 install_pnpm() {
     echo_info "Installing pnpm..."
     
@@ -94,7 +98,7 @@ install_pnpm() {
     echo_info "pnpm $(pnpm --version) installed successfully"
 }
 
-# Create .nvmrc file
+# create_nvmrc creates a .nvmrc file in FRONTEND_DIR containing NODE_VERSION if one does not already exist and prints status messages.
 create_nvmrc() {
     local nvmrc_file="${FRONTEND_DIR}/.nvmrc"
     
@@ -108,7 +112,8 @@ create_nvmrc() {
     echo_info ".nvmrc created with Node.js version ${NODE_VERSION}"
 }
 
-# Setup automatic NVM switching
+# setup_auto_nvm sets up automatic NVM version switching by appending an `autoload-nvmrc` function and appropriate hooks to the user's shell config (bash or zsh) so the Node version changes when entering directories with a .nvmrc.
+# If no suitable shell config is found or the configuration already exists, it makes no changes and returns success.
 setup_auto_nvm() {
     echo_info "Setting up automatic NVM version switching..."
     
@@ -174,7 +179,7 @@ EOF
     echo_warn "Please restart your shell or run: source $shell_config"
 }
 
-# Install frontend dependencies
+# install_dependencies installs frontend dependencies in $FRONTEND_DIR by selecting the project's Node version with nvm and running `pnpm install`.
 install_dependencies() {
     echo_info "Installing frontend dependencies..."
     
@@ -188,7 +193,8 @@ install_dependencies() {
     echo_info "Dependencies installed successfully"
 }
 
-# Main setup function
+# main orchestrates the frontend environment setup by running OS checks, installing and loading NVM, installing Node and pnpm, creating a .nvmrc, enabling automatic NVM switching, and installing frontend dependencies.
+# It prints progress and next-step instructions for the user.
 main() {
     echo_info "Starting frontend environment setup..."
     echo_info "Project root: $PROJECT_ROOT"
