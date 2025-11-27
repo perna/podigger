@@ -4,7 +4,7 @@ from django.contrib.postgres.operations import TrigramExtension
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("podcasts", "0002_add_search_index"),
+        ("podcasts", "0001_initial"),
     ]
 
     operations = [
