@@ -1,14 +1,14 @@
 from django.core.management.base import BaseCommand
-from django.utils import timezone
 from django.db import transaction
+from django.utils import timezone
 
 from podcasts.models import (
+    Episode,
+    Podcast,
     PodcastLanguage,
     PopularTerm,
     Tag,
     TopicSuggestion,
-    Podcast,
-    Episode,
 )
 
 
@@ -16,12 +16,18 @@ class Command(BaseCommand):
     help = "Seed the database with example podcasts, episodes, tags and suggestions. Safe to run multiple times."
 
     def handle(self, *args, **options):
+        _ = args
+        _ = options
         now = timezone.now()
 
         with transaction.atomic():
             # Languages
-            pt, _ = PodcastLanguage.objects.get_or_create(code="pt", defaults={"name": "português"})
-            en, _ = PodcastLanguage.objects.get_or_create(code="en", defaults={"name": "English"})
+            pt, _ = PodcastLanguage.objects.get_or_create(
+                code="pt", defaults={"name": "português"}
+            )
+            en, _ = PodcastLanguage.objects.get_or_create(
+                code="en", defaults={"name": "English"}
+            )
 
             # Tags
             news_tag, _ = Tag.objects.get_or_create(name="news")
@@ -93,7 +99,10 @@ class Command(BaseCommand):
             # Topic suggestions
             TopicSuggestion.objects.get_or_create(
                 title="Como testar APIs",
-                defaults={"description": "Sugestões de tópicos para testar APIs", "is_recorded": False},
+                defaults={
+                    "description": "Sugestões de tópicos para testar APIs",
+                    "is_recorded": False,
+                },
             )
 
         self.stdout.write(self.style.SUCCESS("Seed data created/verified."))
