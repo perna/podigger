@@ -48,7 +48,30 @@ env:
 - Rotate and manage secrets centrally (vault, cloud secrets manager) for production.
 
 6) Using DATABASE_URL and GitHub Secrets
+-----------------------------------------
 It's often convenient to provide a single `DATABASE_URL` instead of separate DB host/user/password env vars. The expected format is:
+
+```
+postgres://<USER>:<PASSWORD>@<HOST>:<PORT>/<DBNAME>
+```
+
+Example:
+
+```
+postgres://postgres:mysecretpassword@localhost:5432/podigger
+```
+
+If your password contains special characters (for example `@` or `:`), URL-encode them (e.g. `@` -> `%40`).
+
+In GitHub Actions you can store this as a secret (for example `DATABASE_URL`) and reference it in the workflow:
+
+```yaml
+env:
+  DATABASE_URL: ${{ secrets.DATABASE_URL }}
+  DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+```
+
+Our `config/settings.py` already supports reading `DATABASE_URL` via `django-environ` and will fall back to sensible defaults if it's not provided.
 
 7) Seeding the database (dev)
 --------------------------------
@@ -82,27 +105,4 @@ docker compose -f docker-compose.django.yml exec web python manage.py remove_fix
 ```
 
 Remove without `--dry-run` to perform the deletion.
-
-
-```
-postgres://<USER>:<PASSWORD>@<HOST>:<PORT>/<DBNAME>
-```
-
-Example:
-
-```
-postgres://postgres:mysecretpassword@localhost:5432/podigger
-```
-
-If your password contains special characters (for example `@` or `:`), URL-encode them (e.g. `@` -> `%40`).
-
-In GitHub Actions you can store this as a secret (for example `DATABASE_URL`) and reference it in the workflow:
-
-```yaml
-env:
-  DATABASE_URL: ${{ secrets.DATABASE_URL }}
-  DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
-```
-
-Our `config/settings.py` already supports reading `DATABASE_URL` via `django-environ` and will fall back to sensible defaults if it's not provided.
 
