@@ -10,7 +10,7 @@ How to run (development):
 docker compose -f ../docker-compose.django.yml up --build
 ```
 
-2. The Django dev server will be available at http://localhost:8000 (after `manage.py` and migrations run).
+2. The Django dev server will be available at [http://localhost:8000](http://localhost:8000) (after `manage.py` and migrations run).
 
 Dependency installation
 
