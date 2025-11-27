@@ -1,0 +1,122 @@
+# Configuração do Ruff para projetos Python/Django
+# https://docs.astral.sh/ruff/
+
+# Comprimento máximo de linha
+line-length = 88
+
+# Versão do Python alvo
+target-version = "py311"
+
+# Diretórios a serem excluídos
+exclude = [
+    ".git",
+    ".venv",
+    "venv",
+    "__pycache__",
+    "*.pyc",
+    ".pytest_cache",
+    ".mypy_cache",
+    ".ruff_cache",
+    "migrations",
+    "staticfiles",
+    "media",
+    "node_modules",
+    "build",
+    "dist",
+    "*.egg-info",
+]
+
+[lint]
+# Regras ativadas
+select = [
+    "E",     # pycodestyle errors
+    "W",     # pycodestyle warnings
+    "F",     # pyflakes
+    "I",     # isort
+    "N",     # pep8-naming
+    "UP",    # pyupgrade
+    "B",     # flake8-bugbear
+    "C4",    # flake8-comprehensions
+    "DJ",    # flake8-django
+    "DTZ",   # flake8-datetimez
+    "T10",   # flake8-debugger
+    "EM",    # flake8-errmsg
+    "G",     # flake8-logging-format
+    "PIE",   # flake8-pie
+    "T20",   # flake8-print
+    "PYI",   # flake8-pyi
+    "PT",    # flake8-pytest-style
+    "Q",     # flake8-quotes
+    "RSE",   # flake8-raise
+    "RET",   # flake8-return
+    "SIM",   # flake8-simplify
+    "TID",   # flake8-tidy-imports
+    "TCH",   # flake8-type-checking
+    "ARG",   # flake8-unused-arguments
+    "PTH",   # flake8-use-pathlib
+    "ERA",   # eradicate (código comentado)
+    "PL",    # pylint
+    "RUF",   # Ruff-specific rules
+]
+
+# Regras ignoradas
+ignore = [
+    "E501",    # Line too long (já controlado por line-length)
+    "B008",    # Do not perform function calls in argument defaults (comum em Django)
+    "RUF012",  # Mutable class attributes (comum em Django models)
+    "DJ001",   # Avoid using null=True on string fields (flexibilidade)
+    "PLR0913", # Too many arguments (flexível para views complexas)
+    "PLR2004", # Magic value comparison (comum em código de negócio)
+]
+
+# Correções automáticas
+fixable = ["ALL"]
+unfixable = []
+
+# Permitir imports não utilizados em __init__.py
+[lint.per-file-ignores]
+"__init__.py" = ["F401", "F403"]
+"settings.py" = ["F405"]
+"test_*.py" = ["ARG001", "ARG002"]
+"*/tests/*" = ["ARG001", "ARG002"]
+"conftest.py" = ["ARG001"]
+
+[lint.isort]
+# Configurações do isort
+known-first-party = ["app"]  # Substitua por seu app principal
+section-order = [
+    "future",
+    "standard-library",
+    "django",
+    "third-party",
+    "first-party",
+    "local-folder",
+]
+
+[lint.isort.sections]
+"django" = ["django"]
+
+[lint.flake8-quotes]
+# Preferência por aspas duplas
+inline-quotes = "double"
+multiline-quotes = "double"
+
+[lint.mccabe]
+# Complexidade ciclomática máxima
+max-complexity = 10
+
+[lint.pylint]
+# Máximo de argumentos em funções
+max-args = 8
+# Máximo de branches
+max-branches = 15
+# Máximo de statements
+max-statements = 50
+
+[format]
+# Formatação automática
+quote-style = "double"
+indent-style = "space"
+line-ending = "auto"
+docstring-code-format = true
+docstring-code-line-length = 72
