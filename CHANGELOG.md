@@ -11,6 +11,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Semantic versioning automation with Commitizen
 - GitHub Actions workflow for automated releases
 - Commit message validation in CI
+- Test coverage for episode counter update logic
+
+### Changed
+- **BREAKING**: Complete migration from Flask to Django
+  - Removed entire Flask application (`app/` directory)
+  - Removed Flask-specific files (manage.py, run.py, requirements.txt, config/)
+  - Removed Alembic migrations (replaced by Django migrations)
+  - All functionality now provided by Django backend
+
+### Fixed
+- Episode counter (`total_episodes`) now updates correctly after feed parsing
+  - Fixed indentation bug that caused counter to update inside episode loop
+  - Counter now updates once per feed within atomic transaction
+  - Improved timezone-aware datetime handling
 
 ---
 
