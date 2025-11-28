@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 def add_episode(feed_url):
     """
     Populate episodes for the podcast feed at the given URL.
-    
+
     Parameters:
         feed_url (str): URL of the podcast RSS/Atom feed to fetch and process.
     """
@@ -30,7 +30,7 @@ def add_episode(feed_url):
 def update_base():
     """
     Update episodes for all podcasts by running EpisodeUpdater over every podcast feed.
-    
+
     This enqueues the job that recalculates each podcast's total episode count and performs a legacy healthcheck HTTP GET (network errors are suppressed).
     """
     logger.info("Starting update_base task")
@@ -70,7 +70,7 @@ def update_total_episodes():
 def remove_podcasts():
     """
     Delete Podcast records that have no associated episodes.
-    
+
     This task removes podcasts whose related episode count is zero. It also performs a legacy healthcheck ping on completion.
     """
     logger.info("Starting remove_podcasts task")

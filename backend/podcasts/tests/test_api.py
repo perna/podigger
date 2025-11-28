@@ -24,13 +24,13 @@ class TestEpisodeAPI:
     def setup_method(self):
         """
         Prepare test state by creating an API client, a Podcast, and two Episodes associated with that podcast.
-        
+
         Creates:
         - self.client: an APIClient instance for making requests.
         - self.podcast: a Podcast with name "Pod 1" and feed "http://feed1.com".
         - self.episode1: an Episode titled "Ep 1" linked to self.podcast.
         - self.episode2: an Episode titled "Ep 2" linked to self.podcast.
-        
+
         These objects are persisted to the test database for use by the test methods.
         """
         self.client = APIClient()
@@ -51,7 +51,7 @@ class TestEpisodeAPI:
     def test_list_episodes(self):
         """
         Verify that GET /api/episodes/ responds with HTTP 200 and returns exactly two episodes.
-        
+
         Performs a GET request to the episodes list endpoint and asserts the response status code is 200 and the response contains two items.
         """
         response = self.client.get("/api/episodes/")
@@ -78,7 +78,7 @@ class TestEpisodeAPI:
 
         """
         Exercise the episodes search API endpoint with query "python" and assert it responds with HTTP 200.
-        
+
         This test verifies the endpoint structure for searching episodes (GET /api/episodes/?q=python). It primarily checks the response status code because full-text search results can vary by database backend or test environment (for example, FTS may require Postgres or specific indexing).
         """
         response = self.client.get("/api/episodes/?q=python")
