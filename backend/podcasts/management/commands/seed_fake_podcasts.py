@@ -25,10 +25,10 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         """
         Register command-line options for the seed command.
-        
+
         Parameters:
             parser (argparse.ArgumentParser): Argument parser provided by Django; options added modify seeding behavior.
-        
+
         Options:
             --podcasts (int, default=100): Number of podcasts to create.
             --episodes (int, default=100): Number of episodes to create per podcast.
@@ -62,9 +62,9 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         """
         Seed the database with fake podcasts, episodes, tags, and related metadata based on command-line options.
-        
+
         Performs all writes inside a single database transaction. If the estimated work is large (more than 2000 total episodes) and `force` is not set, the command prints a warning and exits without making changes.
-        
+
         Parameters:
             options (dict): Command options and their meanings:
                 - "podcasts": number of podcasts to create.
@@ -73,7 +73,7 @@ class Command(BaseCommand):
                 - "tag_pool": number of unique tag names to pre-create.
                 - "locale": Faker locale to use for generated data.
                 - "force": boolean flag to bypass the safety check for large seeds.
-        
+
         Side effects:
             - Ensures PodcastLanguage entries for Portuguese ("pt") and English ("en") exist.
             - Creates Tag, Podcast, Episode, through-model tag links, PopularTerm, and TopicSuggestion records in bulk.

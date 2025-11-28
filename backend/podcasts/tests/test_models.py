@@ -42,7 +42,7 @@ class PodcastEpisodeRelationTests(TestCase):
     def setUp(self):
         """
         Create a PodcastLanguage and a Podcast instance for tests.
-        
+
         Sets `self.lang` to a new PodcastLanguage and `self.podcast` to a Podcast named "Test Podcast" with feed "https://example.com/feed" linked to that language.
         """
         self.lang = PodcastLanguage.objects.create()

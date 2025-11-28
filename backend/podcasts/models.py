@@ -17,7 +17,7 @@ class PodcastLanguage(BaseModel):
     def __str__(self):
         """
         Format the language's display label as name followed by code in parentheses.
-        
+
         Returns:
             str: The language formatted as "<name> (<code>)".
         """
@@ -41,7 +41,7 @@ class Podcast(BaseModel):
     def __str__(self):
         """
         Provide the model instance's name as its string representation.
-        
+
         Returns:
             str: The value of the instance's `name` field.
         """
@@ -54,7 +54,7 @@ class Tag(BaseModel):
     def __str__(self):
         """
         Provide the model instance's name as its string representation.
-        
+
         Returns:
             str: The value of the instance's `name` field.
         """
@@ -76,7 +76,7 @@ class Episode(models.Model):
     def __str__(self):
         """
         Represent the episode by its title.
-        
+
         Returns:
             str: The episode title used as the object's string representation.
         """
@@ -91,7 +91,7 @@ class PopularTerm(BaseModel):
     def __str__(self):
         """
         Return a string representation of the popular term showing the term and its occurrence count.
-        
+
         Returns:
             str: String in the format "<term> (<times>)".
         """
@@ -106,7 +106,7 @@ class TopicSuggestion(BaseModel):
     def __str__(self):
         """
         Represent the episode by its title.
-        
+
         Returns:
             str: The episode title used as the object's string representation.
         """

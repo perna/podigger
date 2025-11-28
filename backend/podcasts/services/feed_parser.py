@@ -13,10 +13,10 @@ _TAG_RE = re.compile(r"(<!--.*?-->|<[^>]*>)", re.DOTALL)
 def _strip_html(text: str | None) -> str:
     """
     Remove HTML tags and comments from the given text and trim leading/trailing whitespace.
-    
+
     Parameters:
         text (str | None): The input text to clean; if falsy, an empty string is returned.
-    
+
     Returns:
         str: The input with HTML tags and comments removed and surrounding whitespace trimmed.
     """
@@ -30,7 +30,7 @@ def parse_feed(
 ) -> dict[str, Any]:
     """
     Parse an RSS/Atom feed URL and produce a normalized feed dictionary.
-    
+
     The returned dictionary contains:
     - title: feed title or empty string
     - language: feed language lowercased or empty string
@@ -39,11 +39,11 @@ def parse_feed(
       - title, link, published, description (HTML stripped)
       - optional `tags`: list of tag strings when present
       - optional `enclosure`: first enclosure href when present
-    
+
     Parameters:
         url (str): The feed URL to parse.
         default_image (str): Fallback image URL used when the feed has no image.
-    
+
     Returns:
         dict[str, Any]: A normalized feed dictionary as described above. Returns an empty dict on parse errors (the exception is logged).
     """
@@ -110,12 +110,12 @@ def parse_feed(
 def is_valid_feed(url: str) -> bool:
     """
     Check whether a feed URL parses without feedparser bozo errors.
-    
+
     If parsing raises an exception, the feed is considered invalid.
-    
+
     Parameters:
         url (str): The feed URL to validate.
-    
+
     Returns:
         `true` if feedparser reports no bozo errors (`bozo == 0`), `false` otherwise.
     """
