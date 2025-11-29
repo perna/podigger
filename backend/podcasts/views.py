@@ -59,8 +59,13 @@ class PodcastViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        if Podcast.objects.filter(feed=feed).exists():
-            podcast = Podcast.objects.get(feed=feed)
+        # Atomic lookup to avoid race condition between exists/get/create
+        podcast, created = Podcast.objects.get_or_create(
+            feed=feed, defaults={"name": name}
+        )
+
+        if not created:
+            # Podcast already exists
             return Response(
                 {
                     "id": podcast.id,
@@ -70,10 +75,7 @@ class PodcastViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_200_OK,
             )
 
-        # Create initial object
-        podcast = Podcast.objects.create(name=name, feed=feed)
-
-        # Trigger async task
+        # New podcast created - trigger async task
         add_episode.delay(feed)
 
         return Response(
