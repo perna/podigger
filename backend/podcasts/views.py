@@ -124,10 +124,11 @@ class EpisodeViewSet(viewsets.ModelViewSet):
             return qs
 
         # Save search term
-        term, _ = PopularTerm.objects.get_or_create(term=q)
-        if not _:
-            term.times += 1
-            term.save()
+        term, created = PopularTerm.objects.get_or_create(
+            term=q, defaults={"times": 1}
+        )
+        if not created:
+            PopularTerm.objects.filter(pk=term.pk).update(times=F("times") + 1)
 
         # Full-text search across title and description using Portuguese config.
         # Use the same text search configuration as the index so Postgres can use the GIN index.

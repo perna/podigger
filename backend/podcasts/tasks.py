@@ -41,10 +41,6 @@ def update_base():
     # Trigger update_total_episodes after population
     update_total_episodes.delay()
 
-    # Legacy healthcheck ping
-    # Legacy healthcheck ping
-    with contextlib.suppress(requests.RequestException):
-        requests.get("https://hchk.io/a6f9d3b8-fa0d-4af5-8563-a793a67a9db1", timeout=10)
     logger.info("Finished update_base task")
 
 
@@ -59,10 +55,6 @@ def update_total_episodes():
         podcast.total_episodes = podcast.episodes.count()
         podcast.save(update_fields=["total_episodes"])
 
-    # Legacy healthcheck ping
-    # Legacy healthcheck ping
-    with contextlib.suppress(requests.RequestException):
-        requests.get("https://hchk.io/5db2d9f6-c920-4b87-a671-cc4681bffc02", timeout=10)
     logger.info("Finished update_total_episodes task")
 
 
@@ -85,8 +77,4 @@ def remove_podcasts():
         if podcast.episodes.count() == 0:
             podcast.delete()
 
-    # Legacy healthcheck ping
-    # Legacy healthcheck ping
-    with contextlib.suppress(requests.RequestException):
-        requests.get("https://hchk.io/70e00b3a-fe32-491b-8c0f-eb93b6a3fdc5", timeout=10)
     logger.info("Finished remove_podcasts task")
