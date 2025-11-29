@@ -66,15 +66,13 @@ def remove_podcasts():
     This task removes podcasts whose related episode count is zero. It also performs a legacy healthcheck ping on completion.
     """
     logger.info("Starting remove_podcasts task")
-    # Using filter directly is more efficient than iterating
-    Podcast.objects.filter(episodes__isnull=True).delete()
-    # Better approach matching legacy logic:
-    Podcast.objects.annotate(num_episodes=Count("episodes")).filter(num_episodes=0)
-    # Actually, legacy logic iterates and checks count.
-    # Let's stick to a safe implementation.
-
-    for podcast in Podcast.objects.all():
-        if podcast.episodes.count() == 0:
-            podcast.delete()
-
+    
+    # Bulk delete podcasts with zero episodes using annotated queryset
+    deleted_count, _ = (
+        Podcast.objects.annotate(num_episodes=Count("episodes"))
+        .filter(num_episodes=0)
+        .delete()
+    )
+    
+    logger.info("Deleted %d podcasts with no episodes", deleted_count)
     logger.info("Finished remove_podcasts task")
