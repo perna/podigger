@@ -41,9 +41,9 @@ class TagModelTests(TestCase):
 class PodcastEpisodeRelationTests(TestCase):
     def setUp(self):
         """
-        Create a PodcastLanguage and a Podcast instance for tests.
-
-        Sets `self.lang` to a new PodcastLanguage and `self.podcast` to a Podcast named "Test Podcast" with feed "https://example.com/feed" linked to that language.
+        Prepare test fixtures by creating a PodcastLanguage and a Podcast associated with it.
+        
+        The created PodcastLanguage is assigned to `self.lang`. The created Podcast, named "Test Podcast" with feed "https://example.com/feed", is assigned to `self.podcast` and linked to `self.lang`.
         """
         self.lang = PodcastLanguage.objects.create()
         self.podcast = Podcast.objects.create(
