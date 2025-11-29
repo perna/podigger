@@ -112,15 +112,12 @@ jobs:
       
       - name: Create GitHub Release
         if: steps.check_bump.outputs.should_bump == 'true'
-        uses: actions/create-release@v1
+        run: |
+          gh release create "v${{ steps.bump.outputs.new_version }}" \
+            --title "Release v${{ steps.bump.outputs.new_version }}" \
+            --notes-file "${{ steps.changelog.outputs.changelog_file }}"
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: v${{ steps.bump.outputs.new_version }}
-          release_name: Release v${{ steps.bump.outputs.new_version }}
-          body_path: ${{ steps.changelog.outputs.changelog_file }}
-          draft: false
-          prerelease: false
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       
       - name: Summary
         if: steps.check_bump.outputs.should_bump == 'true'
