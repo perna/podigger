@@ -34,18 +34,17 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         """
-        Remove seeded podcast-related records created within the last `minutes` minutes.
-
-        Computes a cutoff timestamp (now - minutes) and identifies Podcast, Episode, Tag, PopularTerm,
-        and TopicSuggestion records created since that cutoff. If `dry_run` is True, prints counts and
-        exits without performing deletions. Otherwise deletes episodes, then podcasts, removes tags
-        created in the window that are orphaned (no related episode), and deletes matching popular terms
-        and topic suggestions. Writes a summary of deleted counts to stdout.
-
+        Remove podcast-related seed data created within the last `minutes` minutes.
+        
+        Identifies Podcast, Episode, Tag, PopularTerm, and TopicSuggestion records with created_at >= (now - minutes).
+        If `dry_run` is True, prints counts and exits without deleting. Otherwise deletes episodes, then podcasts,
+        removes tags created in the window that have no related episode, and deletes matching popular terms and topic suggestions,
+        then prints a deletion summary.
+        
         Parameters:
             options (dict): Command options; recognized keys:
-                - minutes (int): lookback window in minutes used to select recently created records.
-                - dry_run (bool): if True, only report what would be deleted and do not perform deletions.
+                minutes (int): Lookback window in minutes used to select recently created records.
+                dry_run (bool): If True, report what would be deleted and do not perform deletions.
         """
         _ = args
         self.stdout.write("Cleaning up fake data...")

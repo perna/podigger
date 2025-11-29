@@ -12,13 +12,15 @@ _TAG_RE = re.compile(r"(<!--.*?-->|<[^>]*>)", re.DOTALL)
 
 def _strip_html(text: str | None) -> str:
     """
-    Remove HTML tags and comments from the given text and trim leading/trailing whitespace.
-
+    Strip HTML tags and comments from text and trim surrounding whitespace.
+    
+    Returns an empty string for falsy input.
+    
     Parameters:
-        text (str | None): The input text to clean; if falsy, an empty string is returned.
-
+        text (str | None): Input text to clean.
+    
     Returns:
-        str: The input with HTML tags and comments removed and surrounding whitespace trimmed.
+        str: The cleaned text with HTML tags/comments removed and surrounding whitespace trimmed.
     """
     if not text:
         return ""
@@ -109,15 +111,10 @@ def parse_feed(
 
 def is_valid_feed(url: str) -> bool:
     """
-    Check whether a feed URL parses without feedparser bozo errors.
-
-    If parsing raises an exception, the feed is considered invalid.
-
-    Parameters:
-        url (str): The feed URL to validate.
-
+    Determine whether a feed URL parses without feedparser bozo errors.
+    
     Returns:
-        `true` if feedparser reports no bozo errors (`bozo == 0`), `false` otherwise.
+        `true` if feedparser reports no bozo errors (`bozo == 0`), `false` otherwise (including when parsing raises an exception).
     """
     try:
         d = feedparser.parse(url)

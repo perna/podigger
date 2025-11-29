@@ -16,10 +16,10 @@ class PodcastLanguage(BaseModel):
 
     def __str__(self):
         """
-        Format the language's display label as name followed by code in parentheses.
-
+        Format the language's display label as "name (code)".
+        
         Returns:
-            str: The language formatted as "<name> (<code>)".
+            str: The formatted label, e.g. "Português (pt)".
         """
         return f"{self.name} ({self.code})"
 
@@ -90,10 +90,10 @@ class PopularTerm(BaseModel):
 
     def __str__(self):
         """
-        Return a string representation of the popular term showing the term and its occurrence count.
-
+        Format the popular term with its occurrence count.
+        
         Returns:
-            str: String in the format "<term> (<times>)".
+            str: The term and count in the format "<term> (<times>)".
         """
         return f"{self.term} ({self.times})"
 

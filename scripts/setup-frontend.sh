@@ -24,7 +24,7 @@ echo_warn() {
     echo -e "${YELLOW}[WARN]${NC} $1"
 }
 
-# echo_error prints a message prefixed with "[ERROR]" in red to stderr-like output (uses colored formatting).
+# echo_error prints an error message prefixed with "[ERROR]" in red.
 echo_error() {
     echo -e "${RED}[ERROR]${NC} $1"
 }
@@ -59,7 +59,7 @@ install_nvm() {
     echo_info "NVM installed successfully"
 }
 
-# load_nvm loads NVM into the current shell by sourcing nvm.sh and bash_completion if present and exits with a non-zero status if `nvm` is not available.
+# load_nvm loads NVM into the current shell by sourcing nvm.sh and bash_completion if present. Exits with status 1 if `nvm` is not available after sourcing.
 load_nvm() {
     export NVM_DIR="$HOME/.nvm"
     [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
@@ -72,7 +72,7 @@ load_nvm() {
 }
 
 # install_node installs the configured Node.js LTS version using nvm and sets it as the default.
-# It prints the installed Node and npm versions.
+# install_node installs the Node.js LTS version specified by NODE_VERSION, sets it as the default, and prints the installed Node.js and npm versions.
 install_node() {
     echo_info "Installing Node.js ${NODE_VERSION} LTS..."
     
@@ -113,7 +113,8 @@ create_nvmrc() {
 }
 
 # setup_auto_nvm sets up automatic NVM version switching by appending an `autoload-nvmrc` function and appropriate hooks to the user's shell config (bash or zsh) so the Node version changes when entering directories with a .nvmrc.
-# If no suitable shell config is found or the configuration already exists, it makes no changes and returns success.
+# setup_auto_nvm appends an autoload-nvmrc hook to the user's shell config to automatically switch Node versions based on a project `.nvmrc` when changing directories.
+# If no suitable shell config is found or the configuration already exists, it makes no changes and exits successfully.
 setup_auto_nvm() {
     echo_info "Setting up automatic NVM version switching..."
     
@@ -194,7 +195,7 @@ install_dependencies() {
 }
 
 # main orchestrates the frontend environment setup by running OS checks, installing and loading NVM, installing Node and pnpm, creating a .nvmrc, enabling automatic NVM switching, and installing frontend dependencies.
-# It prints progress and next-step instructions for the user.
+# main orchestrates frontend environment setup: it verifies the OS, installs and loads NVM, installs the specified Node.js and pnpm, creates the frontend .nvmrc, configures automatic NVM switching in the user's shell, installs frontend dependencies, and prints next-step instructions.
 main() {
     echo_info "Starting frontend environment setup..."
     echo_info "Project root: $PROJECT_ROOT"
