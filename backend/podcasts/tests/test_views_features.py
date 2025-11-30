@@ -1,14 +1,14 @@
+
 import pytest
 from rest_framework.test import APIClient
 
-from podcasts.models import Podcast, PopularTerm
+from podcasts.models import Episode, Podcast, PopularTerm
 
 
 @pytest.mark.django_db
 class TestPodcastViewSetFeatures:
     def setup_method(self):
-        """
-        Set up a Django REST Framework APIClient instance for test methods.
+        """Set up a Django REST Framework APIClient instance for test methods.
 
         Assigns an APIClient to self.client for making HTTP requests in each test.
         """
@@ -55,7 +55,6 @@ class TestPodcastViewSetFeatures:
     def test_search_episodes_saves_term(self):
         # Create some episodes to search
         p = Podcast.objects.create(name="Pod", feed="http://feed.com")
-        from podcasts.models import Episode
         Episode.objects.create(podcast=p, title="Python Rocks", link="http://1.com", published="2023-01-01")
 
         # Search

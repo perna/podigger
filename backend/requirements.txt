@@ -4,10 +4,10 @@ Django==5.2.8
 djangorestframework>=3.16.1,<4.0
 psycopg2-binary==2.9.11
 django-cors-headers==4.0.0
-celery==5.2.7
-redis==4.4.4
+celery==5.5.3
+redis==7.1.0
 gunicorn>=20.1.0,<24.0
-uvicorn==0.22.0
+uvicorn==0.38.0
 ruff>=0.8.0,<0.9.0
 django-environ>=0.10.0
 django-redis>=5.4.0

@@ -1,9 +1,7 @@
-import contextlib
 import logging
 
 from django.db.models import Count
 
-import requests
 from celery import shared_task
 
 from .models import Podcast
@@ -14,8 +12,7 @@ logger = logging.getLogger(__name__)
 
 @shared_task
 def add_episode(feed_url):
-    """
-    Populate episodes for the podcast feed at the given URL.
+    """Populate episodes for the podcast feed at the given URL.
 
     Parameters:
         feed_url (str): URL of the podcast RSS/Atom feed to fetch and process.
@@ -28,8 +25,7 @@ def add_episode(feed_url):
 
 @shared_task(name="update_base")
 def update_base():
-    """
-    Update episodes for all podcasts by running EpisodeUpdater over every podcast feed.
+    """Update episodes for all podcasts by running EpisodeUpdater over every podcast feed.
 
     This enqueues the job that recalculates each podcast's total episode count and performs a legacy healthcheck HTTP GET (network errors are suppressed).
     """
@@ -46,8 +42,7 @@ def update_base():
 
 @shared_task(name="update_total_episodes")
 def update_total_episodes():
-    """
-    Task to update the total_episodes count for each podcast.
+    """Task to update the total_episodes count for each podcast.
     """
     logger.info("Starting update_total_episodes task")
     podcasts = Podcast.objects.all()
@@ -60,19 +55,18 @@ def update_total_episodes():
 
 @shared_task(name="remove_podcasts")
 def remove_podcasts():
-    """
-    Delete Podcast records that have no associated episodes.
+    """Delete Podcast records that have no associated episodes.
 
     This task removes podcasts whose related episode count is zero. It also performs a legacy healthcheck ping on completion.
     """
     logger.info("Starting remove_podcasts task")
-    
+
     # Bulk delete podcasts with zero episodes using annotated queryset
     deleted_count, _ = (
         Podcast.objects.annotate(num_episodes=Count("episodes"))
         .filter(num_episodes=0)
         .delete()
     )
-    
+
     logger.info("Deleted %d podcasts with no episodes", deleted_count)
     logger.info("Finished remove_podcasts task")
