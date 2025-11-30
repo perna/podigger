@@ -20,5 +20,5 @@ ENV PYTHONUNBUFFERED=1
 
 EXPOSE 8000
 
-# Default command runs uvicorn via manage.py ASGI (adjust in production)
+# Default command runs Django's development server (adjust for production)
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]

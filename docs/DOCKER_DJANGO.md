@@ -22,8 +22,6 @@ docker compose -f docker-compose.django.yml up --build
 
 Notas e próximos passos
 
-Notas e próximos passos
-
 - Estes arquivos são um scaffold inicial. Ainda é necessário gerar o projeto Django (manage.py, settings, apps) — posso gerar um esqueleto compatível com os modelos existentes.
 - O `backend/` contém agora o Dockerfile e `requirements.txt` canônicos para o novo backend. Arquivos antigos no root foram marcados como legados.
 - Assunção: você quer migrar gradualmente. Se preferir sobrescrever os arquivos existentes (Dockerfile e docker-compose.yml), posso alterar diretamente.

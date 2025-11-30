@@ -46,7 +46,7 @@ echo ""
 
 # Create virtual environment with UV
 echo -e "${YELLOW}Creating virtual environment with Python ${PYTHON_VERSION}...${NC}"
-uv venv --python ${PYTHON_VERSION}
+uv venv --python "${PYTHON_VERSION}"
 
 echo -e "${GREEN}✓ Virtual environment created at .venv${NC}"
 echo ""
