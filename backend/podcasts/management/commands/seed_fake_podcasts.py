@@ -25,10 +25,10 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         """
         Add command-line options that control seeding behavior for the management command.
-        
+
         Parameters:
             parser (argparse.ArgumentParser): Django-provided argument parser to which options are added.
-        
+
         Options:
             --podcasts (int, default=100): Number of podcasts to create.
             --episodes (int, default=100): Number of episodes to create per podcast.

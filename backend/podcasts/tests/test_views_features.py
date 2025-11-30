@@ -1,4 +1,3 @@
-
 import pytest
 from rest_framework.test import APIClient
 
@@ -55,7 +54,9 @@ class TestPodcastViewSetFeatures:
     def test_search_episodes_saves_term(self):
         # Create some episodes to search
         p = Podcast.objects.create(name="Pod", feed="http://feed.com")
-        Episode.objects.create(podcast=p, title="Python Rocks", link="http://1.com", published="2023-01-01")
+        Episode.objects.create(
+            podcast=p, title="Python Rocks", link="http://1.com", published="2023-01-01"
+        )
 
         # Search
         response = self.client.get("/api/episodes/?q=Python")

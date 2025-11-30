@@ -12,10 +12,10 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         """
         Register command-line arguments used by this management command.
-        
+
         Adds a positional optional `fixture` argument (path to the JSON fixture; defaults to
         backend/podcasts/fixtures/initial_fake_seed.json) and a `--dry-run` flag to simulate deletions.
-        
+
         Parameters:
             parser (argparse.ArgumentParser): The parser to register the arguments on.
         """

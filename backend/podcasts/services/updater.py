@@ -50,7 +50,9 @@ class EpisodeUpdater:
                     for item in parsed_podcast.get("items", []):
                         try:
                             published_str = item.get("published", "")
-                            struct_time = time.strptime(published_str[:25], "%a, %d %b %Y %H:%M:%S")
+                            struct_time = time.strptime(
+                                published_str[:25], "%a, %d %b %Y %H:%M:%S"
+                            )
                             published_dt = timezone.datetime.fromtimestamp(
                                 time.mktime(struct_time), tz=UTC
                             )
@@ -84,7 +86,9 @@ class EpisodeUpdater:
                             new_episode.tags.add(*tag_list)
 
                     # Update total episodes count after processing all items
-                    podcast_obj.total_episodes = Episode.objects.filter(podcast=podcast_obj).count()
+                    podcast_obj.total_episodes = Episode.objects.filter(
+                        podcast=podcast_obj
+                    ).count()
                     podcast_obj.save()
 
             except Exception as e:

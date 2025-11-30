@@ -25,7 +25,7 @@ def test_updater_updates_total_episodes(mocker):
                 "published": "Fri, 01 Jan 2023 10:00:00 GMT",
                 "description": "desc",
                 "enclosure": "http://audio.com/1.mp3",
-                "tags": []
+                "tags": [],
             },
             {
                 "title": "Ep 2",
@@ -33,9 +33,9 @@ def test_updater_updates_total_episodes(mocker):
                 "published": "Fri, 02 Jan 2023 10:00:00 GMT",
                 "description": "desc",
                 "enclosure": "http://audio.com/2.mp3",
-                "tags": []
-            }
-        ]
+                "tags": [],
+            },
+        ],
     }
 
     # Run updater
@@ -47,4 +47,6 @@ def test_updater_updates_total_episodes(mocker):
 
     # Assertions
     assert Episode.objects.count() == 2
-    assert podcast.total_episodes == 2  # This should fail currently as it defaults to 0 and isn't updated
+    assert (
+        podcast.total_episodes == 2
+    )  # This should fail currently as it defaults to 0 and isn't updated

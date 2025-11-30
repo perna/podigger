@@ -34,12 +34,12 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         """
         Remove podcast-related seed data created within the last `minutes` minutes.
-        
+
         Identifies Podcast, Episode, Tag, PopularTerm, and TopicSuggestion records with created_at >= (now - minutes).
         If `dry_run` is True, prints counts and exits without deleting. Otherwise deletes episodes, then podcasts,
         removes tags created in the window that have no related episode, and deletes matching popular terms and topic suggestions,
         then prints a deletion summary.
-        
+
         Parameters:
             options (dict): Command options; recognized keys:
                 minutes (int): Lookback window in minutes used to select recently created records.

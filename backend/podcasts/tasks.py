@@ -42,8 +42,7 @@ def update_base():
 
 @shared_task(name="update_total_episodes")
 def update_total_episodes():
-    """Task to update the total_episodes count for each podcast.
-    """
+    """Task to update the total_episodes count for each podcast."""
     logger.info("Starting update_total_episodes task")
     podcasts = Podcast.objects.all()
     for podcast in podcasts:
