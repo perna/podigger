@@ -47,16 +47,9 @@ class TestEpisodeAPI:
         )
 
     def test_list_episodes(self):
-<<<<<<< HEAD
-        """
-        Ensure the episodes list endpoint returns HTTP 200 and exactly two episodes.
-        
-        Performs a GET request to "/api/episodes/" and asserts the response status code is 200 and the response contains two items.
-=======
         """Verify that GET /api/episodes/ responds with HTTP 200 and returns exactly two episodes.
 
         Performs a GET request to the episodes list endpoint and asserts the response status code is 200 and the response contains two items.
->>>>>>> 60a8243 (style: apply ruff auto-formatting to backend code)
         """
         response = self.client.get("/api/episodes/")
         assert response.status_code == 200
@@ -95,7 +88,7 @@ class TestPopularTermAPI:
     def setup_method(self):
         """
         Prepare test state by attaching an APIClient to `self` and seeding two PopularTerm records.
-        
+
         Creates `self.client` as an APIClient instance and inserts PopularTerm entries: term "python" with times 10 and term "django" with times 5.
         """
         self.client = APIClient()

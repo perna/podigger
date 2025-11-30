@@ -108,18 +108,10 @@ class EpisodeViewSet(viewsets.ModelViewSet):
     filterset_fields = ["podcast"]
 
     def get_queryset(self):
-<<<<<<< HEAD
-        """
-        Return the episodes queryset, applying full-text search and relevance ordering when a search term is provided.
-        
-        If the `q` or `search` query parameter is present, record the term in PopularTerm, perform a PostgreSQL full-text search (Portuguese configuration) over title and description and annotate results with a text-search rank and a trigram similarity on the title. Return episodes with a positive text-search rank ordered by rank then published date; if no rank matches are found, fall back to trigram matches (threshold 0.1) ordered by trigram then published date.
-        
-=======
         """Get the queryset of episodes, applying full-text search and relevance ordering when a search term is provided.
 
         If the "q" or "search" query parameter is present, returns episodes ranked by PostgreSQL full-text search (Portuguese configuration) using a weighted vector over title (weight A) and description (weight B). Results with positive text-search rank are ordered by rank then published date. If no text-search matches exist, falls back to trigram similarity on the title (threshold 0.1) and orders by trigram then published date.
 
->>>>>>> 60a8243 (style: apply ruff auto-formatting to backend code)
         Returns:
             QuerySet: Episode objects filtered and ordered according to the presence and relevance of the search term.
         """
