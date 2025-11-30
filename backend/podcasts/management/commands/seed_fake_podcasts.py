@@ -60,8 +60,7 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        """
-        Seed the database with fake podcasts, episodes, tags, and related metadata based on command-line options.
+        """Seed the database with fake podcasts, episodes, tags, and related metadata based on command-line options.
 
         Performs all writes inside a single database transaction. If the estimated work is large (more than 2000 total episodes) and `force` is not set, the command prints a warning and exits without making changes.
 
@@ -121,9 +120,13 @@ class Command(BaseCommand):
             tag_names = []
             for _ in range(tag_pool_size):
                 name = fake.word().lower()
-                # ensure some uniqueness
+                retries = 0
                 while name in existing_tags or name in tag_names:
-                    name = fake.word().lower() + str(random.randint(1, 99))
+                    name = fake.word().lower() + str(random.randint(1, 9999))
+                    retries += 1
+                    if retries > 100:
+                        name = f"tag_{len(tag_names)}_{random.randint(1, 99999)}"
+                        break
                 tag_names.append(name)
                 tags_to_create.append(Tag(name=name))
 

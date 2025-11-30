@@ -13,8 +13,7 @@ class Command(BaseCommand):
     )
 
     def add_arguments(self, parser):
-        """
-        Register command-line options for the management command.
+        """Register command-line options for the management command.
 
         Adds:
         - `--minutes`: integer lookback window in minutes used to select data created since (default 60).

@@ -7,8 +7,7 @@ from podcasts.models import Episode, Podcast, PopularTerm
 @pytest.mark.django_db
 class TestPodcastAPI:
     def setup_method(self):
-        """
-        Attach a new APIClient instance to self for use in test methods.
+        """Attach a new APIClient instance to self for use in test methods.
         """
         self.client = APIClient()
 
@@ -22,8 +21,7 @@ class TestPodcastAPI:
 @pytest.mark.django_db
 class TestEpisodeAPI:
     def setup_method(self):
-        """
-        Prepare test state by creating an API client, a Podcast, and two Episodes associated with that podcast.
+        """Prepare test state by creating an API client, a Podcast, and two Episodes associated with that podcast.
 
         Creates:
         - self.client: an APIClient instance for making requests.
@@ -49,10 +47,16 @@ class TestEpisodeAPI:
         )
 
     def test_list_episodes(self):
+<<<<<<< HEAD
         """
         Ensure the episodes list endpoint returns HTTP 200 and exactly two episodes.
         
         Performs a GET request to "/api/episodes/" and asserts the response status code is 200 and the response contains two items.
+=======
+        """Verify that GET /api/episodes/ responds with HTTP 200 and returns exactly two episodes.
+
+        Performs a GET request to the episodes list endpoint and asserts the response status code is 200 and the response contains two items.
+>>>>>>> 60a8243 (style: apply ruff auto-formatting to backend code)
         """
         response = self.client.get("/api/episodes/")
         assert response.status_code == 200
@@ -75,9 +79,7 @@ class TestEpisodeAPI:
         # For simple sqlite/tests, search behavior might vary or fail if not using Postgres.
         # Assuming we might be running against a DB that supports it or mocking.
         # If running with pytest-django and a configured DB, this should work if data is committed.
-
-        """
-        Exercise the episodes search API endpoint with query "python" and assert it responds with HTTP 200.
+        """Exercise the episodes search API endpoint with query "python" and assert it responds with HTTP 200.
 
         This test verifies the endpoint structure for searching episodes (GET /api/episodes/?q=python). It primarily checks the response status code because full-text search results can vary by database backend or test environment (for example, FTS may require Postgres or specific indexing).
         """

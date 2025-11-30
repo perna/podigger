@@ -11,11 +11,16 @@ _TAG_RE = re.compile(r"(<!--.*?-->|<[^>]*>)", re.DOTALL)
 
 
 def _strip_html(text: str | None) -> str:
+<<<<<<< HEAD
     """
     Strip HTML tags and comments from text and trim surrounding whitespace.
     
     Returns an empty string for falsy input.
     
+=======
+    """Remove HTML tags and comments from the given text and trim leading/trailing whitespace.
+
+>>>>>>> 60a8243 (style: apply ruff auto-formatting to backend code)
     Parameters:
         text (str | None): Input text to clean.
     
@@ -30,8 +35,7 @@ def _strip_html(text: str | None) -> str:
 def parse_feed(
     url: str, default_image: str = "/static/dist/img/podcast-banner.png"
 ) -> dict[str, Any]:
-    """
-    Parse an RSS/Atom feed URL and produce a normalized feed dictionary.
+    """Parse an RSS/Atom feed URL and produce a normalized feed dictionary.
 
     The returned dictionary contains:
     - title: feed title or empty string
@@ -110,9 +114,19 @@ def parse_feed(
 
 
 def is_valid_feed(url: str) -> bool:
+<<<<<<< HEAD
     """
     Determine whether a feed URL parses without feedparser bozo errors.
     
+=======
+    """Check whether a feed URL parses without feedparser bozo errors.
+
+    If parsing raises an exception, the feed is considered invalid.
+
+    Parameters:
+        url (str): The feed URL to validate.
+
+>>>>>>> 60a8243 (style: apply ruff auto-formatting to backend code)
     Returns:
         `true` if feedparser reports no bozo errors (`bozo == 0`), `false` otherwise (including when parsing raises an exception).
     """

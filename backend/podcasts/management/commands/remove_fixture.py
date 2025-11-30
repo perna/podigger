@@ -32,8 +32,7 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        """
-        Remove database records listed in a JSON fixture file.
+        """Remove database records listed in a JSON fixture file.
 
         Loads the fixture specified by options["fixture"], aggregates primary keys per model, determines a deletion order that minimizes foreign-key conflicts, and deletes the corresponding records inside a single database transaction. Reports the number of records found per model and supports a dry-run mode (options["dry_run"]) that reports what would be removed without performing any deletions. Unknown models present in the fixture are skipped with a warning; a missing fixture file causes the command to exit without changes.
 

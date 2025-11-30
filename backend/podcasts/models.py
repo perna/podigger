@@ -39,8 +39,7 @@ class Podcast(BaseModel):
     total_episodes = models.IntegerField(default=0)
 
     def __str__(self):
-        """
-        Provide the model instance's name as its string representation.
+        """Provide the model instance's name as its string representation.
 
         Returns:
             str: The value of the instance's `name` field.
@@ -52,8 +51,7 @@ class Tag(BaseModel):
     name = models.CharField(max_length=255, unique=True)
 
     def __str__(self):
-        """
-        Provide the model instance's name as its string representation.
+        """Provide the model instance's name as its string representation.
 
         Returns:
             str: The value of the instance's `name` field.
@@ -74,11 +72,10 @@ class Episode(models.Model):
     tags = models.ManyToManyField(Tag, related_name="episodes", blank=True)
 
     def __str__(self):
-        """
-        Represent the episode by its title.
+        """Represent the topic suggestion by its title.
 
         Returns:
-            str: The episode title used as the object's string representation.
+            str: The topic suggestion title used as the object's string representation.
         """
         return self.title
 
@@ -104,8 +101,7 @@ class TopicSuggestion(BaseModel):
     is_recorded = models.BooleanField(default=False)
 
     def __str__(self):
-        """
-        Represent the episode by its title.
+        """Represent the episode by its title.
 
         Returns:
             str: The episode title used as the object's string representation.
