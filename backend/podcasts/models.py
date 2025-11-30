@@ -1,3 +1,5 @@
+import datetime
+
 from django.db import models
 from django.utils import timezone
 
@@ -17,7 +19,7 @@ class PodcastLanguage(BaseModel):
     def __str__(self):
         """
         Format the language's display label as "name (code)".
-        
+
         Returns:
             str: The formatted label, e.g. "Português (pt)".
         """
@@ -83,12 +85,12 @@ class Episode(models.Model):
 class PopularTerm(BaseModel):
     term = models.CharField(max_length=255, db_index=True)
     times = models.IntegerField(default=1)
-    date_search = models.DateField(default=timezone.now)
+    date_search = models.DateField(default=datetime.date.today)
 
     def __str__(self):
         """
         Format the popular term with its occurrence count.
-        
+
         Returns:
             str: The term and count in the format "<term> (<times>)".
         """
