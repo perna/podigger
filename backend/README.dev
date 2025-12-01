@@ -1,0 +1,108 @@
+Development environment and secrets
+=================================
+
+This file explains how to set up local environment variables for the Django backend without committing secrets to the repository.
+
+1) Create a local `.env`
+-------------------------
+Copy `backend/.env.example` to `backend/.env` and fill real values (do NOT commit this file):
+
+```bash
+cp backend/.env.example backend/.env
+# edit backend/.env and replace placeholders with real credentials
+```
+
+2) What belongs in `.env`
+-------------------------
+- `DJANGO_SECRET_KEY`: Django secret key (keep secret).
+- `DJANGO_DEBUG`: `True` for local dev, `False` in production.
+- DB/Redis connection values used by `config.settings`.
+
+3) Using environment variables locally
+-------------------------------------
+- You can load `.env` with your shell or use a library such as `django-environ`.
+- Alternatively export variables in your shell session:
+
+```bash
+export $(grep -v '^#' backend/.env | xargs)
+python backend/manage.py runserver
+```
+
+4) CI and production
+---------------------
+- Do NOT store secrets in the repository. Use GitHub Secrets (Repository → Settings → Secrets) for CI.
+- Reference secrets in GitHub Actions using `${{ secrets.NAME }}` and pass them as env variables in the workflow.
+
+Example snippet for the workflow (do not hardcode values):
+
+```yaml
+env:
+  DATABASE_USER: ${{ secrets.DB_USER }}
+  DATABASE_PASSWORD: ${{ secrets.DB_PASSWORD }}
+  DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+```
+
+5) Additional notes
+-------------------
+- Keep `backend/.env` in `.gitignore` (already added).
+- Rotate and manage secrets centrally (vault, cloud secrets manager) for production.
+
+6) Using DATABASE_URL and GitHub Secrets
+-----------------------------------------
+It's often convenient to provide a single `DATABASE_URL` instead of separate DB host/user/password env vars. The expected format is:
+
+```
+postgres://<USER>:<PASSWORD>@<HOST>:<PORT>/<DBNAME>
+```
+
+Example:
+
+```
+postgres://postgres:mysecretpassword@localhost:5432/podigger
+```
+
+If your password contains special characters (for example `@` or `:`), URL-encode them (e.g. `@` -> `%40`).
+
+In GitHub Actions you can store this as a secret (for example `DATABASE_URL`) and reference it in the workflow:
+
+```yaml
+env:
+  DATABASE_URL: ${{ secrets.DATABASE_URL }}
+  DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+```
+
+Our `config/settings.py` already supports reading `DATABASE_URL` via `django-environ` and will fall back to sensible defaults if it's not provided.
+
+7) Seeding the database (dev)
+--------------------------------
+To populate the database with example data for frontend development, use the management commands provided.
+
+- To create a small seeded dataset (10 podcasts × 5 episodes):
+
+```bash
+docker compose -f docker-compose.django.yml exec web python manage.py seed_fake_podcasts --podcasts 10 --episodes 5 --force
+```
+
+- To create the larger default dataset (100×100) you can run the same command without overriding counts, but it requires `--force` and may take significant time and disk space.
+
+- To dump the current `podcasts` data to a fixture file (so other devs can `loaddata`):
+
+```bash
+docker compose -f docker-compose.django.yml exec web python manage.py dumpdata podcasts --indent 2 > backend/podcasts/fixtures/initial_fake_seed.json
+```
+
+- To remove recently seeded fake data (safe cleanup), the `clear_fake_seed` command will delete records created within the last N minutes (default 60):
+
+```bash
+docker compose -f docker-compose.django.yml exec web python manage.py clear_fake_seed --minutes 60
+# use --dry-run to preview
+```
+
+- To remove exactly the records present in a fixture file (deterministic):
+
+```bash
+docker compose -f docker-compose.django.yml exec web python manage.py remove_fixture backend/podcasts/fixtures/initial_fake_seed.json --dry-run
+```
+
+Remove without `--dry-run` to perform the deletion.
+

@@ -1,0 +1,106 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [ main, master ]
+  push:
+    branches: [ feature/migrate-flask-to-django ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: podigger
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d podigger" 
+          --health-interval 10s 
+          --health-timeout 5s 
+          --health-retries 5
+
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r backend/requirements.txt
+
+      - name: Validate commit messages
+        if: github.event_name == 'pull_request'
+        continue-on-error: true
+        run: |
+          pip install commitizen>=3.13.0
+          cd backend
+          # Validate commits in PR
+          cz check --rev-range origin/${{ github.base_ref }}..HEAD || {
+            echo "::warning::❌ Commit messages do not follow Conventional Commits format"
+            echo "Please use the format: type(scope): subject"
+            echo "Types: feat, fix, docs, style, refactor, test, chore"
+            echo "Example: feat(backend): add user authentication"
+            exit 1
+          }
+
+      - name: Run ruff (lint)
+        run: |
+          cd backend
+          ruff check .
+
+      - name: Wait for services
+        run: |
+          # Wait for Postgres
+          for i in {1..30}; do
+            pg_isready -h localhost -p 5432 -U postgres -d podigger && break || sleep 1
+          done
+          # Wait for Redis
+          for i in {1..30}; do
+            redis-cli -h localhost -p 6379 ping && break || sleep 1
+          done
+
+
+      - name: Run migrations
+        env:
+          DATABASE_HOST: localhost
+          DATABASE_PORT: 5432
+          DATABASE_NAME: podigger
+          DATABASE_USER: ${{ secrets.DB_USER || 'postgres' }}
+          DATABASE_PASSWORD: ${{ secrets.DB_PASSWORD || 'postgres' }}
+          DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY || 'test-secret-key-for-ci-only' }}
+          DJANGO_SETTINGS_MODULE: config.settings
+        run: |
+          cd backend
+          python manage.py migrate --noinput
+
+      - name: Run tests
+        env:
+          DATABASE_HOST: localhost
+          DATABASE_PORT: 5432
+          DATABASE_NAME: podigger
+          DATABASE_USER: ${{ secrets.DB_USER || 'postgres' }}
+          DATABASE_PASSWORD: ${{ secrets.DB_PASSWORD || 'postgres' }}
+          DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY || 'test-secret-key-for-ci-only' }}
+          DJANGO_SETTINGS_MODULE: config.settings
+        run: |
+          cd backend
+          pytest -v --tb=short --strict-markers

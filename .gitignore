@@ -9,6 +9,9 @@ __pycache__/
 # Distribution / packaging
 .Python
 env/
+venv/
+.venv/
+ENV/
 build/
 develop-eggs/
 dist/
@@ -67,3 +70,14 @@ config/config.py
 app.db
 celerybeat-schedule
 app/static/node_modules
+
+# Local environment files
+.env
+backend/.env
+
+# UV package manager
+uv.lock
+.uv/
+
+# Editor directories
+.vscode/
