@@ -84,20 +84,6 @@ install_node() {
     echo_info "npm $(npm --version) installed successfully"
 }
 
-# install_pnpm installs pnpm globally using npm unless pnpm is already installed, in which case it prints a warning and returns successfully.
-install_pnpm() {
-    echo_info "Installing pnpm..."
-    
-    if command -v pnpm &> /dev/null; then
-        echo_warn "pnpm already installed: $(pnpm --version)"
-        return 0
-    fi
-    
-    npm install -g pnpm
-    
-    echo_info "pnpm $(pnpm --version) installed successfully"
-}
-
 # create_nvmrc creates a .nvmrc file in FRONTEND_DIR containing NODE_VERSION if one does not already exist and prints status messages.
 create_nvmrc() {
     local nvmrc_file="${FRONTEND_DIR}/.nvmrc"
@@ -180,7 +166,7 @@ EOF
     echo_warn "Please restart your shell or run: source $shell_config"
 }
 
-# install_dependencies installs frontend dependencies in $FRONTEND_DIR by selecting the project's Node version with nvm and running `pnpm install`.
+# install_dependencies installs frontend dependencies in $FRONTEND_DIR by selecting the project's Node version with nvm and running `npm install`.
 install_dependencies() {
     echo_info "Installing frontend dependencies..."
     
@@ -189,13 +175,13 @@ install_dependencies() {
     # Use the correct Node version
     nvm use
     
-    pnpm install
+    npm install
     
     echo_info "Dependencies installed successfully"
 }
 
-# main orchestrates the frontend environment setup by running OS checks, installing and loading NVM, installing Node and pnpm, creating a .nvmrc, enabling automatic NVM switching, and installing frontend dependencies.
-# main orchestrates frontend environment setup: it verifies the OS, installs and loads NVM, installs the specified Node.js and pnpm, creates the frontend .nvmrc, configures automatic NVM switching in the user's shell, installs frontend dependencies, and prints next-step instructions.
+# main orchestrates the frontend environment setup by running OS checks, installing and loading NVM, installing Node, creating a .nvmrc, enabling automatic NVM switching, and installing frontend dependencies.
+# main orchestrates frontend environment setup: it verifies the OS, installs and loads NVM, installs the specified Node.js, creates the frontend .nvmrc, configures automatic NVM switching in the user's shell, installs frontend dependencies, and prints next-step instructions.
 main() {
     echo_info "Starting frontend environment setup..."
     echo_info "Project root: $PROJECT_ROOT"
@@ -205,7 +191,7 @@ main() {
     install_nvm
     load_nvm
     install_node
-    install_pnpm
+    # install_pnpm # Removed as we are using npm
     create_nvmrc
     setup_auto_nvm
     install_dependencies
@@ -217,7 +203,7 @@ main() {
     echo "  1. Restart your shell or run: source ~/.bashrc (or ~/.zshrc)"
     echo "  2. Navigate to the frontend directory: cd $FRONTEND_DIR"
     echo "  3. Node version will automatically switch to $(cat ${FRONTEND_DIR}/.nvmrc)"
-    echo "  4. Run development server: pnpm dev"
+    echo "  4. Run development server: npm start"
     echo ""
 }
 

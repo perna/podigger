@@ -1,4 +1,4 @@
-.PHONY: help setup install dev services services-stop migrate test lint format clean shell superuser seed version bump-patch bump-minor bump-major changelog frontend-setup frontend-dev frontend-test frontend-lint frontend-build
+.PHONY: help setup install dev services services-stop migrate test lint format clean shell superuser seed version bump-patch bump-minor bump-major changelog frontend-setup frontend-dev frontend-test frontend-build
 
 # Default target
 help:
@@ -36,10 +36,9 @@ help:
 	@echo "  make changelog      - Generate/update CHANGELOG.md"
 	@echo ""
 	@echo "Frontend:"
-	@echo "  make frontend-setup - Setup frontend environment (NVM, Node.js 24, pnpm)"
+	@echo "  make frontend-setup - Setup frontend environment (NVM, Node.js 24)"
 	@echo "  make frontend-dev   - Start frontend dev server"
 	@echo "  make frontend-test  - Run frontend tests"
-	@echo "  make frontend-lint  - Run frontend linting"
 	@echo "  make frontend-build - Build frontend for production"
 
 # Setup UV and create virtual environment
@@ -153,17 +152,13 @@ frontend-setup:
 
 frontend-dev:
 	@echo "Starting frontend dev server..."
-	@cd frontend && pnpm dev
+	@cd frontend && npm start
 
 frontend-test:
 	@echo "Running frontend tests..."
-	@cd frontend && pnpm test
-
-frontend-lint:
-	@echo "Running frontend linting..."
-	@cd frontend && pnpm lint
+	@cd frontend && npm test
 
 frontend-build:
 	@echo "Building frontend for production..."
-	@cd frontend && pnpm build
+	@cd frontend && npm run build
 	@echo "Frontend build complete!"
