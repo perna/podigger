@@ -5,7 +5,7 @@
 Este é um projeto de podcasts em **migração do Flask para Django**:
 - **Backend Legado**: Flask (pasta `app/`) - em processo de deprecação
 - **Backend Novo**: Django (pasta `backend/`) - em desenvolvimento ativo
-- **Frontend**: React com TypeScript (Vite) - em desenvolvimento
+- **Frontend**: Aguardando migração para Angular (pasta `frontend/` limpa)
 - **Infraestrutura**: Docker e Docker Compose
 - **Banco de Dados**: PostgreSQL com migrações Alembic (Flask) e Django migrations
 - **Package Manager**: UV (local development) e pip (CI/deployment)
@@ -54,12 +54,9 @@ projeto/
 │   ├── pyproject.toml           # Ruff config
 │   └── requirements.txt
 │
-├── frontend/                     # React + TypeScript + Vite
-│   ├── src/
-│   │   ├── App.tsx
-│   │   └── main.tsx
-│   ├── package.json
-│   └── vite.config.ts
+├── frontend/                     # Aguardando migração para Angular
+│   ├── package.json             # Minimal config
+│   └── README.md
 │
 ├── migrations/                   # ⚠️ Alembic (Flask) - manter até migração completa
 │   └── versions/
@@ -89,7 +86,7 @@ projeto/
    - ✅ Models (já iniciado em `backend/podcasts/models.py`)
    - ⏳ API endpoints (migrar para DRF)
    - ✅ Business logic (`app/parser/` → `backend/podcasts/services/`)
-   - ⏳ Templates (se necessário, ou usar React)
+   - ⏳ Templates (se necessário, ou usar Angular)
    - ⏳ Admin (Django Admin é superior)
 
 3. **Conversão de Código**
@@ -97,7 +94,7 @@ projeto/
    - SQLAlchemy → Django ORM
    - Alembic migrations → Django migrations
    - Flask-RESTful → Django REST Framework
-   - Jinja2 templates → React components (preferencial)
+   - Jinja2 templates → Angular components (preferencial)
 
 4. **Dados e Migrações**
    - Não rode migrações Alembic em produção
@@ -149,12 +146,12 @@ projeto/
    - Extremamente rápido (escrito em Rust)
    - Configuração no `pyproject.toml`
 
-### TypeScript/React
+### TypeScript/Angular
 
 1. **Estrutura de Componentes**
-   - Componentes funcionais com hooks
-   - Props tipadas com interfaces
-   - Separar lógica de negócio em hooks customizados
+   - Componentes baseados em classe ou funcionais
+   - Tipagem forte com interfaces
+   - Separar lógica em services
 
 2. **Tipagem**
    - Defina interfaces para todas as entidades
@@ -162,9 +159,9 @@ projeto/
    - Evite `any`, prefira `unknown`
 
 3. **Estado**
-   - Context API para estado global simples
-   - React Query para cache de API
-   - Zustand ou Redux Toolkit para estado complexo
+   - Services para estado global
+   - RxJS para programação reativa
+   - NgRx ou Signals para estado complexo
 
 4. **Requisições**
    - Axios com interceptors
@@ -269,20 +266,20 @@ python manage.py clear_fake_seed
 python manage.py runserver 0.0.0.0:8000
 ```
 
-### React/TypeScript
+### Angular/TypeScript
 ```bash
-# Instalação
-npm install
+# Instalação (Angular CLI)
+npm install -g @angular/cli
+ng new frontend
 
 # Desenvolvimento
-npm run dev
+ng serve
 
 # Build
-npm run build
+ng build
 
 # Testes
-npm test
-npm run test:coverage
+ng test
 
 # Lint
 npm run lint
@@ -499,7 +496,7 @@ docs: atualiza README com instruções de Docker
 
 ### Escopos Sugeridos
 - **backend**: Django/Python
-- **frontend**: React/TypeScript
+- **frontend**: Angular/TypeScript
 - **api**: Endpoints REST
 - **models**: Models Django
 - **auth**: Autenticação/Autorização
@@ -546,7 +543,7 @@ import pdb; pdb.set_trace()  # Python debugger
 
 ### Frontend
 ```typescript
-// React DevTools
+// Angular DevTools
 // Redux DevTools (se usar Redux)
 // Console logging estratégico
 // Source maps habilitados
@@ -571,11 +568,11 @@ Use este checklist para acompanhar o progresso:
 - [ ] Remover código Flask
 
 ### Frontend
-- [ ] Setup React + TypeScript completo
+- [ ] Setup Angular + TypeScript completo
 - [ ] Componentes principais
 - [ ] Integração com API Django
-- [ ] Roteamento (React Router)
-- [ ] Estado global (Context/Zustand)
+- [ ] Roteamento (Angular Router)
+- [ ] Estado global (Services/Signals/NgRx)
 - [ ] Formulários
 - [ ] Listagens com paginação
 - [ ] Search/filters
@@ -609,12 +606,12 @@ Use este checklist para acompanhar o progresso:
 - Melhor suporte para testes
 - Comunidade mais ativa
 
-### Por que React + TypeScript?
-- Type safety para menos bugs
-- Componentes reutilizáveis
-- Melhor DX (Developer Experience)
-- Ecosistema rico (React Query, Zustand, etc.)
-- Performance com Vite
+### Por que Angular + TypeScript?
+- Framework completo e opinativo
+- Injeção de dependência nativa
+- Estrutura robusta para enterprise
+- TypeScript como first-class citizen
+- Performance com Ivy Compiler
 
 ### Estrutura de Services
 ```python
@@ -636,7 +633,7 @@ class FeedParserService:
 Esta estrutura separa lógica de negócio (services) de acesso a dados (models) e apresentação (views/serializers).
 
 - Django Docs: https://docs.djangoproject.com/
-- React Docs: https://react.dev/
+- Angular Docs: https://angular.dev/
 - TypeScript Handbook: https://www.typescriptlang.org/docs/
 - Docker Docs: https://docs.docker.com/
 
