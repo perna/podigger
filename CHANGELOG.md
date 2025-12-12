@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Removed Flask-specific files (manage.py, run.py, requirements.txt, config/)
   - Removed Alembic migrations (replaced by Django migrations)
   - All functionality now provided by Django backend
+  - Removed Next.js frontend implementation (preparation for Angular migration)
 
 ### Fixed
 - Episode counter (`total_episodes`) now updates correctly after feed parsing
