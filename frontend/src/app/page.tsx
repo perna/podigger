@@ -1,5 +1,14 @@
 import Image from "next/image";
 
+/**
+ * Render the app's home page UI with branding, guidance links, and action buttons.
+ *
+ * The component displays a centered, responsive layout with the Next.js logo, a heading
+ * instructing how to get started, a short paragraph linking to Templates and Learning resources,
+ * and two call-to-action buttons for "Deploy Now" and "Documentation". Styling adapts for dark mode.
+ *
+ * @returns The JSX element for the application's root home page.
+ */
 export default function Home() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
