@@ -203,7 +203,7 @@ main() {
     echo "  1. Restart your shell or run: source ~/.bashrc (or ~/.zshrc)"
     echo "  2. Navigate to the frontend directory: cd $FRONTEND_DIR"
     echo "  3. Node version will automatically switch to $(cat ${FRONTEND_DIR}/.nvmrc)"
-    echo "  4. Run development server: npm start"
+    echo "  4. Run development server: npm run dev"
     echo ""
 }
 
