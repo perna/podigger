@@ -152,7 +152,7 @@ frontend-setup:
 
 frontend-dev:
 	@echo "Starting frontend dev server..."
-	@cd frontend && npm start
+	@cd frontend && npm run dev
 
 frontend-test:
 	@echo "Running frontend tests..."
