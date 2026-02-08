@@ -81,3 +81,10 @@ uv.lock
 
 # Editor directories
 .vscode/
+
+#Agents
+.agent
+.agents
+.claude
+.cursor
+docs

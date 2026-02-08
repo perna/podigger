@@ -1,258 +1,180 @@
-# Gemini - Guia de Desenvolvimento
+# GEMINI - Guia de Desenvolvimento
 
-## Contexto do Projeto
+> **Projeto**: Podcast Aggregator (Podigger)  
+> **Python**: 3.12.7 | **Package Manager**: UV (dev) / pip (CI)  
+> **Status**: Migração Flask → Django em andamento
 
-Este é um projeto de podcasts em **migração do Flask para Django**:
-- **Backend Legado**: Flask (pasta `app/`) - em processo de deprecação
-- **Backend Novo**: Django (pasta `backend/`) - em desenvolvimento ativo
-- **Frontend**: Aguardando migração para Angular (pasta `frontend/` limpa)
-- **Infraestrutura**: Docker e Docker Compose
-- **Banco de Dados**: PostgreSQL com migrações Alembic (Flask) e Django migrations
-- **Package Manager**: UV (local development) e pip (CI/deployment)
-- **Python Version**: 3.12.7
+---
 
-## ⚠️ Status da Migração
+## 🎯 REGRAS CRÍTICAS
 
-**IMPORTANTE**: Este projeto está em transição. Siga estas diretrizes:
+### Status da Migração Flask → Django
 
-1. **NÃO adicione novas features no Flask** (`app/`)
-2. **TODO novo desenvolvimento vai para Django** (`backend/`)
-3. **Mantenha compatibilidade** durante a transição
-4. **Frontend deve consumir APIs Django** progressivamente
-5. **Documente decisões** de migração no CHANGELOG.md
+**IMPORTANTE - Siga estas diretrizes obrigatórias:**
 
-## Estrutura de Diretórios
+1. ❌ **NÃO adicione features no Flask** (`app/`)
+2. ✅ **TODO novo código vai para Django** (`backend/`)
+3. ⚠️ **Mantenha compatibilidade** durante transição
+4. 🔄 **Frontend consome APIs Django** progressivamente
+5. 📝 **Documente decisões** em CHANGELOG.md
+
+### Tecnologias
+
+- **Backend Legado**: Flask (`app/`) - DEPRECADO
+- **Backend Novo**: Django + DRF (`backend/`) - ATIVO
+- **Frontend**: Angular + TypeScript (planejado)
+- **Database**: PostgreSQL
+- **Migrations**: Alembic (Flask) + Django migrations
+- **Infra**: Docker Compose
+- **Cache/Queue**: Redis + Celery (planejado)
+
+---
+
+## 📁 Estrutura do Projeto
 
 ```
-projeto/
-├── app/                          # ⚠️ LEGADO - Flask (não adicionar features)
-│   ├── admin/                    # Admin Flask
-│   ├── api/                      # API Flask (deprecar)
-│   ├── parser/                   # Parser de feeds (migrar lógica)
-│   ├── repository/               # Repositórios Flask
-│   ├── site/                     # Views Flask
-│   ├── static/                   # Assets estáticos
-│   ├── templates/                # Templates Jinja2
-│   └── utils/                    # Utilitários gerais
+podigger/
+├── app/                    # ⚠️ LEGADO - Flask (NÃO adicionar features)
+│   ├── admin/              # Admin Flask
+│   ├── api/                # API Flask (deprecar)
+│   ├── parser/             # Parser feeds (migrar → backend/podcasts/services/)
+│   ├── repository/         # Repositórios Flask
+│   ├── site/               # Views Flask
+│   ├── static/             # Assets estáticos
+│   ├── templates/          # Templates Jinja2
+│   └── utils/              # Utilitários gerais
 │
-├── backend/                      # ✅ NOVO - Django (desenvolvimento ativo)
-│   ├── Dockerfile
-│   ├── config/                   # Settings Django
-│   │   ├── settings.py
-│   │   ├── urls.py
-│   │   └── wsgi.py
-│   ├── podcasts/                 # App principal
+├── backend/                # ✅ NOVO - Django (desenvolvimento ativo)
+│   ├── config/             # Settings, URLs, WSGI
+│   ├── podcasts/           # App principal
 │   │   ├── models.py
 │   │   ├── serializers.py
 │   │   ├── views.py
 │   │   ├── urls.py
-│   │   ├── services/            # Business logic
-│   │   │   └── feed_parser.py
-│   │   ├── management/          # Commands
-│   │   │   └── commands/
+│   │   ├── services/       # Business logic (feed_parser.py)
+│   │   ├── management/commands/  # Commands customizados
 │   │   └── tests/
-│   ├── pyproject.toml           # Ruff config
-│   └── requirements.txt
+│   ├── pyproject.toml      # Ruff config
+│   ├── requirements.txt
+│   └── Dockerfile
 │
-├── frontend/                     # Aguardando migração para Angular
-│   ├── package.json             # Minimal config
+├── frontend/               # Angular (aguardando setup)
+│   ├── package.json
 │   └── README.md
 │
-├── migrations/                   # ⚠️ Alembic (Flask) - manter até migração completa
-│   └── versions/
+├── migrations/             # ⚠️ Alembic (Flask) - manter até migração completa
 │
-├── docker-compose.yml           # Full stack deployment
-├── docker-compose.local.yml     # Local services only (Postgres + Redis)
-├── Makefile                     # Development automation
-├── scripts/                     # Setup scripts
-│   └── setup-uv.sh             # UV installation
-├── .python-version              # Python 3.12.7 for UV
+├── docker-compose.yml           # Full stack
+├── docker-compose.local.yml     # Apenas Postgres + Redis
+├── Makefile                     # Automação dev
+├── scripts/setup-uv.sh          # UV installer
+├── .python-version              # 3.12.7
 ├── GEMINI.md                    # Este arquivo
-├── README.dev.md                # Local development guide
-└── CHANGELOG.md                 # Histórico de mudanças
+├── README.dev.md                # Guia dev local
+└── CHANGELOG.md
 ```
 
-## Boas Práticas de Desenvolvimento
+---
 
-### 🔄 Estratégia de Migração Flask → Django
+## 🔄 Estratégia de Migração
 
-1. **Migração Incremental**
-   - Migre uma feature por vez
-   - Mantenha ambas APIs funcionando temporariamente
-   - Use feature flags quando necessário
-   - Teste exhaustivamente antes de desativar Flask
+### Princípios
 
-2. **Ordem Sugerida**
-   - ✅ Models (já iniciado em `backend/podcasts/models.py`)
-   - ⏳ API endpoints (migrar para DRF)
-   - ✅ Business logic (`app/parser/` → `backend/podcasts/services/`)
-   - ⏳ Templates (se necessário, ou usar Angular)
-   - ⏳ Admin (Django Admin é superior)
+- **Incremental**: Uma feature por vez
+- **Compatibilidade**: Ambas APIs funcionando temporariamente
+- **Feature Flags**: Quando necessário
+- **Testes**: Exhaustivos antes de desativar Flask
 
-3. **Conversão de Código**
-   - Flask routes → Django views/viewsets
-   - SQLAlchemy → Django ORM
-   - Alembic migrations → Django migrations
-   - Flask-RESTful → Django REST Framework
-   - Jinja2 templates → Angular components (preferencial)
+### Ordem de Migração
 
-4. **Dados e Migrações**
-   - Não rode migrações Alembic em produção
-   - Use Django migrations no novo código
-   - Mantenha schema compatível durante transição
-   - Planeje data migration quando necessário
+1. ✅ **Models** (iniciado em `backend/podcasts/models.py`)
+2. ⏳ **API Endpoints** (Flask → DRF)
+3. ✅ **Business Logic** (`app/parser/` → `backend/podcasts/services/`)
+4. ⏳ **Templates** (Jinja2 → Angular components)
+5. ⏳ **Admin** (Flask → Django Admin)
 
-### Python/Django
+### Mapeamento de Código
 
-1. **Organização de Apps**
-   - Uma app por domínio/funcionalidade
-   - Use `apps/` para agrupar suas aplicações
-   - Mantenha models, views, serializers e tests separados
+| Flask | Django |
+|-------|--------|
+| Routes | Views/ViewSets (DRF) |
+| SQLAlchemy | Django ORM |
+| Alembic migrations | Django migrations |
+| Flask-RESTful | Django REST Framework |
+| Jinja2 templates | Angular components |
 
-2. **Configurações**
-   - Use variáveis de ambiente para credenciais
-   - Separe settings por ambiente (dev, staging, prod)
-   - Utilize `python-decouple` ou `django-environ`
+### Migrações de Dados
 
-3. **API Design**
-   - Use Django REST Framework para APIs
-   - Implemente versionamento (v1/, v2/)
-   - Documente com drf-spectacular ou drf-yasg
-   - Use serializers para validação
+- ❌ Não rode Alembic em produção
+- ✅ Use Django migrations no novo código
+- ⚠️ Mantenha schema compatível durante transição
+- 📋 Planeje data migration quando necessário
 
-4. **Testes**
-   - Cobertura mínima de 80%
-   - Use pytest-django
-   - Testes unitários e de integração
-   - Factory Boy para fixtures
+---
 
-5. **Clean Code**
-   - Funções pequenas com responsabilidade única
-   - Nomes descritivos e auto-explicativos
-   - Evite comentários desnecessários (código deve ser auto-documentável)
-   - Máximo de 3-4 parâmetros por função
-   - DRY (Don't Repeat Yourself)
-   - KISS (Keep It Simple, Stupid)
+## 🛠️ Setup Desenvolvimento Local
 
-6. **Princípios SOLID**
-   - **S**ingle Responsibility: Uma classe, uma responsabilidade
-   - **O**pen/Closed: Aberto para extensão, fechado para modificação
-   - **L**iskov Substitution: Subclasses devem ser substituíveis
-   - **I**nterface Segregation: Interfaces específicas e coesas
-   - **D**ependency Inversion: Dependa de abstrações, não implementações
+### Quick Start com UV
 
-7. **Ruff - Linting e Formatação**
-   - Substitui Flake8, isort, Black e mais
-   - Extremamente rápido (escrito em Rust)
-   - Configuração no `pyproject.toml`
-
-### TypeScript/Angular
-
-1. **Estrutura de Componentes**
-   - Componentes baseados em classe ou funcionais
-   - Tipagem forte com interfaces
-   - Separar lógica em services
-
-2. **Tipagem**
-   - Defina interfaces para todas as entidades
-   - Use types para unions e aliases
-   - Evite `any`, prefira `unknown`
-
-3. **Estado**
-   - Services para estado global
-   - RxJS para programação reativa
-   - NgRx ou Signals para estado complexo
-
-4. **Requisições**
-   - Axios com interceptors
-   - Tratamento centralizado de erros
-   - Tipos compartilhados com backend
-
-### Docker
-
-1. **Multi-stage Builds**
-   - Reduza tamanho das imagens
-   - Separe build de runtime
-
-2. **Volumes**
-   - Code reload em desenvolvimento
-   - Persistência de dados com volumes nomeados
-
-3. **Networks**
-   - Isole serviços em networks customizadas
-   - Comunicação entre containers por nome de serviço
-
-## Ambiente de Desenvolvimento Local
-
-### Setup com UV (Recomendado)
-
-O projeto usa **UV** como package manager para desenvolvimento local, proporcionando:
-- Instalação rápida de dependências
-- Gerenciamento automático de versões Python
-- Ambiente virtual isolado
-- Melhor performance que pip
-
-**Quick Start:**
 ```bash
-# Setup completo (instala UV, cria venv, instala Python 3.12.7 e dependências)
+# Setup completo (UV + venv + Python 3.12.7 + deps)
 make setup
 
 # Ativar ambiente virtual
 source .venv/bin/activate
 
-# Iniciar serviços locais (Postgres + Redis)
+# Iniciar serviços (Postgres + Redis)
 make services
 
-# Rodar migrações
+# Rodar migrations
 make migrate
 
-# Iniciar servidor de desenvolvimento
+# Dev server
 make dev
 ```
 
-**Comandos Make Disponíveis:**
-```bash
-make help           # Ver todos os comandos
-make setup          # Setup inicial
-make install        # Instalar/atualizar dependências
-make dev            # Iniciar dev server + services
-make services       # Iniciar apenas Postgres + Redis
-make services-stop  # Parar services
-make migrate        # Rodar migrations
-make test           # Rodar testes
-make lint           # Linting com Ruff
-make format         # Formatação com Ruff
-make shell          # Django shell
-make clean          # Limpar venv e cache
-```
+### Comandos Make
 
-**Documentação Completa:** Veja [README.dev.md](file:///home/perna/workspace/projects/podigger/README.dev.md) para guia detalhado.
+| Comando | Descrição |
+|---------|-----------|
+| `make help` | Lista todos comandos |
+| `make setup` | Setup inicial completo |
+| `make install` | Instalar/atualizar deps |
+| `make dev` | Dev server + services |
+| `make services` | Apenas Postgres + Redis |
+| `make services-stop` | Parar services |
+| `make migrate` | Rodar migrations |
+| `make test` | Rodar testes |
+| `make lint` | Linting (Ruff) |
+| `make format` | Formatação (Ruff) |
+| `make shell` | Django shell |
+| `make clean` | Limpar venv e cache |
 
-## Comandos Úteis
+**Documentação completa**: [README.dev.md](file:///home/perna/workspace/projects/podigger/README.dev.md)
+
+---
+
+## 📋 Comandos Úteis
 
 ### Django
+
 ```bash
-# Navegue para o backend
 cd backend/
 
-# Criar nova app
+# Apps e migrations
 python manage.py startapp nome_app
-
-# Migrations
 python manage.py makemigrations
 python manage.py migrate
 
-# Superuser
+# Admin e shell
 python manage.py createsuperuser
-
-# Shell
 python manage.py shell_plus
 
 # Testes
 pytest
 pytest --cov
 
-# Ruff
+# Linting/Formatação
 ruff check .
 ruff check --fix .
 ruff format .
@@ -262,23 +184,20 @@ python manage.py seed_podcasts
 python manage.py seed_fake_podcasts
 python manage.py clear_fake_seed
 
-# Servidor de desenvolvimento
+# Dev server
 python manage.py runserver 0.0.0.0:8000
 ```
 
 ### Angular/TypeScript
+
 ```bash
-# Instalação (Angular CLI)
+# Setup
 npm install -g @angular/cli
 ng new frontend
 
-# Desenvolvimento
+# Dev workflow
 ng serve
-
-# Build
 ng build
-
-# Testes
 ng test
 
 # Lint
@@ -287,43 +206,82 @@ npm run lint:fix
 ```
 
 ### Docker
+
 ```bash
-# Local services only (Postgres + Redis) - Recomendado para desenvolvimento
+# Local services (Postgres + Redis) - RECOMENDADO para dev
 docker-compose -f docker-compose.local.yml up -d
 docker-compose -f docker-compose.local.yml down
 
-# Full stack deployment (backend, frontend, db, redis, celery)
+# Full stack (backend + frontend + db + redis + celery)
 docker-compose up --build
-
-# Stop
 docker-compose down
 
 # Logs
 docker-compose logs -f [service]
 
-# Exec no backend Django
+# Exec commands
 docker-compose exec backend python manage.py migrate
 docker-compose exec backend python manage.py createsuperuser
-
-# Exec no frontend
 docker-compose exec frontend npm install
 
-# Rebuild específico
+# Rebuild
 docker-compose build [service]
 
-# Limpar volumes (cuidado!)
+# Limpar volumes (⚠️ cuidado!)
 docker-compose down -v
 ```
 
-## Padrões de Código
+---
 
-### Python
+## 🎨 Padrões de Código
+
+### Python/Django
+
+**Princípios:**
 - PEP 8 como base
-- **Ruff** para linting e formatação (substitui Black, Flake8, isort)
-- Type hints obrigatórios (mypy para verificação)
-- Docstrings no estilo Google ou NumPy
+- Type hints obrigatórios (mypy)
+- Docstrings estilo Google/NumPy
+- Ruff para linting + formatação (substitui Black, Flake8, isort)
 
-**Configuração Ruff (`pyproject.toml`):**
+**Clean Code:**
+- Funções pequenas (responsabilidade única)
+- Nomes descritivos e auto-explicativos
+- Máximo 3-4 parâmetros por função
+- DRY (Don't Repeat Yourself)
+- KISS (Keep It Simple, Stupid)
+
+**SOLID:**
+- **S**ingle Responsibility
+- **O**pen/Closed
+- **L**iskov Substitution
+- **I**nterface Segregation
+- **D**ependency Inversion
+
+**Organização de Apps:**
+- Uma app por domínio/funcionalidade
+- Use `apps/` para agrupar aplicações
+- Separe models, views, serializers, tests
+
+**API Design:**
+- Django REST Framework
+- Versionamento (v1/, v2/)
+- Documentação (drf-spectacular ou drf-yasg)
+- Serializers para validação
+
+**Testes:**
+- Cobertura mínima: 80%
+- pytest-django
+- Unitários + integração
+- Factory Boy para fixtures
+
+**Configurações:**
+- Variáveis de ambiente para credenciais
+- Settings por ambiente (dev, staging, prod)
+- Use `python-decouple` ou `django-environ`
+
+### Ruff Configuration
+
+**pyproject.toml:**
 ```toml
 [tool.ruff]
 line-length = 88
@@ -331,43 +289,42 @@ target-version = "py312"
 
 [tool.ruff.lint]
 select = [
-    "E",      # pycodestyle errors
-    "W",      # pycodestyle warnings
-    "F",      # pyflakes
-    "I",      # isort
-    "C90",    # mccabe complexity
-    "N",      # pep8-naming
-    "D",      # pydocstyle
-    "UP",     # pyupgrade
-    "S",      # bandit security
-    "B",      # flake8-bugbear
-    "A",      # flake8-builtins
-    "C4",     # flake8-comprehensions
-    "DTZ",    # flake8-datetimez
-    "T10",    # flake8-debugger
-    "DJ",     # flake8-django
-    "EM",     # flake8-errmsg
-    "ISC",    # flake8-implicit-str-concat
-    "ICN",    # flake8-import-conventions
-    "PIE",    # flake8-pie
-    "PT",     # flake8-pytest-style
-    "Q",      # flake8-quotes
-    "RET",    # flake8-return
-    "SIM",    # flake8-simplify
-    "ARG",    # flake8-unused-arguments
-    "PTH",    # flake8-use-pathlib
-    "ERA",    # eradicate
-    "PL",     # pylint
-    "RUF",    # ruff-specific rules
+    "E", "W",    # pycodestyle
+    "F",         # pyflakes
+    "I",         # isort
+    "C90",       # mccabe
+    "N",         # pep8-naming
+    "D",         # pydocstyle
+    "UP",        # pyupgrade
+    "S",         # bandit security
+    "B",         # bugbear
+    "A",         # builtins
+    "C4",        # comprehensions
+    "DTZ",       # datetimez
+    "T10",       # debugger
+    "DJ",        # django
+    "EM",        # errmsg
+    "ISC",       # implicit-str-concat
+    "ICN",       # import-conventions
+    "PIE",       # pie
+    "PT",        # pytest-style
+    "Q",         # quotes
+    "RET",       # return
+    "SIM",       # simplify
+    "ARG",       # unused-arguments
+    "PTH",       # use-pathlib
+    "ERA",       # eradicate
+    "PL",        # pylint
+    "RUF",       # ruff-specific
 ]
 ignore = [
-    "D100",   # Missing docstring in public module
-    "D104",   # Missing docstring in public package
+    "D100",      # Missing docstring in public module
+    "D104",      # Missing docstring in public package
 ]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/**/*.py" = ["S101", "PLR2004"]  # Allow assert and magic values in tests
-"**/migrations/*.py" = ["E501"]         # Long lines ok in migrations
+"tests/**/*.py" = ["S101", "PLR2004"]
+"**/migrations/*.py" = ["E501"]
 
 [tool.ruff.lint.mccabe]
 max-complexity = 10
@@ -376,73 +333,98 @@ max-complexity = 10
 convention = "google"
 ```
 
-**Comandos Ruff:**
+**Comandos:**
 ```bash
-# Linting
-ruff check .
-ruff check --fix .
-
-# Formatação
-ruff format .
-ruff format --check .
+ruff check .           # Lint
+ruff check --fix .     # Lint + autofix
+ruff format .          # Format
+ruff format --check .  # Check formatting
 ```
 
-### TypeScript
+### TypeScript/Angular
+
+**Tipagem:**
+- Interfaces para entidades
+- Types para unions/aliases
+- Evite `any`, prefira `unknown`
+
+**Estrutura:**
+- Componentes com tipagem forte
+- Lógica em services
+- RxJS para reatividade
+- NgRx/Signals para estado complexo
+
+**Nomenclatura:**
+- Components: `PascalCase`
+- Functions/variables: `camelCase`
+- Constants: `UPPER_CASE`
+- Files: `kebab-case` ou `PascalCase` (components)
+
+**Requisições:**
+- Axios com interceptors
+- Tratamento centralizado de erros
+- Tipos compartilhados com backend
+
+**Linting:**
 - ESLint com config recomendada
 - Prettier para formatação
-- Convenção de nomenclatura:
-  - Components: PascalCase
-  - Functions/variables: camelCase
-  - Constants: UPPER_CASE
-  - Files: kebab-case ou PascalCase para components
 
-## Segurança
+### Docker
 
-1. **Backend**
-   - CORS configurado corretamente
-   - CSRF protection habilitado
-   - Authentication/Authorization (JWT ou Session)
-   - Rate limiting
-   - SQL injection prevention (use ORM)
+**Multi-stage Builds:**
+- Reduza tamanho das imagens
+- Separe build de runtime
 
-2. **Frontend**
-   - Sanitize inputs
-   - XSS prevention
-   - Secure storage (httpOnly cookies)
-   - Environment variables
+**Volumes:**
+- Code reload em dev
+- Persistência com volumes nomeados
 
-3. **Docker**
-   - Não rode como root
-   - Use imagens oficiais
-   - Scan de vulnerabilidades
-   - Secrets management
+**Networks:**
+- Isole serviços em networks customizadas
+- Comunicação entre containers por nome
 
-## Performance
+---
 
-1. **Backend**
-   - Database indexing
-   - Query optimization (select_related, prefetch_related)
-   - Caching (Redis)
-   - Pagination
+## 🔒 Segurança
 
-2. **Frontend**
-   - Code splitting
-   - Lazy loading
-   - Memoization (useMemo, useCallback)
-   - Image optimization
+### Backend
+- CORS configurado corretamente
+- CSRF protection habilitado
+- Authentication/Authorization (JWT ou Session)
+- Rate limiting
+- SQL injection prevention (use ORM)
 
-## CI/CD
+### Frontend
+- Sanitize inputs
+- XSS prevention
+- Secure storage (httpOnly cookies)
+- Environment variables
 
-Considere implementar:
-- GitHub Actions ou GitLab CI
-- Testes automatizados
-- Linting/formatting checks
-- Build de imagens Docker
-- Deploy automatizado
+### Docker
+- Não rode como root
+- Use imagens oficiais
+- Scan de vulnerabilidades
+- Secrets management
 
-## Conventional Commits
+---
 
-Siga o padrão de commits semânticos para histórico claro e geração automática de changelogs.
+## ⚡ Performance
+
+### Backend
+- Database indexing
+- Query optimization (`select_related`, `prefetch_related`)
+- Caching (Redis)
+- Pagination
+
+### Frontend
+- Code splitting
+- Lazy loading
+- Memoization (`useMemo`, `useCallback`)
+- Image optimization
+
+---
+
+## 🔄 Conventional Commits
 
 ### Estrutura
 ```
@@ -453,34 +435,38 @@ Siga o padrão de commits semânticos para histórico claro e geração automát
 [rodapé(s) opcional(is)]
 ```
 
-### Tipos Principais
-- **feat**: Nova funcionalidade
-- **fix**: Correção de bug
-- **docs**: Documentação
-- **style**: Formatação (não afeta código)
-- **refactor**: Refatoração (sem mudança de comportamento)
-- **perf**: Melhoria de performance
-- **test**: Adição ou correção de testes
-- **build**: Mudanças no sistema de build
-- **ci**: Mudanças em arquivos de CI
-- **chore**: Tarefas gerais (deps, configs)
-- **revert**: Reverter commit anterior
+### Tipos
+
+| Tipo | Descrição |
+|------|-----------|
+| `feat` | Nova funcionalidade |
+| `fix` | Correção de bug |
+| `docs` | Documentação |
+| `style` | Formatação (não afeta código) |
+| `refactor` | Refatoração (sem mudança de comportamento) |
+| `perf` | Melhoria de performance |
+| `test` | Testes |
+| `build` | Sistema de build |
+| `ci` | CI/CD |
+| `chore` | Tarefas gerais (deps, configs) |
+| `revert` | Reverter commit |
+
+### Escopos Sugeridos
+`backend`, `frontend`, `api`, `models`, `auth`, `docker`, `tests`, `ci`, `deps`
 
 ### Exemplos
+
 ```bash
 # Feature
 feat(auth): adiciona autenticação JWT
 
 # Bugfix
-fix(api): corrige erro de validação no endpoint de usuários
+fix(api): corrige validação no endpoint de usuários
 
 # Breaking change
 feat(api)!: remove suporte a API v1
 
 BREAKING CHANGE: A API v1 foi removida. Migre para v2.
-
-# Múltiplos escopos
-fix(frontend,backend): corrige sincronização de dados
 
 # Com issue
 fix(orders): corrige cálculo de desconto
@@ -489,23 +475,10 @@ Closes #123
 
 # Refactoring
 refactor(models): aplica SOLID principles em UserService
-
-# Documentation
-docs: atualiza README com instruções de Docker
 ```
 
-### Escopos Sugeridos
-- **backend**: Django/Python
-- **frontend**: Angular/TypeScript
-- **api**: Endpoints REST
-- **models**: Models Django
-- **auth**: Autenticação/Autorização
-- **docker**: Configurações Docker
-- **tests**: Arquivos de teste
-- **ci**: Pipeline CI/CD
-- **deps**: Dependências
-
 ### Ferramentas
+
 ```bash
 # Commitizen (CLI interativo)
 pip install commitizen
@@ -522,21 +495,15 @@ npm install --save-dev @commitlint/cli @commitlint/config-conventional
 - ✅ Facilita code review
 - ✅ Integração com ferramentas de release
 
-## Documentação
+---
 
-Mantenha atualizado:
-- README.md com setup instructions
-- API documentation (OpenAPI/Swagger)
-- Architecture Decision Records (ADRs)
-- Changelog
-
-## Debugging
+## 🐛 Debugging
 
 ### Backend
 ```python
 # Django Debug Toolbar
 # django-extensions para shell_plus
-# pdb ou ipdb para debugging
+# pdb ou ipdb
 
 import pdb; pdb.set_trace()  # Python debugger
 ```
@@ -549,9 +516,9 @@ import pdb; pdb.set_trace()  # Python debugger
 // Source maps habilitados
 ```
 
-## Checklist de Migração
+---
 
-Use este checklist para acompanhar o progresso:
+## ✅ Checklist de Migração
 
 ### Backend
 - [x] Setup Django básico
@@ -560,15 +527,14 @@ Use este checklist para acompanhar o progresso:
 - [x] Serializers DRF
 - [x] Commands de seed
 - [ ] Migrar todos endpoints da API Flask
-
 - [ ] Migrar repositories para services
 - [ ] Testes unitários (>80% cobertura)
 - [ ] Testes de integração
-- [ ] Configurar Celery (se necessário)
+- [ ] Configurar Celery
 - [ ] Remover código Flask
 
 ### Frontend
-- [ ] Setup Angular + TypeScript completo
+- [ ] Setup Angular + TypeScript
 - [ ] Componentes principais
 - [ ] Integração com API Django
 - [ ] Roteamento (Angular Router)
@@ -584,19 +550,21 @@ Use este checklist para acompanhar o progresso:
 - [x] Docker Frontend
 - [ ] Docker Compose unificado
 - [ ] PostgreSQL configurado
-- [ ] Redis (se usar cache/Celery)
+- [ ] Redis (cache/Celery)
 - [ ] Nginx para produção
 - [ ] CI/CD pipeline
 - [ ] Monitoring/logging
 
 ### Documentação
-- [x] GEMINI.md (este arquivo)
+- [x] GEMINI.md
 - [ ] README.md atualizado
 - [ ] API documentation (Swagger)
 - [ ] DOCKER_DJANGO.md
 - [ ] CHANGELOG.md mantido
 
-## Decisões de Arquitetura
+---
+
+## 🏗️ Decisões de Arquitetura
 
 ### Por que Django?
 - ORM mais robusto que SQLAlchemy
@@ -614,6 +582,8 @@ Use este checklist para acompanhar o progresso:
 - Performance com Ivy Compiler
 
 ### Estrutura de Services
+
+**Padrão:**
 ```python
 # backend/podcasts/services/feed_parser.py
 class FeedParserService:
@@ -630,13 +600,41 @@ class FeedParserService:
         pass
 ```
 
-Esta estrutura separa lógica de negócio (services) de acesso a dados (models) e apresentação (views/serializers).
-
-- Django Docs: https://docs.djangoproject.com/
-- Angular Docs: https://angular.dev/
-- TypeScript Handbook: https://www.typescriptlang.org/docs/
-- Docker Docs: https://docs.docker.com/
+**Separação de responsabilidades:**
+- **Services**: Lógica de negócio
+- **Models**: Acesso a dados
+- **Views/Serializers**: Apresentação
 
 ---
 
-**Nota**: Adapte este guia conforme as necessidades específicas do seu projeto.
+## 🔧 CI/CD (Planejado)
+
+- GitHub Actions ou GitLab CI
+- Testes automatizados
+- Linting/formatting checks
+- Build de imagens Docker
+- Deploy automatizado
+
+---
+
+## 📚 Documentação Obrigatória
+
+Mantenha atualizado:
+- `README.md` - Setup instructions
+- API documentation (OpenAPI/Swagger)
+- Architecture Decision Records (ADRs)
+- `CHANGELOG.md`
+
+---
+
+## 🔗 Referências
+
+- [Django Docs](https://docs.djangoproject.com/)
+- [Angular Docs](https://angular.dev/)
+- [TypeScript Handbook](https://www.typescriptlang.org/docs/)
+- [Docker Docs](https://docs.docker.com/)
+
+---
+
+**Última atualização**: 2026-02-07  
+**Versão**: 2.0 (Otimizado para LLMs)
