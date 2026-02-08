@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Add New Podcast - Podigger</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0db9f2",
+                        "background-light": "#f5f8f8",
+                        "background-dark": "#101e22",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans"]
+                    },
+                    borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-white transition-colors duration-300">
+<div class="relative flex min-h-screen w-full flex-col overflow-x-hidden max-w-[430px] mx-auto shadow-2xl bg-background-light dark:bg-background-dark">
+<!-- Top App Bar (iOS Style) -->
+<header class="flex items-center p-4 pb-2 justify-between">
+<button class="flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors">
+<span class="material-symbols-outlined text-2xl">arrow_back_ios_new</span>
+</button>
+<h1 class="text-lg font-bold leading-tight tracking-tight flex-1 text-center pr-10">Add New Podcast</h1>
+</header>
+<!-- Hero Section -->
+<div class="flex flex-col items-center px-6 pt-10 pb-6">
+<div class="mb-8 p-6 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20">
+<span class="material-symbols-outlined text-primary text-6xl">rss_feed</span>
+</div>
+<h2 class="text-[28px] font-bold leading-tight text-center pb-3">Expand your library</h2>
+<p class="text-slate-600 dark:text-slate-400 text-base font-normal leading-relaxed text-center px-2">
+                Paste the RSS feed URL of your favorite podcast below to integrate it into Podigger.
+            </p>
+</div>
+<!-- Main Form Area -->
+<main class="flex flex-col gap-6 px-6 py-4 flex-1">
+<div class="flex flex-col gap-2">
+<label class="text-sm font-semibold tracking-wide uppercase text-slate-500 dark:text-slate-400 ml-1" for="rss-url">
+                    RSS Feed URL
+                </label>
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors">link</span>
+<input class="form-input flex w-full rounded-2xl border-2 border-slate-200 dark:border-slate-800 bg-white dark:bg-[#182d34] h-16 pl-12 pr-4 text-base font-normal transition-all focus:border-primary focus:ring-0 placeholder:text-slate-400 dark:placeholder:text-slate-500" id="rss-url" placeholder="https://example.com/feed.xml" type="url"/>
+</div>
+<p class="text-xs text-slate-400 mt-2 px-1">Supporting standard RSS, Atom, and XML formats.</p>
+</div>
+<div class="pt-4">
+<button class="flex w-full cursor-pointer items-center justify-center rounded-full h-16 px-6 bg-primary text-background-dark text-lg font-bold transition-transform active:scale-95 shadow-lg shadow-primary/20">
+<span class="truncate">Add Podcast</span>
+<span class="material-symbols-outlined ml-2">add_circle</span>
+</button>
+</div>
+</main>
+<!-- Recent Activity / History Placeholder -->
+<section class="px-6 pb-12 mt-auto">
+<h3 class="text-sm font-semibold tracking-wide uppercase text-slate-500 dark:text-slate-400 mb-4 px-1">How it works</h3>
+<div class="space-y-4">
+<div class="flex items-start gap-4 p-4 rounded-2xl bg-white dark:bg-[#182d34] border border-slate-100 dark:border-slate-800">
+<div class="size-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary text-sm">sync</span>
+</div>
+<div>
+<p class="font-semibold text-sm">Auto-Syncing</p>
+<p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">We'll automatically fetch new episodes whenever the host publishes.</p>
+</div>
+</div>
+<div class="flex items-start gap-4 p-4 rounded-2xl bg-white dark:bg-[#182d34] border border-slate-100 dark:border-slate-800">
+<div class="size-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary text-sm">cloud_download</span>
+</div>
+<div>
+<p class="font-semibold text-sm">Offline Access</p>
+<p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Podigger parses the feed and enables one-tap downloads for your commute.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Loading State Overlay (Hidden by default) -->
+<div class="hidden fixed inset-0 bg-background-dark/80 backdrop-blur-sm z-50 flex flex-col items-center justify-center">
+<div class="size-16 border-4 border-primary/30 border-t-primary rounded-full animate-spin"></div>
+<p class="mt-4 font-semibold text-white">Validating Feed...</p>
+</div>
+<!-- Toast Notification (Success State Example) -->
+<div class="hidden fixed bottom-10 left-1/2 -translate-x-1/2 w-[90%] bg-green-500 text-white p-4 rounded-2xl flex items-center gap-3 shadow-xl animate-bounce">
+<span class="material-symbols-outlined">check_circle</span>
+<span class="font-medium text-sm">Podcast added to your library!</span>
+</div>
+</div>
+</body></html>

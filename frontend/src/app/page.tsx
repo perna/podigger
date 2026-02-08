@@ -1,74 +1,75 @@
-import Image from "next/image";
+import { Button } from '@/components/ui/Button';
+import { Icon } from '@/components/ui/Icon';
+import { Card } from '@/components/ui/Card';
+import { Input } from '@/components/ui/Input';
+import { Badge } from '@/components/ui/Badge';
+import { LoadingSpinner } from '@/components/ui/Loading';
 
 /**
- * Render the app's home page UI with branding, guidance links, and action buttons.
- *
- * The component displays a centered, responsive layout with the Next.js logo, a heading
- * instructing how to get started, a short paragraph linking to Templates and Learning resources,
- * and two call-to-action buttons for "Deploy Now" and "Documentation". Styling adapts for dark mode.
- *
- * @returns The JSX element for the application's root home page.
+ * Showcase page for Podigger UI Components (Phase 1).
  */
 export default function Home() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="min-h-screen p-8 max-w-4xl mx-auto space-y-12">
+      <header className="space-y-4">
+        <div className="flex items-center gap-3">
+          <div className="size-12 rounded-2xl bg-primary flex items-center justify-center">
+            <Icon name="rss_feed" className="text-background-dark text-3xl" />
+          </div>
+          <h1 className="text-4xl font-extrabold tracking-tight">Podigger UI Kit</h1>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+        <p className="text-slate-400 text-lg">Foundation and Design System (Phase 1)</p>
+      </header>
+
+      <section className="space-y-6">
+        <h2 className="text-2xl font-bold border-b border-slate-800 pb-2">Buttons</h2>
+        <div className="flex flex-wrap gap-4">
+          <Button>Primary Button</Button>
+          <Button variant="secondary">Secondary</Button>
+          <Button variant="outline">Outline</Button>
+          <Button variant="ghost">Ghost</Button>
+          <Button isLoading>Loading</Button>
+          <Button size="sm">Small</Button>
+          <Button size="lg">Large</Button>
+          <Button size="icon"><Icon name="settings" /></Button>
         </div>
-      </main>
+      </section>
+
+      <section className="space-y-6">
+        <h2 className="text-2xl font-bold border-b border-slate-800 pb-2">Inputs & Badges</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="space-y-4">
+            <Input placeholder="Enter something..." />
+            <div className="relative">
+              <Icon name="search" className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" />
+              <Input className="pl-12" placeholder="Search episodes..." />
+            </div>
+          </div>
+          <div className="flex flex-wrap gap-2 items-center">
+            <Badge>New</Badge>
+            <Badge variant="secondary">Popular</Badge>
+            <Badge variant="outline">Exclusive</Badge>
+            <Badge variant="ghost">Draft</Badge>
+          </div>
+        </div>
+      </section>
+
+      <section className="space-y-6">
+        <h2 className="text-2xl font-bold border-b border-slate-800 pb-2">Cards & Loading</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Card className="p-6" hoverable>
+            <h3 className="text-xl font-bold mb-2">Hoverable Card</h3>
+            <p className="text-slate-400">This card reacts to hover and focus states with a subtle scale and shadow effect.</p>
+            <Button className="mt-4" size="sm" variant="secondary">Action</Button>
+          </Card>
+          <Card className="p-6 flex items-center justify-center">
+            <div className="flex flex-col items-center gap-4">
+              <LoadingSpinner className="size-10 text-primary" />
+              <p className="text-sm font-bold animate-pulse">Loading content...</p>
+            </div>
+          </Card>
+        </div>
+      </section>
     </div>
   );
 }

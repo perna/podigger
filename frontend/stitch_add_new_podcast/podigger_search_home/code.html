@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Podigger Search Home</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0db9f2",
+                        "background-light": "#f5f8f8",
+                        "background-dark": "#101e22",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white font-display">
+<!-- Sticky Header with Search Area -->
+<header class="sticky top-0 z-50 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
+<div class="flex items-center p-4 pb-2 justify-between">
+<div class="text-primary flex size-10 shrink-0 items-center justify-center">
+<span class="material-symbols-outlined text-3xl">rss_feed</span>
+</div>
+<h1 class="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-tight flex-1 text-center">Podigger</h1>
+<div class="flex w-10 items-center justify-end">
+<button class="flex size-10 cursor-pointer items-center justify-center overflow-hidden rounded-full bg-slate-200 dark:bg-slate-800 text-slate-900 dark:text-white">
+<span class="material-symbols-outlined">account_circle</span>
+</button>
+</div>
+</div>
+<div class="px-4 py-3">
+<div class="flex gap-2">
+<label class="flex flex-col flex-1 h-12">
+<div class="flex w-full flex-1 items-stretch rounded-xl h-full bg-slate-100 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 focus-within:border-primary transition-colors">
+<div class="text-slate-400 dark:text-[#90bccb] flex items-center justify-center pl-4">
+<span class="material-symbols-outlined text-xl">search</span>
+</div>
+<input class="form-input flex w-full min-w-0 flex-1 border-none bg-transparent focus:outline-0 focus:ring-0 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-[#90bccb] px-3 text-base font-normal leading-normal" placeholder="Episodes, podcasts, or RSS..." type="text"/>
+</div>
+</label>
+<button class="flex px-6 cursor-pointer items-center justify-center overflow-hidden rounded-xl h-12 bg-primary text-background-dark text-sm font-bold leading-normal tracking-wide transition-transform active:scale-95">
+                    Search
+                </button>
+</div>
+</div>
+<!-- Filter Tabs (Subtle) -->
+<div class="flex gap-4 px-4 pb-3 overflow-x-auto hide-scrollbar">
+<button class="text-sm font-semibold text-primary border-b-2 border-primary pb-1">All Results</button>
+<button class="text-sm font-medium text-slate-500 dark:text-slate-400 pb-1 whitespace-nowrap">Latest</button>
+<button class="text-sm font-medium text-slate-500 dark:text-slate-400 pb-1 whitespace-nowrap">Popular</button>
+<button class="text-sm font-medium text-slate-500 dark:text-slate-400 pb-1 whitespace-nowrap">Short Clips</button>
+</div>
+</header>
+<main class="max-w-2xl mx-auto p-4 space-y-6">
+<h2 class="text-slate-900 dark:text-white text-xl font-bold leading-tight tracking-tight">Recent Search Results</h2>
+<!-- Episode Card 1 -->
+<div class="group relative flex flex-col items-stretch justify-start rounded-2xl bg-white dark:bg-[#182d34] border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden transition-all hover:shadow-md">
+<div class="relative w-full aspect-[16/9] bg-slate-200 dark:bg-slate-700 overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Modern podcast studio with neon lights" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB2qs4YFEukipIXpeVmp96UR7fR6g0lcUm1jlKhhTjbizQtUr_W-D1r9k9KNSU3eC-7OAFooZKw-XHmTQWWUWfTIYB_Mg6gTvMgsR59HOT3paUbzQBQYNOqY7hXwXzcWp047Mo4fSS-XLKp6gbZPGjLITmuBjuRYiwGgTUOPqWCt94yqmkTuFLs8vIjqtHdJyDgL0W7VWQyID_rNvfUFfI33PXNe1YRGqHcOH0Sl5lD_mkSAkFbPGeK2GTfJYw_3k-apKRvzqBf_YY"/>
+<div class="absolute bottom-3 right-3 bg-black/60 backdrop-blur-sm text-white px-2 py-1 rounded-md text-xs font-bold">
+                    42:15
+                </div>
+</div>
+<div class="flex w-full flex-col p-5 gap-3">
+<div class="space-y-1">
+<h3 class="text-slate-900 dark:text-white text-lg font-bold leading-snug">The Future of AI in Design</h3>
+<p class="text-primary text-sm font-semibold tracking-wide uppercase">Design Forward with Podigger</p>
+</div>
+<p class="text-slate-600 dark:text-[#90bccb] text-sm font-normal leading-relaxed line-clamp-2">
+                    In this episode, we explore how RSS feeds are revolutionizing how we consume audio content and the role of AI in discovery within creative industries.
+                </p>
+<div class="flex items-center justify-between pt-2">
+<button class="flex items-center gap-2 px-6 h-10 bg-primary text-background-dark rounded-full text-sm font-bold transition-all active:scale-95">
+<span class="material-symbols-outlined text-xl">play_arrow</span>
+<span>Play</span>
+</button>
+<a class="text-slate-500 dark:text-slate-400 text-sm font-semibold flex items-center gap-1 hover:text-primary transition-colors" href="#">
+                        View Podcast
+                        <span class="material-symbols-outlined text-sm">arrow_forward_ios</span>
+</a>
+</div>
+</div>
+</div>
+<!-- Episode Card 2 -->
+<div class="group relative flex flex-col items-stretch justify-start rounded-2xl bg-white dark:bg-[#182d34] border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden transition-all hover:shadow-md">
+<div class="relative w-full aspect-[16/9] bg-slate-200 dark:bg-slate-700 overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Minimalist microphone on a wooden table" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBGtPIEATGo0CBLuadSaENXj1Z8mLmPL5ZKha14sGsL9lxUWLytEaZmAuLvrVe2QIPVa99fJ3dWhJ-SPWxseUuDatbFlLm6voKk3px87L4ziPAD4t7XMNcsYelN13iKx82wGpsCA7C9E-YT0VH0Fluf8IZSLR8Th570RTNto9AqX8hfZ_XM6NwY3O6IsFH57QjLQhnoaxmTOE3XYN2xkVc8E2qOEVW6CPy2CnJmDMYrSYgVwbV4x3DLxDfEvu3BazHSixkSy3pB9tY"/>
+<div class="absolute bottom-3 right-3 bg-black/60 backdrop-blur-sm text-white px-2 py-1 rounded-md text-xs font-bold">
+                    1:05:00
+                </div>
+</div>
+<div class="flex w-full flex-col p-5 gap-3">
+<div class="space-y-1">
+<h3 class="text-slate-900 dark:text-white text-lg font-bold leading-snug">Building Scalable Feed Architectures</h3>
+<p class="text-primary text-sm font-semibold tracking-wide uppercase">Engineering Audio</p>
+</div>
+<p class="text-slate-600 dark:text-[#90bccb] text-sm font-normal leading-relaxed line-clamp-2">
+                    Technical deep dive into the infrastructure required to handle millions of simultaneous RSS feed updates without breaking the playback experience.
+                </p>
+<div class="flex items-center justify-between pt-2">
+<button class="flex items-center gap-2 px-6 h-10 bg-primary text-background-dark rounded-full text-sm font-bold transition-all active:scale-95">
+<span class="material-symbols-outlined text-xl">play_arrow</span>
+<span>Play</span>
+</button>
+<a class="text-slate-500 dark:text-slate-400 text-sm font-semibold flex items-center gap-1 hover:text-primary transition-colors" href="#">
+                        View Podcast
+                        <span class="material-symbols-outlined text-sm">arrow_forward_ios</span>
+</a>
+</div>
+</div>
+</div>
+<!-- Episode Card 3 -->
+<div class="group relative flex flex-col items-stretch justify-start rounded-2xl bg-white dark:bg-[#182d34] border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden transition-all hover:shadow-md">
+<div class="relative w-full aspect-[16/9] bg-slate-200 dark:bg-slate-700 overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Abstract vibrant audio wave visualization" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAJamU-QSNpOAkvLJuSNIgohZ6eiowf90ifS30J56n57OES9QJbqLxgXrUMH_8QDAnEuOoYMG9inc6rrIDJUfmZjPMMJjrQSvPbiiCuMN9r_Uxlu46icvUPmftvF9tHZum4i3bGwqKD36n2SYZ6yMj1AtrCXLpZOpfVBqLPph206XS-O0afeknEeLr_ToNq6XqaD97hC1MImsC-vUT_Ac6vovgl42an5WlHtezmFsD6vfuZ_gst5PNKoCZJN3mW0A7BmcV2CX3uU3Y"/>
+<div class="absolute bottom-3 right-3 bg-black/60 backdrop-blur-sm text-white px-2 py-1 rounded-md text-xs font-bold">
+                    28:50
+                </div>
+</div>
+<div class="flex w-full flex-col p-5 gap-3">
+<div class="space-y-1">
+<h3 class="text-slate-900 dark:text-white text-lg font-bold leading-snug">The Sound of Minimalism</h3>
+<p class="text-primary text-sm font-semibold tracking-wide uppercase">The Modern Listener</p>
+</div>
+<p class="text-slate-600 dark:text-[#90bccb] text-sm font-normal leading-relaxed line-clamp-2">
+                    Why high-fidelity sound matters in an era of low-bitrate streaming and how to optimize your listening equipment for Podigger.
+                </p>
+<div class="flex items-center justify-between pt-2">
+<button class="flex items-center gap-2 px-6 h-10 bg-primary text-background-dark rounded-full text-sm font-bold transition-all active:scale-95">
+<span class="material-symbols-outlined text-xl">play_arrow</span>
+<span>Play</span>
+</button>
+<a class="text-slate-500 dark:text-slate-400 text-sm font-semibold flex items-center gap-1 hover:text-primary transition-colors" href="#">
+                        View Podcast
+                        <span class="material-symbols-outlined text-sm">arrow_forward_ios</span>
+</a>
+</div>
+</div>
+</div>
+<!-- Loading Indicator for Infinite Scroll -->
+<div class="flex flex-col items-center justify-center py-8 gap-3">
+<div class="size-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+<p class="text-slate-400 dark:text-slate-500 text-xs font-medium uppercase tracking-widest">Loading more episodes</p>
+</div>
+</main>
+<!-- Bottom Navigation Bar (iOS Style) -->
+<nav class="fixed bottom-0 left-0 right-0 bg-white/80 dark:bg-[#101e22]/90 backdrop-blur-xl border-t border-slate-200 dark:border-slate-800 px-6 pb-8 pt-2 z-50">
+<div class="flex justify-between items-center max-w-md mx-auto">
+<button class="flex flex-col items-center gap-1 text-slate-400 dark:text-slate-500">
+<span class="material-symbols-outlined">home</span>
+<span class="text-[10px] font-bold">Home</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-primary">
+<span class="material-symbols-outlined">search</span>
+<span class="text-[10px] font-bold">Search</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-slate-400 dark:text-slate-500">
+<span class="material-symbols-outlined">library_music</span>
+<span class="text-[10px] font-bold">Library</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-slate-400 dark:text-slate-500">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-[10px] font-bold">Settings</span>
+</button>
+</div>
+</nav>
+<!-- Spacer for bottom nav -->
+<div class="h-24"></div>
+</body></html>
