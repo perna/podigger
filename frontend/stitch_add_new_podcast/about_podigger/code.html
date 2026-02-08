@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>About Podigger</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0db9f2",
+                        "background-light": "#f5f8f8",
+                        "background-dark": "#101e22",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .ios-blur {
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white antialiased">
+<div class="relative flex h-screen w-full flex-col overflow-x-hidden">
+<!-- Top App Bar -->
+<header class="sticky top-0 z-50 flex items-center justify-between bg-background-light/80 dark:bg-background-dark/80 px-4 py-4 ios-blur">
+<button class="flex h-10 w-10 items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined text-2xl">arrow_back_ios_new</span>
+</button>
+<h1 class="text-lg font-bold tracking-tight">About</h1>
+<div class="w-10"></div> <!-- Spacer for balance -->
+</header>
+<main class="flex-1 px-6 pb-12 pt-8">
+<!-- App Logo & Version Section -->
+<div class="flex flex-col items-center justify-center mb-10 text-center">
+<div class="relative mb-6">
+<!-- Background Glow -->
+<div class="absolute inset-0 bg-primary/20 blur-3xl rounded-full"></div>
+<div class="relative h-32 w-32 overflow-hidden rounded-xl shadow-2xl bg-gradient-to-br from-primary to-primary/60 p-6 flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-7xl leading-none">podcasts</span>
+</div>
+</div>
+<h2 class="text-3xl font-bold tracking-tight mb-1">Podigger</h2>
+<p class="text-slate-500 dark:text-[#90bccb] font-medium">Version 1.2.0 (Build 42)</p>
+</div>
+<!-- Mission Statement -->
+<section class="mb-10">
+<div class="bg-primary/10 dark:bg-primary/5 border border-primary/20 p-6 rounded-xl text-center">
+<h3 class="text-primary font-bold uppercase tracking-wider text-xs mb-3">Our Mission</h3>
+<p class="text-lg font-medium leading-relaxed dark:text-slate-200">
+                        Podigger is your gateway to the world's most compelling stories. We simplify podcast discovery through advanced RSS integration and a seamless search experience designed for the modern listener.
+                    </p>
+</div>
+</section>
+<!-- Actions List -->
+<section class="space-y-3 mb-12">
+<!-- Action Row 1 -->
+<button class="flex w-full items-center justify-between bg-white/50 dark:bg-white/5 p-4 rounded-xl border border-slate-200 dark:border-white/5 active:scale-[0.98] transition-all">
+<div class="flex items-center gap-4">
+<div class="flex h-10 w-10 items-center justify-center rounded-full bg-primary/20 text-primary">
+<span class="material-symbols-outlined">star</span>
+</div>
+<span class="font-semibold">Rate on App Store</span>
+</div>
+<span class="material-symbols-outlined text-slate-400">chevron_right</span>
+</button>
+<!-- Action Row 2 -->
+<button class="flex w-full items-center justify-between bg-white/50 dark:bg-white/5 p-4 rounded-xl border border-slate-200 dark:border-white/5 active:scale-[0.98] transition-all">
+<div class="flex items-center gap-4">
+<div class="flex h-10 w-10 items-center justify-center rounded-full bg-primary/20 text-primary">
+<span class="material-symbols-outlined">share</span>
+</div>
+<span class="font-semibold">Share with Friends</span>
+</div>
+<span class="material-symbols-outlined text-slate-400">chevron_right</span>
+</button>
+<!-- Action Row 3 -->
+<button class="flex w-full items-center justify-between bg-white/50 dark:bg-white/5 p-4 rounded-xl border border-slate-200 dark:border-white/5 active:scale-[0.98] transition-all">
+<div class="flex items-center gap-4">
+<div class="flex h-10 w-10 items-center justify-center rounded-full bg-primary/20 text-primary">
+<span class="material-symbols-outlined">help</span>
+</div>
+<span class="font-semibold">Help &amp; Support</span>
+</div>
+<span class="material-symbols-outlined text-slate-400">chevron_right</span>
+</button>
+</section>
+<!-- Social & Contact -->
+<section class="flex flex-col items-center">
+<p class="text-slate-400 text-sm font-semibold uppercase tracking-widest mb-6">Stay Connected</p>
+<div class="flex gap-6 mb-12">
+<a class="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-white shadow-lg shadow-primary/30 active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined">alternate_email</span>
+</a>
+<a class="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-white shadow-lg shadow-primary/30 active:scale-90 transition-transform" href="#">
+<svg class="h-6 w-6 fill-current" viewbox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path></svg>
+</a>
+<a class="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-white shadow-lg shadow-primary/30 active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined">rss_feed</span>
+</a>
+</div>
+<!-- Footer Links -->
+<div class="flex flex-col items-center gap-3">
+<div class="flex gap-4 text-sm font-medium text-primary">
+<a class="hover:underline" href="#">Privacy Policy</a>
+<span class="text-slate-300 dark:text-white/20">•</span>
+<a class="hover:underline" href="#">Terms of Service</a>
+</div>
+<p class="text-xs text-slate-400 mt-2">© 2024 Podigger Inc. All rights reserved.</p>
+</div>
+</section>
+</main>
+</div>
+</body></html>

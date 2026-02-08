@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Podigger - Trending Searches</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0db9f2",
+                        "background-light": "#f5f8f8",
+                        "background-dark": "#101e22",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white min-h-screen">
+<!-- Top Navigation Bar -->
+<div class="sticky top-0 z-50 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md">
+<div class="flex items-center p-4 pb-2 justify-between">
+<div class="flex size-12 shrink-0 items-center justify-center">
+<span class="material-symbols-outlined text-2xl">menu</span>
+</div>
+<h1 class="text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center font-display">Podigger</h1>
+<div class="flex w-12 items-center justify-end">
+<button class="flex size-10 items-center justify-center rounded-full bg-primary/10 text-primary">
+<span class="material-symbols-outlined">person</span>
+</button>
+</div>
+</div>
+<!-- Search Bar -->
+<div class="px-4 py-2">
+<label class="flex flex-col w-full">
+<div class="flex w-full items-stretch rounded-xl h-12 bg-slate-200/50 dark:bg-[#223f49]">
+<div class="flex items-center justify-center pl-4 text-slate-500 dark:text-[#90bccb]">
+<span class="material-symbols-outlined">search</span>
+</div>
+<input class="form-input flex w-full border-none bg-transparent focus:ring-0 text-base font-normal placeholder:text-slate-500 dark:placeholder:text-[#90bccb] px-3" placeholder="Search podcasts, hosts, or topics"/>
+</div>
+</label>
+</div>
+<!-- Timeframe Segmented Control -->
+<div class="px-4 py-3">
+<div class="flex h-11 items-center justify-center rounded-full bg-slate-200/50 dark:bg-[#223f49] p-1">
+<label class="flex cursor-pointer h-full grow items-center justify-center rounded-full px-2 has-[:checked]:bg-white dark:has-[:checked]:bg-[#101e23] has-[:checked]:shadow-sm text-slate-500 dark:text-[#90bccb] has-[:checked]:text-primary text-sm font-semibold transition-all">
+<span>Today</span>
+<input checked="" class="hidden" name="timeframe" type="radio" value="Today"/>
+</label>
+<label class="flex cursor-pointer h-full grow items-center justify-center rounded-full px-2 has-[:checked]:bg-white dark:has-[:checked]:bg-[#101e23] has-[:checked]:shadow-sm text-slate-500 dark:text-[#90bccb] has-[:checked]:text-primary text-sm font-semibold transition-all">
+<span>This Week</span>
+<input class="hidden" name="timeframe" type="radio" value="Week"/>
+</label>
+<label class="flex cursor-pointer h-full grow items-center justify-center rounded-full px-2 has-[:checked]:bg-white dark:has-[:checked]:bg-[#101e23] has-[:checked]:shadow-sm text-slate-500 dark:text-[#90bccb] has-[:checked]:text-primary text-sm font-semibold transition-all">
+<span>This Month</span>
+<input class="hidden" name="timeframe" type="radio" value="Month"/>
+</label>
+</div>
+</div>
+<!-- Quick-Filter Chips -->
+<div class="flex gap-2 px-4 py-2 overflow-x-auto no-scrollbar">
+<div class="flex h-8 shrink-0 items-center justify-center rounded-full bg-primary text-white px-4">
+<p class="text-xs font-bold">All</p>
+</div>
+<div class="flex h-8 shrink-0 items-center justify-center rounded-full bg-slate-200/50 dark:bg-[#223f49] px-4 text-slate-600 dark:text-white">
+<p class="text-xs font-semibold">True Crime</p>
+</div>
+<div class="flex h-8 shrink-0 items-center justify-center rounded-full bg-slate-200/50 dark:bg-[#223f49] px-4 text-slate-600 dark:text-white">
+<p class="text-xs font-semibold">Technology</p>
+</div>
+<div class="flex h-8 shrink-0 items-center justify-center rounded-full bg-slate-200/50 dark:bg-[#223f49] px-4 text-slate-600 dark:text-white">
+<p class="text-xs font-semibold">Comedy</p>
+</div>
+<div class="flex h-8 shrink-0 items-center justify-center rounded-full bg-slate-200/50 dark:bg-[#223f49] px-4 text-slate-600 dark:text-white">
+<p class="text-xs font-semibold">Health</p>
+</div>
+</div>
+</div>
+<!-- Main Content: Trending List -->
+<main class="px-4 pb-24">
+<div class="flex items-center justify-between py-4">
+<h2 class="text-xl font-extrabold tracking-tight">Trending Now</h2>
+<span class="text-primary text-xs font-bold uppercase tracking-wider">Top 50</span>
+</div>
+<!-- Trending Item 1 -->
+<div class="flex items-center gap-4 py-4 border-b border-slate-200 dark:border-slate-800">
+<div class="flex flex-col items-center justify-center w-10">
+<span class="text-2xl font-black text-primary italic">01</span>
+<span class="material-symbols-outlined text-primary text-sm font-bold">trending_up</span>
+</div>
+<div class="flex-1 min-w-0">
+<h3 class="text-base font-bold truncate">The Future of AI Architecture</h3>
+<p class="text-sm text-slate-500 dark:text-slate-400">12.5k searches today</p>
+</div>
+<button class="size-10 flex items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800">
+<span class="material-symbols-outlined text-slate-400">arrow_forward_ios</span>
+</button>
+</div>
+<!-- Trending Item 2 -->
+<div class="flex items-center gap-4 py-4 border-b border-slate-200 dark:border-slate-800">
+<div class="flex flex-col items-center justify-center w-10">
+<span class="text-2xl font-black text-slate-400 italic">02</span>
+<span class="material-symbols-outlined text-primary text-sm font-bold">trending_up</span>
+</div>
+<div class="flex-1 min-w-0">
+<h3 class="text-base font-bold truncate">True Crime: The Alpine Mystery</h3>
+<p class="text-sm text-slate-500 dark:text-slate-400">9.2k searches today</p>
+</div>
+<button class="size-10 flex items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800">
+<span class="material-symbols-outlined text-slate-400">arrow_forward_ios</span>
+</button>
+</div>
+<!-- Trending Item 3 -->
+<div class="flex items-center gap-4 py-4 border-b border-slate-200 dark:border-slate-800">
+<div class="flex flex-col items-center justify-center w-10">
+<span class="text-2xl font-black text-slate-400 italic">03</span>
+<span class="material-symbols-outlined text-slate-300 dark:text-slate-600 text-sm font-bold">horizontal_rule</span>
+</div>
+<div class="flex-1 min-w-0">
+<h3 class="text-base font-bold truncate">SpaceX Starship Launch Replay</h3>
+<p class="text-sm text-slate-500 dark:text-slate-400">8.1k searches today</p>
+</div>
+<button class="size-10 flex items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800">
+<span class="material-symbols-outlined text-slate-400">arrow_forward_ios</span>
+</button>
+</div>
+<!-- Banner / CTA Card -->
+<div class="my-6 relative rounded-2xl overflow-hidden aspect-[16/7] bg-primary group cursor-pointer">
+<div class="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent z-10 p-6 flex flex-col justify-center">
+<span class="bg-white/20 backdrop-blur-md text-white text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded w-fit mb-2">Featured Series</span>
+<h4 class="text-white text-lg font-bold">The Creative Pulse</h4>
+<p class="text-white/80 text-xs">Interviewing world-class designers.</p>
+</div>
+<div class="absolute inset-0 bg-cover bg-center" data-alt="Abstract creative tech background" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBnNLnds8_9N3blcyPCdrRYiSYGndke9KnYI07ZEEAS4DrghZYh0jsrrfFhz8tkYRH3WgT4oU1fBXnq-GpjZARtHC2iqUXZTqx7DA-tcnFahFIScXGag9AjzeF_0ml7Wa6AgJtR0zO3wa3buAnj-lI6B06qOOiBjfyIp18CCv8qfcftzlMkea1vAc2mkdc74nHkKeE2P_I0VG7enmDaGhTcOw-64HJV5BL_hdTWToDuVRuMzYQZiZ_L3U0UkVGvGTNTc2TiUSP_uM8');"></div>
+</div>
+<!-- Trending Item 4 -->
+<div class="flex items-center gap-4 py-4 border-b border-slate-200 dark:border-slate-800">
+<div class="flex flex-col items-center justify-center w-10">
+<span class="text-2xl font-black text-slate-400 italic">04</span>
+<span class="material-symbols-outlined text-primary text-sm font-bold">trending_up</span>
+</div>
+<div class="flex-1 min-w-0">
+<h3 class="text-base font-bold truncate">Mindfulness &amp; Habit Stacking</h3>
+<p class="text-sm text-slate-500 dark:text-slate-400">7.4k searches today</p>
+</div>
+<button class="size-10 flex items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800">
+<span class="material-symbols-outlined text-slate-400">arrow_forward_ios</span>
+</button>
+</div>
+<!-- Trending Item 5 -->
+<div class="flex items-center gap-4 py-4">
+<div class="flex flex-col items-center justify-center w-10">
+<span class="text-2xl font-black text-slate-400 italic">05</span>
+<span class="material-symbols-outlined text-red-400 text-sm font-bold">trending_down</span>
+</div>
+<div class="flex-1 min-w-0">
+<h3 class="text-base font-bold truncate">Bitcoin Halving Explained</h3>
+<p class="text-sm text-slate-500 dark:text-slate-400">6.8k searches today</p>
+</div>
+<button class="size-10 flex items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800">
+<span class="material-symbols-outlined text-slate-400">arrow_forward_ios</span>
+</button>
+</div>
+<!-- Section: Rising Stars -->
+<div class="mt-8">
+<h3 class="text-lg font-extrabold mb-4">Rising Stars</h3>
+<div class="flex gap-4 overflow-x-auto no-scrollbar">
+<div class="flex-shrink-0 w-40 p-4 rounded-2xl bg-slate-200/50 dark:bg-[#223f49] border border-primary/20">
+<span class="material-symbols-outlined text-primary mb-2">rocket_launch</span>
+<h4 class="font-bold text-sm mb-1 truncate">Dark Matter</h4>
+<p class="text-xs text-slate-500 dark:text-[#90bccb]">+450% surge</p>
+</div>
+<div class="flex-shrink-0 w-40 p-4 rounded-2xl bg-slate-200/50 dark:bg-[#223f49]">
+<span class="material-symbols-outlined text-primary mb-2">bolt</span>
+<h4 class="font-bold text-sm mb-1 truncate">Web3 Gaming</h4>
+<p class="text-xs text-slate-500 dark:text-[#90bccb]">+210% surge</p>
+</div>
+<div class="flex-shrink-0 w-40 p-4 rounded-2xl bg-slate-200/50 dark:bg-[#223f49]">
+<span class="material-symbols-outlined text-primary mb-2">auto_awesome</span>
+<h4 class="font-bold text-sm mb-1 truncate">Stoic Habits</h4>
+<p class="text-xs text-slate-500 dark:text-[#90bccb]">+180% surge</p>
+</div>
+</div>
+</div>
+</main>
+<!-- Bottom Navigation Bar (Floating Style) -->
+<div class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-md h-16 bg-white dark:bg-slate-800 shadow-2xl rounded-full z-50 flex items-center justify-around px-6 border border-slate-200 dark:border-slate-700">
+<button class="flex flex-col items-center justify-center text-slate-400">
+<span class="material-symbols-outlined">home</span>
+</button>
+<button class="flex flex-col items-center justify-center text-primary">
+<span class="material-symbols-outlined">explore</span>
+<div class="size-1 bg-primary rounded-full mt-0.5"></div>
+</button>
+<button class="flex flex-col items-center justify-center text-slate-400">
+<span class="material-symbols-outlined">bookmarks</span>
+</button>
+<button class="flex flex-col items-center justify-center text-slate-400">
+<span class="material-symbols-outlined">settings</span>
+</button>
+</div>
+</body></html>

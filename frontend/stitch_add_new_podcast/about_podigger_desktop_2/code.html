@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>About Podigger Desktop</title>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0db9f2",
+                        "background-light": "#f5f8f8",
+                        "background-dark": "#101e22",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: "Plus Jakarta Sans", sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-[#0d181c] dark:text-white font-display">
+<!-- Top Navigation Bar -->
+<header class="sticky top-0 z-50 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-800">
+<div class="flex items-center p-4 justify-between max-w-md mx-auto">
+<div class="flex items-center gap-3">
+<div class="text-[#0d181c] dark:text-white flex size-10 items-center justify-center rounded-full bg-primary/10" data-icon="ArrowLeft">
+<span class="material-symbols-outlined">arrow_back</span>
+</div>
+<h2 class="text-lg font-bold leading-tight tracking-tight">About Podigger</h2>
+</div>
+<div class="size-10 flex items-center justify-center bg-primary/10 rounded-full text-primary">
+<span class="material-symbols-outlined">share</span>
+</div>
+</div>
+</header>
+<main class="max-w-md mx-auto pb-24">
+<!-- Hero Section -->
+<section class="p-4">
+<div class="@container">
+<div class="overflow-hidden rounded-xl">
+<div class="bg-cover bg-center flex flex-col justify-end min-h-[260px] relative" data-alt="Modern desktop workspace with headphones and professional audio gear" style='background-image: linear-gradient(0deg, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0) 60%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuCI1o1qpoX9SJVQ7Y5e3ZBBVKqtIiQKKoCoKQkWpLlr-GedrGsH8aQ_xwJf4x3ziJ2J6HAS9LfsitkxQQYnJTJSfICOYHwmJTdwHLWE0CLFCz4jHYzfR9YtQOaXzALEiF1gQuOidPtUQHvNte3rgbck86nbZCKmgcalWX7KFHU7oWd4scSIZCC4BaWmJR1GKqUvQhndhrUQniNidrKH2XSHR9K1PxaKOR0FdPzA7zIXph3fhwWcvdlaefXExWWIvFdcvTCIEOpsxlw");'>
+<div class="p-6">
+<div class="bg-primary px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest text-white w-fit mb-2">Version 2.4.0</div>
+<h1 class="text-white text-3xl font-extrabold leading-tight">Podigger Desktop</h1>
+</div>
+</div>
+</div>
+</div>
+<div class="pt-8 pb-6 text-center">
+<h2 class="text-3xl font-extrabold tracking-tight mb-3">Discover your next obsession.</h2>
+<p class="text-gray-600 dark:text-gray-400 text-lg leading-relaxed">
+                    The ultimate discovery engine for RSS-powered podcasts. Clean, fast, and completely open.
+                </p>
+</div>
+</section>
+<!-- Our Mission Card -->
+<section class="px-4 mb-8">
+<div class="bg-white dark:bg-gray-900 p-8 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800">
+<div class="size-12 bg-primary/20 rounded-full flex items-center justify-center text-primary mb-4">
+<span class="material-symbols-outlined text-3xl">rocket_launch</span>
+</div>
+<h3 class="text-2xl font-bold mb-4">Our Mission</h3>
+<p class="text-gray-600 dark:text-gray-400 leading-relaxed mb-4">
+                    We believe podcasting should remain open and accessible. Podigger was built to help listeners break out of algorithmic bubbles and explore the vast world of independent RSS feeds.
+                </p>
+<div class="flex items-center gap-2 text-primary font-bold">
+<span>Read our manifesto</span>
+<span class="material-symbols-outlined">arrow_forward</span>
+</div>
+</div>
+</section>
+<!-- How It Works -->
+<section class="px-4 mb-8">
+<h3 class="text-xl font-extrabold mb-6 px-2">How it Works</h3>
+<div class="space-y-6">
+<!-- Feature 1 -->
+<div class="flex gap-4 items-start">
+<div class="size-12 shrink-0 bg-primary rounded-full flex items-center justify-center text-white">
+<span class="material-symbols-outlined">rss_feed</span>
+</div>
+<div>
+<h4 class="font-bold text-lg">RSS-First Engine</h4>
+<p class="text-gray-600 dark:text-gray-400 text-sm">Directly parse any valid RSS feed with lightning speed. No proprietary middlemen between you and the content.</p>
+</div>
+</div>
+<!-- Feature 2 -->
+<div class="flex gap-4 items-start">
+<div class="size-12 shrink-0 bg-primary rounded-full flex items-center justify-center text-white">
+<span class="material-symbols-outlined">auto_awesome_motion</span>
+</div>
+<div>
+<h4 class="font-bold text-lg">Infinite Discovery</h4>
+<p class="text-gray-600 dark:text-gray-400 text-sm">Our "Infinite Scroll" discovery engine surfaces trending and niche shows based on real-time global feed updates.</p>
+</div>
+</div>
+<!-- Feature 3 -->
+<div class="flex gap-4 items-start">
+<div class="size-12 shrink-0 bg-primary rounded-full flex items-center justify-center text-white">
+<span class="material-symbols-outlined">devices</span>
+</div>
+<div>
+<h4 class="font-bold text-lg">Native Experience</h4>
+<p class="text-gray-600 dark:text-gray-400 text-sm">Built with desktop performance in mind. Low CPU usage, high-fidelity audio playback, and keyboard-first navigation.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Contact Section -->
+<section class="px-4 mb-12">
+<div class="bg-gray-100 dark:bg-gray-800/50 p-6 rounded-xl">
+<h3 class="text-xl font-bold mb-4">Get in Touch</h3>
+<p class="text-gray-600 dark:text-gray-400 mb-6">Have questions or feedback about the desktop app? We'd love to hear from you.</p>
+<div class="grid grid-cols-2 gap-3">
+<button class="flex items-center justify-center gap-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 py-3 rounded-full font-bold text-sm">
+<span class="material-symbols-outlined text-lg">mail</span>
+                        Support
+                    </button>
+<button class="flex items-center justify-center gap-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 py-3 rounded-full font-bold text-sm">
+<span class="material-symbols-outlined text-lg">forum</span>
+                        Discord
+                    </button>
+</div>
+</div>
+</section>
+<!-- Footer / Legal -->
+<footer class="px-4 py-8 text-center text-gray-500 text-xs">
+<p class="mb-2">© 2024 Podigger Media Inc.</p>
+<div class="flex justify-center gap-4">
+<a class="hover:text-primary" href="#">Privacy Policy</a>
+<a class="hover:text-primary" href="#">Terms of Service</a>
+<a class="hover:text-primary" href="#">Open Source</a>
+</div>
+</footer>
+</main>
+<!-- Fixed Bottom CTA -->
+<div class="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-background-light dark:from-background-dark via-background-light dark:via-background-dark to-transparent">
+<div class="max-w-md mx-auto">
+<button class="w-full bg-primary text-white font-extrabold py-4 rounded-full shadow-lg shadow-primary/30 flex items-center justify-center gap-2">
+                Get Podigger Desktop
+                <span class="material-symbols-outlined">download</span>
+</button>
+</div>
+</div>
+</body></html>

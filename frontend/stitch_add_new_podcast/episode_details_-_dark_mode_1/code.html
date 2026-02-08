@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Podigger - Episode Details</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0db9f2",
+                        "background-light": "#f5f8f8",
+                        "background-dark": "#121212",
+                        "surface-dark": "#1e1e1e",
+                        "muted-dark": "#90bccb",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: "Plus Jakarta Sans", sans-serif;
+        }
+        .custom-blur {
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-gray-900 dark:text-white min-h-screen font-display">
+<!-- Top Navigation Bar -->
+<nav class="sticky top-0 z-50 flex items-center justify-between px-4 py-4 bg-background-light/80 dark:bg-background-dark/80 custom-blur">
+<button class="flex items-center justify-center size-10 rounded-full hover:bg-gray-200 dark:hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined text-gray-900 dark:text-white">arrow_back_ios_new</span>
+</button>
+<h2 class="text-base font-bold tracking-tight">Episode Details</h2>
+<button class="flex items-center justify-center size-10 rounded-full hover:bg-gray-200 dark:hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined text-gray-900 dark:text-white">share</span>
+</button>
+</nav>
+<main class="px-4 pb-32">
+<!-- Hero Section: Cover Art -->
+<div class="mt-4 @container">
+<div class="aspect-square w-full max-w-[400px] mx-auto overflow-hidden rounded-xl shadow-2xl shadow-primary/10">
+<div class="w-full h-full bg-center bg-no-repeat bg-cover" data-alt="Futuristic AI design podcast cover art featuring neon blue patterns" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAUDDstbHkFGXVntitAwJce9_UXFZ3hR8Qyha9kw_rGsAUh_TAkEwvGcPVu72uJFBQXgEWwqtjv8ZYkuS7cMWERC8R3zFt4714stnJ9YuCOotR6_mT_zyPQhCsh6M-Op0D8MVrPIfH6fwyOd0x74_q_-O4DFV1nDuubELKmxoj7zVW2Qh-nZJfDFZ_gZ8D9vemcZtVXCk9QRdSkNMkn-JIfbYRVJm4VBca8W3PbEeUOWpOJtW2u6FR9WDmbqJ3iJYD1rNaW9MgRxSw');">
+</div>
+</div>
+</div>
+<!-- Episode Info Header -->
+<div class="mt-8 space-y-2">
+<h1 class="text-3xl font-extrabold leading-tight tracking-tight text-gray-900 dark:text-white">
+                The Future of AI Design: Synthesis and Scale
+            </h1>
+<div class="flex items-center gap-2 group cursor-pointer">
+<span class="text-primary font-semibold text-lg hover:underline">Design Forward</span>
+<span class="material-symbols-outlined text-primary text-sm">verified</span>
+</div>
+</div>
+<!-- Action Buttons -->
+<div class="mt-8 flex flex-col gap-3">
+<button class="flex items-center justify-center gap-3 w-full bg-primary hover:bg-primary/90 text-background-dark font-extrabold py-4 rounded-full transition-all active:scale-95 shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined fill-1">play_arrow</span>
+<span>Play Episode</span>
+</button>
+<button class="flex items-center justify-center gap-3 w-full bg-gray-200 dark:bg-white/10 hover:bg-gray-300 dark:hover:bg-white/20 text-gray-900 dark:text-white font-bold py-4 rounded-full transition-all">
+<span class="material-symbols-outlined">playlist_add</span>
+<span>Add to Queue</span>
+</button>
+</div>
+<!-- Episode Description -->
+<div class="mt-10">
+<h3 class="text-sm uppercase tracking-widest font-bold text-gray-500 dark:text-muted-dark mb-3">About this episode</h3>
+<p class="text-gray-700 dark:text-gray-300 leading-relaxed text-base">
+                In this episode, we dive deep into how generative AI is reshaping the creative landscape. From automated layout systems to the role of the designer in the age of prompt engineering. Join us as we interview lead designers from top tech firms about the ethical implications and the exciting opportunities ahead.
+            </p>
+<button class="mt-2 text-primary font-bold text-sm">Read More</button>
+</div>
+<!-- Metadata Grid -->
+<div class="mt-10 grid grid-cols-2 gap-4">
+<div class="p-4 rounded-2xl bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/5">
+<span class="material-symbols-outlined text-primary mb-2">calendar_today</span>
+<p class="text-xs text-gray-500 dark:text-muted-dark font-medium">Published</p>
+<p class="font-bold">Oct 24, 2023</p>
+</div>
+<div class="p-4 rounded-2xl bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/5">
+<span class="material-symbols-outlined text-primary mb-2">schedule</span>
+<p class="text-xs text-gray-500 dark:text-muted-dark font-medium">Duration</p>
+<p class="font-bold">45 min 12 sec</p>
+</div>
+<div class="p-4 rounded-2xl bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/5">
+<span class="material-symbols-outlined text-primary mb-2">download</span>
+<p class="text-xs text-gray-500 dark:text-muted-dark font-medium">File Size</p>
+<p class="font-bold">42.8 MB</p>
+</div>
+<div class="p-4 rounded-2xl bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/5">
+<span class="material-symbols-outlined text-primary mb-2">equalizer</span>
+<p class="text-xs text-gray-500 dark:text-muted-dark font-medium">Quality</p>
+<p class="font-bold">320kbps HD</p>
+</div>
+</div>
+<!-- More Episodes -->
+<div class="mt-12">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-xl font-bold">From Design Forward</h3>
+<span class="text-primary text-sm font-bold">See All</span>
+</div>
+<div class="space-y-4">
+<div class="flex items-center gap-4 p-2 rounded-xl hover:bg-white/5 transition-colors cursor-pointer">
+<div class="size-16 rounded-lg bg-cover bg-center shrink-0" data-alt="Abstract digital tech pattern" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuByiZr8N9NTV0mPAShYIge-7LI-KqsAw_gbCGaEuBIh2EhKDS_u8ZGlfqyJWGXOlweFvCeC_6Bi9YpN8Bp2aJv-vCi0vN_im4esMpcwWhz_K72fj7Fm3fQobdWu__SFSQTTqxpPTFbfdetOAMhn2Tuc3n0k71kVPiRfNmlGeYvTN7Gj1Zw3elTQjIeIt9RuyfQ5g9jZAEyPI3QJCEp9luV3SZQLfqxhClxmtZoVvAmd5NmcfTPimRHXgXC24DJwX0txHsYZkc3BJC0');"></div>
+<div class="flex-1 min-w-0">
+<p class="font-bold truncate text-sm">Building Design Systems for scale</p>
+<p class="text-xs text-gray-500 dark:text-muted-dark">Oct 17 • 38 min</p>
+</div>
+<span class="material-symbols-outlined text-gray-400">play_circle</span>
+</div>
+</div>
+</div>
+</main>
+<!-- Sticky Mini-Player -->
+<div class="fixed bottom-0 left-0 right-0 p-4 pb-8 bg-white/90 dark:bg-background-dark/95 border-t border-gray-200 dark:border-white/10 custom-blur z-50">
+<div class="flex items-center gap-4">
+<div class="size-12 rounded-lg bg-cover bg-center shrink-0 shadow-lg" data-alt="Small thumbnail of the current episode" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDQo1g_JO9zT9ZtEjdYFZza91ME0TvJX-KGPxkGkOd4evzuxQ8TxJtCUj0KR0s3Dg_bmefyzjeOnKZsIrN9DAoAQ_Qag8GPk0oiXpZWp5vx3O35NP-FFE5bmKMGPT2tE8T9HhHnPsxoiVqxLg6Zj4OCjNDlNGetUUZDk7ANQUEo2qB1l-8WQYxeRpmrL4TKYr3d6U-PAepLg4zrrCJDvZyurJFmaSRFEXaIyfZHa2sYw7kApAoyYOaBZ6iK0CfhSISRRF4pGYmCsxw');"></div>
+<div class="flex-1 min-w-0">
+<p class="text-sm font-bold truncate">The Future of AI Design</p>
+<p class="text-xs text-primary font-medium">Design Forward</p>
+</div>
+<div class="flex items-center gap-4">
+<button class="flex items-center justify-center">
+<span class="material-symbols-outlined text-3xl">play_arrow</span>
+</button>
+<button class="flex items-center justify-center">
+<span class="material-symbols-outlined text-2xl">close</span>
+</button>
+</div>
+</div>
+<!-- Simple Progress Bar -->
+<div class="mt-3 h-1 w-full bg-gray-200 dark:bg-white/10 rounded-full overflow-hidden">
+<div class="h-full bg-primary w-1/3 rounded-full"></div>
+</div>
+</div>
+</body></html>
