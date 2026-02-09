@@ -18,7 +18,7 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
+/lib/
 lib64/
 parts/
 sdist/
@@ -81,3 +81,10 @@ uv.lock
 
 # Editor directories
 .vscode/
+
+#Agents
+.agent
+.agents
+.claude
+.cursor
+docs

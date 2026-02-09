@@ -1,4 +1,4 @@
-Django==5.2.9
+Django==5.2.11
 djangorestframework>=3.16.1,<4.0
 psycopg2-binary==2.9.11
 django-cors-headers==4.0.0
@@ -17,3 +17,4 @@ pytest-mock>=3.10.0
 feedparser>=6.0.10
 requests>=2.31.0
 commitizen>=3.13.0
+urllib3>=2.6.3 # not directly required, pinned by Snyk to avoid a vulnerability

@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Podigger - Episode Details</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0db9f2",
+                        "background-light": "#f5f8f8",
+                        "background-dark": "#121212",
+                        "surface-dark": "#1e1e1e",
+                        "muted-dark": "#90bccb",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        body {
+            font-family: "Plus Jakarta Sans", sans-serif;
+            min-height: max(884px, 100dvh);
+        }
+        .custom-blur {
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-gray-900 dark:text-white min-h-screen font-display">
+<nav class="sticky top-0 z-50 flex items-center justify-between px-4 py-4 bg-background-light/80 dark:bg-background-dark/80 custom-blur">
+<button class="flex items-center justify-center size-10 rounded-full hover:bg-gray-200 dark:hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined text-gray-900 dark:text-white">arrow_back_ios_new</span>
+</button>
+<h2 class="text-base font-bold tracking-tight">Episode Details</h2>
+<button class="flex items-center justify-center size-10 rounded-full hover:bg-gray-200 dark:hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined text-gray-900 dark:text-white">more_vert</span>
+</button>
+</nav>
+<main class="px-4 pb-48">
+<div class="mt-4 @container">
+<div class="aspect-square w-full max-w-[400px] mx-auto overflow-hidden rounded-xl shadow-2xl shadow-primary/10">
+<div class="w-full h-full bg-center bg-no-repeat bg-cover" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAUDDstbHkFGXVntitAwJce9_UXFZ3hR8Qyha9kw_rGsAUh_TAkEwvGcPVu72uJFBQXgEWwqtjv8ZYkuS7cMWERC8R3zFt4714stnJ9YuCOotR6_mT_zyPQhCsh6M-Op0D8MVrPIfH6fwyOd0x74_q_-O4DFV1nDuubELKmxoj7zVW2Qh-nZJfDFZ_gZ8D9vemcZtVXCk9QRdSkNMkn-JIfbYRVJm4VBca8W3PbEeUOWpOJtW2u6FR9WDmbqJ3iJYD1rNaW9MgRxSw');">
+</div>
+</div>
+</div>
+<div class="mt-8 space-y-2 text-center sm:text-left">
+<h1 class="text-3xl font-extrabold leading-tight tracking-tight text-gray-900 dark:text-white">
+            The Future of AI Design: Synthesis and Scale
+        </h1>
+<div class="flex items-center justify-center sm:justify-start gap-2 group cursor-pointer">
+<span class="text-primary font-semibold text-lg hover:underline">Design Forward</span>
+<span class="material-symbols-outlined text-primary text-sm">verified</span>
+</div>
+</div>
+<div class="mt-8 flex flex-col gap-3">
+<button class="flex items-center justify-center gap-3 w-full bg-primary hover:bg-primary/90 text-background-dark font-extrabold py-4 rounded-full transition-all active:scale-95 shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined fill-1">play_arrow</span>
+<span>Play Episode</span>
+</button>
+<button class="flex items-center justify-center gap-3 w-full bg-gray-200 dark:bg-white/10 hover:bg-gray-300 dark:hover:bg-white/20 text-gray-900 dark:text-white font-bold py-4 rounded-full transition-all">
+<span class="material-symbols-outlined">playlist_add</span>
+<span>Add to Queue</span>
+</button>
+<div class="flex items-center justify-center gap-6 mt-4 py-2">
+<button class="group flex flex-col items-center gap-1 transition-colors">
+<div class="size-10 flex items-center justify-center rounded-full bg-gray-100 dark:bg-white/5 text-gray-500 dark:text-gray-400 group-hover:text-primary group-hover:bg-primary/10 transition-all">
+<i class="fa-brands fa-whatsapp text-xl"></i>
+</div>
+</button>
+<button class="group flex flex-col items-center gap-1 transition-colors">
+<div class="size-10 flex items-center justify-center rounded-full bg-gray-100 dark:bg-white/5 text-gray-500 dark:text-gray-400 group-hover:text-primary group-hover:bg-primary/10 transition-all">
+<i class="fa-brands fa-x-twitter text-lg"></i>
+</div>
+</button>
+<button class="group flex flex-col items-center gap-1 transition-colors">
+<div class="size-10 flex items-center justify-center rounded-full bg-gray-100 dark:bg-white/5 text-gray-500 dark:text-gray-400 group-hover:text-primary group-hover:bg-primary/10 transition-all">
+<i class="fa-brands fa-facebook-f text-lg"></i>
+</div>
+</button>
+<button class="group flex flex-col items-center gap-1 transition-colors">
+<div class="size-10 flex items-center justify-center rounded-full bg-gray-100 dark:bg-white/5 text-gray-500 dark:text-gray-400 group-hover:text-primary group-hover:bg-primary/10 transition-all">
+<span class="material-symbols-outlined text-xl">link</span>
+</div>
+</button>
+</div>
+</div>
+<div class="mt-10 border-b border-gray-100 dark:border-white/10 pb-10">
+<h3 class="text-sm uppercase tracking-widest font-bold text-gray-500 dark:text-muted-dark mb-3">About this episode</h3>
+<p class="text-gray-700 dark:text-gray-300 leading-relaxed text-base">
+            In this episode, we dive deep into how generative AI is reshaping the creative landscape. From automated layout systems to the role of the designer in the age of prompt engineering. Join us as we interview lead designers from top tech firms about the ethical implications and the exciting opportunities ahead.
+        </p>
+<button class="mt-2 text-primary font-bold text-sm">Read More</button>
+</div>
+<div class="mt-10 grid grid-cols-2 gap-4">
+<div class="p-4 rounded-2xl bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/5">
+<span class="material-symbols-outlined text-primary mb-2">calendar_today</span>
+<p class="text-xs text-gray-500 dark:text-muted-dark font-medium">Published</p>
+<p class="font-bold">Oct 24, 2023</p>
+</div>
+<div class="p-4 rounded-2xl bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/5">
+<span class="material-symbols-outlined text-primary mb-2">schedule</span>
+<p class="text-xs text-gray-500 dark:text-muted-dark font-medium">Duration</p>
+<p class="font-bold">45 min 12 sec</p>
+</div>
+</div>
+<div class="mt-12">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-xl font-bold">Related Episodes</h3>
+<button class="text-primary text-sm font-bold">See All</button>
+</div>
+<div class="flex gap-2 overflow-x-auto no-scrollbar -mx-4 px-4 mb-6">
+<button class="flex-none px-5 py-2 rounded-full text-xs font-bold transition-all border border-primary bg-primary text-background-dark">
+                From this Podcast
+            </button>
+<button class="flex-none px-5 py-2 rounded-full text-xs font-bold transition-all border border-gray-200 dark:border-white/10 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5">
+                Similar Topics
+            </button>
+<button class="flex-none px-5 py-2 rounded-full text-xs font-bold transition-all border border-gray-200 dark:border-white/10 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5">
+                Latest from Category
+            </button>
+</div>
+<div class="grid grid-cols-2 gap-x-4 gap-y-6">
+<div class="group cursor-pointer">
+<div class="aspect-square w-full rounded-2xl overflow-hidden bg-white/5 relative shadow-md mb-2.5">
+<div class="w-full h-full bg-center bg-cover transition-transform group-hover:scale-105" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuByiZr8N9NTV0mPAShYIge-7LI-KqsAw_gbCGaEuBIh2EhKDS_u8ZGlfqyJWGXOlweFvCeC_6Bi9YpN8Bp2aJv-vCi0vN_im4esMpcwWhz_K72fj7Fm3fQobdWu__SFSQTTqxpPTFbfdetOAMhn2Tuc3n0k71kVPiRfNmlGeYvTN7Gj1Zw3elTQjIeIt9RuyfQ5g9jZAEyPI3QJCEp9luV3SZQLfqxhClxmtZoVvAmd5NmcfTPimRHXgXC24DJwX0txHsYZkc3BJC0');"></div>
+<div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+<div class="size-12 bg-primary rounded-full flex items-center justify-center shadow-lg">
+<span class="material-symbols-outlined text-background-dark fill-1 text-2xl">play_arrow</span>
+</div>
+</div>
+</div>
+<div>
+<h4 class="text-sm font-bold leading-tight line-clamp-2 group-hover:text-primary transition-colors">The Ethics of AI in Creative Industries</h4>
+<p class="text-[10px] text-gray-500 dark:text-muted-dark mt-1.5 font-bold uppercase tracking-wide">OCT 20, 2023</p>
+</div>
+</div>
+<div class="group cursor-pointer">
+<div class="aspect-square w-full rounded-2xl overflow-hidden bg-white/5 relative shadow-md mb-2.5">
+<div class="w-full h-full bg-center bg-cover transition-transform group-hover:scale-105" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDQo1g_JO9zT9ZtEjdYFZza91ME0TvJX-KGPxkGkOd4evzuxQ8TxJtCUj0KR0s3Dg_bmefyzjeOnKZsIrN9DAoAQ_Qag8GPk0oiXpZWp5vx3O35NP-FFE5bmKMGPT2tE8T9HhHnPsxoiVqxLg6Zj4OCjNDlNGetUUZDk7ANQUEo2qB1l-8WQYxeRpmrL4TKYr3d6U-PAepLg4zrrCJDvZyurJFmaSRFEXaIyfZHa2sYw7kApAoyYOaBZ6iK0CfhSISRRF4pGYmCsxw');"></div>
+<div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+<div class="size-12 bg-primary rounded-full flex items-center justify-center shadow-lg">
+<span class="material-symbols-outlined text-background-dark fill-1 text-2xl">play_arrow</span>
+</div>
+</div>
+</div>
+<div>
+<h4 class="text-sm font-bold leading-tight line-clamp-2 group-hover:text-primary transition-colors">Prompt Engineering for UX Designers</h4>
+<p class="text-[10px] text-gray-500 dark:text-muted-dark mt-1.5 font-bold uppercase tracking-wide">OCT 12, 2023</p>
+</div>
+</div>
+<div class="group cursor-pointer">
+<div class="aspect-square w-full rounded-2xl overflow-hidden bg-white/5 relative shadow-md mb-2.5">
+<div class="w-full h-full bg-center bg-cover transition-transform group-hover:scale-105" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAUDDstbHkFGXVntitAwJce9_UXFZ3hR8Qyha9kw_rGsAUh_TAkEwvGcPVu72uJFBQXgEWwqtjv8ZYkuS7cMWERC8R3zFt4714stnJ9YuCOotR6_mT_zyPQhCsh6M-Op0D8MVrPIfH6fwyOd0x74_q_-O4DFV1nDuubELKmxoj7zVW2Qh-nZJfDFZ_gZ8D9vemcZtVXCk9QRdSkNMkn-JIfbYRVJm4VBca8W3PbEeUOWpOJtW2u6FR9WDmbqJ3iJYD1rNaW9MgRxSw');"></div>
+<div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+<div class="size-12 bg-primary rounded-full flex items-center justify-center shadow-lg">
+<span class="material-symbols-outlined text-background-dark fill-1 text-2xl">play_arrow</span>
+</div>
+</div>
+</div>
+<div>
+<h4 class="text-sm font-bold leading-tight line-clamp-2 group-hover:text-primary transition-colors">Visual Synthesis: New Workflows</h4>
+<p class="text-[10px] text-gray-500 dark:text-muted-dark mt-1.5 font-bold uppercase tracking-wide">OCT 05, 2023</p>
+</div>
+</div>
+<div class="group cursor-pointer">
+<div class="aspect-square w-full rounded-2xl overflow-hidden bg-white/5 relative shadow-md mb-2.5">
+<div class="w-full h-full bg-center bg-cover transition-transform group-hover:scale-105" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuByiZr8N9NTV0mPAShYIge-7LI-KqsAw_gbCGaEuBIh2EhKDS_u8ZGlfqyJWGXOlweFvCeC_6Bi9YpN8Bp2aJv-vCi0vN_im4esMpcwWhz_K72fj7Fm3fQobdWu__SFSQTTqxpPTFbfdetOAMhn2Tuc3n0k71kVPiRfNmlGeYvTN7Gj1Zw3elTQjIeIt9RuyfQ5g9jZAEyPI3QJCEp9luV3SZQLfqxhClxmtZoVvAmd5NmcfTPimRHXgXC24DJwX0txHsYZkc3BJC0');"></div>
+<div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+<div class="size-12 bg-primary rounded-full flex items-center justify-center shadow-lg">
+<span class="material-symbols-outlined text-background-dark fill-1 text-2xl">play_arrow</span>
+</div>
+</div>
+</div>
+<div>
+<h4 class="text-sm font-bold leading-tight line-clamp-2 group-hover:text-primary transition-colors">Scaling Systems with Machine Learning</h4>
+<p class="text-[10px] text-gray-500 dark:text-muted-dark mt-1.5 font-bold uppercase tracking-wide">SEP 28, 2023</p>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-12">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-xl font-bold">More from Design Forward</h3>
+<span class="text-primary text-sm font-bold">See All</span>
+</div>
+<div class="space-y-4">
+<div class="flex items-center gap-4 p-3 rounded-2xl bg-gray-100 dark:bg-white/5 hover:bg-white/10 transition-colors cursor-pointer border border-transparent hover:border-white/10">
+<div class="size-16 rounded-xl bg-cover bg-center shrink-0 shadow-sm" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuByiZr8N9NTV0mPAShYIge-7LI-KqsAw_gbCGaEuBIh2EhKDS_u8ZGlfqyJWGXOlweFvCeC_6Bi9YpN8Bp2aJv-vCi0vN_im4esMpcwWhz_K72fj7Fm3fQobdWu__SFSQTTqxpPTFbfdetOAMhn2Tuc3n0k71kVPiRfNmlGeYvTN7Gj1Zw3elTQjIeIt9RuyfQ5g9jZAEyPI3QJCEp9luV3SZQLfqxhClxmtZoVvAmd5NmcfTPimRHXgXC24DJwX0txHsYZkc3BJC0');"></div>
+<div class="flex-1 min-w-0">
+<p class="font-bold truncate text-sm">Building Design Systems for scale</p>
+<p class="text-xs text-gray-500 dark:text-muted-dark mt-0.5">Oct 17 • 38 min</p>
+</div>
+<span class="material-symbols-outlined text-primary">play_circle</span>
+</div>
+</div>
+</div>
+</main>
+<div class="fixed bottom-0 left-0 right-0 p-4 pb-8 bg-white/95 dark:bg-background-dark/95 border-t border-gray-200 dark:border-white/10 custom-blur z-50">
+<div class="flex items-center gap-4 max-w-lg mx-auto">
+<div class="size-12 rounded-lg bg-cover bg-center shrink-0 shadow-lg" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDQo1g_JO9zT9ZtEjdYFZza91ME0TvJX-KGPxkGkOd4evzuxQ8TxJtCUj0KR0s3Dg_bmefyzjeOnKZsIrN9DAoAQ_Qag8GPk0oiXpZWp5vx3O35NP-FFE5bmKMGPT2tE8T9HhHnPsxoiVqxLg6Zj4OCjNDlNGetUUZDk7ANQUEo2qB1l-8WQYxeRpmrL4TKYr3d6U-PAepLg4zrrCJDvZyurJFmaSRFEXaIyfZHa2sYw7kApAoyYOaBZ6iK0CfhSISRRF4pGYmCsxw');"></div>
+<div class="flex-1 min-w-0">
+<p class="text-sm font-bold truncate">The Future of AI Design</p>
+<p class="text-[10px] text-primary font-bold uppercase tracking-wider">Design Forward</p>
+</div>
+<div class="flex items-center gap-3">
+<button class="flex items-center justify-center size-10 rounded-full hover:bg-gray-100 dark:hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined text-3xl fill-1">play_arrow</span>
+</button>
+<button class="flex items-center justify-center size-10 rounded-full hover:bg-gray-100 dark:hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined text-2xl">close</span>
+</button>
+</div>
+</div>
+<div class="mt-3 h-1 w-full max-w-lg mx-auto bg-gray-200 dark:bg-white/10 rounded-full overflow-hidden">
+<div class="h-full bg-primary w-1/3 rounded-full"></div>
+</div>
+</div>
+
+</body></html>
