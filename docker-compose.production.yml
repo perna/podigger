@@ -1,0 +1,205 @@
+# Docker Compose for Production Environment
+# Deploy on VPS for production
+#
+# Usage:
+#   docker-compose -f docker-compose.production.yml up -d
+#   docker-compose -f docker-compose.production.yml down
+
+
+services:
+  # Backend Django + DRF
+  backend-production:
+    extends:
+      file: docker-compose.base.yml
+      service: backend
+    build:
+      dockerfile: Dockerfile.production
+      args:
+        - ENVIRONMENT=production
+    container_name: podigger-production-backend
+    command: gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 4 --timeout 120 --access-logfile - --error-logfile -
+    expose:
+      - "8000"
+    volumes:
+      - static_production:/app/staticfiles
+      - media_production:/app/media
+    depends_on:
+      db-production:
+        condition: service_healthy
+      redis-production:
+        condition: service_healthy
+    env_file:
+      - ./backend/.env.production
+    environment:
+      - DATABASE_HOST=db-production
+      - REDIS_URL=redis://redis-production:6379/1
+      - CELERY_BROKER_URL=redis://redis-production:6379/0
+    networks:
+      - podigger-production
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Frontend Next.js
+  frontend-production:
+    extends:
+      file: docker-compose.base.yml
+      service: frontend
+    build:
+      dockerfile: Dockerfile.production
+      args:
+        - NEXT_PUBLIC_API_URL=https://api.podigger.perna.app
+        - NEXT_PUBLIC_ENVIRONMENT=production
+    container_name: podigger-production-frontend
+    expose:
+      - "3000"
+    depends_on:
+      - backend-production
+    networks:
+      - podigger-production
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # PostgreSQL Database
+  db-production:
+    extends:
+      file: docker-compose.base.yml
+      service: db
+    container_name: podigger-production-db
+    environment:
+      POSTGRES_DB: podigger_production
+      POSTGRES_USER: podigger_production
+      POSTGRES_PASSWORD: ${DB_PASSWORD_PRODUCTION}
+    volumes:
+      - pgdata_production:/var/lib/postgresql/data
+      - ./backups:/backups
+    networks:
+      - podigger-production
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U podigger_production -d podigger_production" ]
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Redis for cache and Celery broker
+  redis-production:
+    extends:
+      file: docker-compose.base.yml
+      service: redis
+    container_name: podigger-production-redis
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis_production:/data
+    networks:
+      - podigger-production
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "2"
+
+  # Celery Worker
+  celery-production:
+    extends:
+      file: docker-compose.base.yml
+      service: celery
+    build:
+      dockerfile: Dockerfile.production
+      args:
+        - ENVIRONMENT=production
+    container_name: podigger-production-celery
+    command: celery -A config worker --loglevel=warning --concurrency=4
+    depends_on:
+      db-production:
+        condition: service_healthy
+      redis-production:
+        condition: service_healthy
+    env_file:
+      - ./backend/.env.production
+    environment:
+      - DATABASE_HOST=db-production
+      - REDIS_URL=redis://redis-production:6379/1
+      - CELERY_BROKER_URL=redis://redis-production:6379/0
+    networks:
+      - podigger-production
+    volumes:
+      - media_production:/app/media
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Celery Beat
+  celery-beat-production:
+    extends:
+      file: docker-compose.base.yml
+      service: celery-beat
+    build:
+      dockerfile: Dockerfile.production
+      args:
+        - ENVIRONMENT=production
+    container_name: podigger-production-celery-beat
+    command: celery -A config beat --loglevel=warning
+    depends_on:
+      db-production:
+        condition: service_healthy
+      redis-production:
+        condition: service_healthy
+    env_file:
+      - ./backend/.env.production
+    environment:
+      - DATABASE_HOST=db-production
+      - REDIS_URL=redis://redis-production:6379/1
+      - CELERY_BROKER_URL=redis://redis-production:6379/0
+    networks:
+      - podigger-production
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "2"
+
+  # Database Backup (cron job)
+  db-backup:
+    extends:
+      file: docker-compose.base.yml
+      service: db-backup
+    container_name: podigger-production-db-backup
+    depends_on:
+      - db-production
+    environment:
+      POSTGRES_DB: podigger_production
+      POSTGRES_USER: podigger_production
+      POSTGRES_PASSWORD: ${DB_PASSWORD_PRODUCTION}
+      PGHOST: db-production
+    volumes:
+      - ./backups:/backups
+    networks:
+      - podigger-production
+    entrypoint: |
+      sh -c '
+      echo "0 2 * * * pg_dump -U podigger_production podigger_production | gzip > /backups/backup-$$(date +\%Y\%m\%d-\%H\%M\%S).sql.gz && find /backups -name \"backup-*.sql.gz\" -mtime +7 -delete" | crontab - && crond -f -l 2
+      '
+
+volumes:
+  pgdata_production:
+    name: podigger-production-pgdata
+  redis_production:
+    name: podigger-production-redis
+  static_production:
+    name: podigger-production-static
+  media_production:
+    name: podigger-production-media
+
+networks:
+  podigger-production:
+    name: podigger-production
+    driver: bridge

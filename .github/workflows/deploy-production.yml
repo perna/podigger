@@ -1,0 +1,217 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:  # Keep manual option for emergency deployments
+    inputs:
+      branch:
+        description: 'Branch to deploy'
+        required: true
+        default: 'main'
+        type: string
+      skip_backup:
+        description: 'Skip database backup'
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+jobs:
+  deploy-production:
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://podigger.perna.app
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.branch || 'main' }}
+      
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.VPS_SSH_KEY }}
+      
+      - name: Add VPS to known hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
+      
+      - name: Backup database
+        if: ${{ github.event_name == 'push' || !inputs.skip_backup }}
+        run: |
+          echo "📦 Creating database backup..."
+          ssh ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'ENDSSH'
+            cd /opt/podigger-production
+            
+            # Create backup directory if not exists
+            mkdir -p backups
+            
+            # Create backup
+            BACKUP_FILE="backups/backup-$(date +%Y%m%d-%H%M%S).sql.gz"
+            docker-compose -f docker-compose.production.yml exec -T db-production \
+              pg_dump -U podigger_production podigger_production | gzip > "$BACKUP_FILE"
+            
+            echo "✅ Backup created: $BACKUP_FILE"
+            
+            # Keep only last 7 backups
+            ls -t backups/backup-*.sql.gz | tail -n +8 | xargs -r rm
+          ENDSSH
+      
+      - name: Create .env.production file
+        run: |
+          cat > backend/.env.production << EOF
+          DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY_PRODUCTION }}
+          DJANGO_DEBUG=False
+          DJANGO_SETTINGS_MODULE=config.settings
+          ALLOWED_HOSTS=api.podigger.perna.app
+          CORS_ALLOWED_ORIGINS=https://podigger.perna.app
+          
+          DATABASE_HOST=db-production
+          DATABASE_PORT=5432
+          DATABASE_NAME=podigger_production
+          DATABASE_USER=podigger_production
+          DATABASE_PASSWORD=${{ secrets.DB_PASSWORD_PRODUCTION }}
+          
+          REDIS_URL=redis://redis-production:6379/1
+          CELERY_BROKER_URL=redis://redis-production:6379/0
+          CELERY_RESULT_BACKEND=redis://redis-production:6379/0
+          
+          SECURE_SSL_REDIRECT=True
+          SESSION_COOKIE_SECURE=True
+          CSRF_COOKIE_SECURE=True
+          
+          LOG_LEVEL=WARNING
+          EOF
+      
+      - name: Create .env.production for frontend
+        run: |
+          cat > frontend/.env.production << EOF
+          NEXT_PUBLIC_API_URL=https://api.podigger.perna.app
+          NEXT_PUBLIC_ENVIRONMENT=production
+          EOF
+      
+      - name: Copy files to VPS
+        run: |
+          ssh ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "mkdir -p /opt/podigger-production"
+          rsync -avz --delete \
+            --exclude '.git' \
+            --exclude 'node_modules' \
+            --exclude '.venv' \
+            --exclude '__pycache__' \
+            --exclude '.next' \
+            --exclude 'backups' \
+            ./ ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/opt/podigger-production/
+      
+      - name: Deploy to production
+        run: |
+          ssh ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'ENDSSH'
+            cd /opt/podigger-production
+            
+            # Export environment variable for docker-compose
+            export DB_PASSWORD_PRODUCTION=${{ secrets.DB_PASSWORD_PRODUCTION }}
+            
+            # Pull latest images and rebuild
+            docker-compose -f docker-compose.production.yml pull || true
+            docker-compose -f docker-compose.production.yml build --no-cache
+            
+            # Stop old containers (graceful shutdown)
+            docker-compose -f docker-compose.production.yml down --timeout 30
+            
+            # Start new containers
+            docker-compose -f docker-compose.production.yml up -d
+            
+            # Wait for backend to be healthy
+            echo "Waiting for backend to be healthy..."
+            sleep 15
+            
+            # Run migrations
+            docker-compose -f docker-compose.production.yml exec -T backend-production python manage.py migrate --noinput
+            
+            # Collect static files
+            docker-compose -f docker-compose.production.yml exec -T backend-production python manage.py collectstatic --noinput
+          ENDSSH
+      
+      - name: Health check
+        run: |
+          sleep 20
+          
+          # Check backend health (retry up to 3 times)
+          for i in 1 2 3; do
+            BACKEND_STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://api.podigger.perna.app/health/ || echo "000")
+            if [ "$BACKEND_STATUS" = "200" ]; then
+              echo "✅ Backend is healthy"
+              break
+            fi
+            if [ $i -eq 3 ]; then
+              echo "❌ Backend health check failed after 3 attempts (HTTP $BACKEND_STATUS)"
+              exit 1
+            fi
+            echo "⏳ Backend not ready, retrying in 10s... (attempt $i/3)"
+            sleep 10
+          done
+          
+          # Check frontend health (retry up to 3 times)
+          for i in 1 2 3; do
+            FRONTEND_STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://podigger.perna.app/ || echo "000")
+            if [ "$FRONTEND_STATUS" = "200" ]; then
+              echo "✅ Frontend is healthy"
+              break
+            fi
+            if [ $i -eq 3 ]; then
+              echo "❌ Frontend health check failed after 3 attempts (HTTP $FRONTEND_STATUS)"
+              exit 1
+            fi
+            echo "⏳ Frontend not ready, retrying in 10s... (attempt $i/3)"
+            sleep 10
+          done
+      
+      - name: Deployment summary
+        if: success()
+        run: |
+          BRANCH="${{ github.event_name == 'workflow_dispatch' && inputs.branch || 'main' }}"
+          echo "### 🚀 Production Deployment Successful" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Branch**: $BRANCH" >> $GITHUB_STEP_SUMMARY
+          echo "**Commit**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Triggered by**: ${{ github.event_name == 'push' && 'Automatic (merge to main)' || 'Manual' }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Frontend**: https://podigger.perna.app" >> $GITHUB_STEP_SUMMARY
+          echo "**Backend**: https://api.podigger.perna.app" >> $GITHUB_STEP_SUMMARY
+          echo "**Deployed at**: $(date -u +'%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "⚠️ **Important**: Monitor the application for the next 30 minutes" >> $GITHUB_STEP_SUMMARY
+      
+      - name: Rollback on failure
+        if: failure()
+        run: |
+          echo "⚠️ Deployment failed, attempting rollback..."
+          
+          ssh ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'ENDSSH'
+            cd /opt/podigger-production
+            
+            # Stop failed containers
+            docker-compose -f docker-compose.production.yml down
+            
+            # Restore from latest backup if exists
+            LATEST_BACKUP=$(ls -t backups/backup-*.sql.gz 2>/dev/null | head -n 1)
+            if [ -n "$LATEST_BACKUP" ]; then
+              echo "📦 Restoring from backup: $LATEST_BACKUP"
+              gunzip < "$LATEST_BACKUP" | docker-compose -f docker-compose.production.yml exec -T db-production \
+                psql -U podigger_production podigger_production
+              echo "✅ Database restored"
+            else
+              echo "⚠️ No backup found, database not restored"
+            fi
+          ENDSSH
+          
+          echo "### ❌ Production Deployment Failed" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Rollback attempted**. Please check logs and restore manually if needed." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Action required**: Investigate failure and redeploy when ready." >> $GITHUB_STEP_SUMMARY

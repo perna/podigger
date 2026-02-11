@@ -7,9 +7,9 @@
 
 services:
   backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
+    extends:
+      file: docker-compose.base.yml
+      service: backend
     command: python manage.py runserver 0.0.0.0:8000
     ports:
       - "8000:8000"
@@ -19,7 +19,6 @@ services:
       - db
       - redis
     environment:
-      - DJANGO_SETTINGS_MODULE=config.settings
       - DATABASE_HOST=db
       - DATABASE_PORT=5432
       - DATABASE_NAME=podigger
@@ -27,9 +26,9 @@ services:
       - DATABASE_PASSWORD=docker
 
   # frontend:
-  #   build:
-  #     context: ./frontend
-  #     dockerfile: Dockerfile
+  #   extends:
+  #     file: docker-compose.base.yml
+  #     service: frontend
   #   ports:
   #     - "5173:5173"
   #   volumes:
@@ -39,7 +38,9 @@ services:
   #     - backend
 
   db:
-    image: postgres:15-alpine
+    extends:
+      file: docker-compose.base.yml
+      service: db
     environment:
       POSTGRES_PASSWORD: docker
       POSTGRES_USER: docker
@@ -50,14 +51,16 @@ services:
       - "5432:5432"
 
   redis:
-    image: redis:7-alpine
+    extends:
+      file: docker-compose.base.yml
+      service: redis
     ports:
       - "6379:6379"
 
   celery:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
+    extends:
+      file: docker-compose.base.yml
+      service: celery
     command: celery -A config worker --loglevel=info
     depends_on:
       - redis
@@ -65,7 +68,6 @@ services:
     volumes:
       - ./backend:/app
     environment:
-      - DJANGO_SETTINGS_MODULE=config.settings
       - DATABASE_HOST=db
       - DATABASE_PORT=5432
       - DATABASE_NAME=podigger
@@ -74,3 +76,5 @@ services:
 
 volumes:
   pgdata:
+
+

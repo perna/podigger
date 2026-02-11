@@ -48,3 +48,53 @@ changelog_incremental = true
 changelog_start_rev = "HEAD"
 
 
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+
+[tool.ruff.lint]
+select = [
+    "E", "W",    # pycodestyle
+    "F",         # pyflakes
+    "I",         # isort
+    "C90",       # mccabe
+    "N",         # pep8-naming
+    "D",         # pydocstyle
+    "UP",        # pyupgrade
+    "S",         # bandit security
+    "B",         # bugbear
+    "A",         # builtins
+    "C4",        # comprehensions
+    "DTZ",       # datetimez
+    "T10",       # debugger
+    "DJ",        # django
+    "EM",        # errmsg
+    "ISC",       # implicit-str-concat
+    "ICN",       # import-conventions
+    "PIE",       # pie
+    "PT",        # pytest-style
+    "Q",         # quotes
+    "RET",       # return
+    "SIM",       # simplify
+    "ARG",       # unused-arguments
+    "PTH",       # use-pathlib
+    "ERA",       # eradicate
+    "PL",        # pylint
+    "RUF",       # ruff-specific
+]
+ignore = [
+    "D100",      # Missing docstring in public module
+    "D104",      # Missing docstring in public package
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = ["S101", "PLR2004"]
+"**/migrations/*.py" = ["E501"]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 10
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+

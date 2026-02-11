@@ -1,0 +1,156 @@
+name: Deploy to Staging
+
+on:
+  push:
+    branches:
+      - develop
+  workflow_dispatch:  # Keep manual option for emergency deployments
+    inputs:
+      branch:
+        description: 'Branch to deploy'
+        required: true
+        default: 'develop'
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  deploy-staging:
+    runs-on: ubuntu-latest
+    environment:
+      name: staging
+      url: https://staging.podigger.perna.app
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.branch || 'develop' }}
+      
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.VPS_SSH_KEY }}
+      
+      - name: Add VPS to known hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
+      
+      - name: Create .env.staging file
+        run: |
+          cat > backend/.env.staging << EOF
+          DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY_STAGING }}
+          DJANGO_DEBUG=False
+          DJANGO_SETTINGS_MODULE=config.settings
+          ALLOWED_HOSTS=staging.api.podigger.perna.app
+          CORS_ALLOWED_ORIGINS=https://staging.podigger.perna.app
+          
+          DATABASE_HOST=db-staging
+          DATABASE_PORT=5432
+          DATABASE_NAME=podigger_staging
+          DATABASE_USER=podigger_staging
+          DATABASE_PASSWORD=${{ secrets.DB_PASSWORD_STAGING }}
+          
+          REDIS_URL=redis://redis-staging:6379/1
+          CELERY_BROKER_URL=redis://redis-staging:6379/0
+          CELERY_RESULT_BACKEND=redis://redis-staging:6379/0
+          
+          LOG_LEVEL=INFO
+          EOF
+      
+      - name: Create .env.staging for frontend
+        run: |
+          cat > frontend/.env.staging << EOF
+          NEXT_PUBLIC_API_URL=https://staging.api.podigger.perna.app
+          NEXT_PUBLIC_ENVIRONMENT=staging
+          EOF
+      
+      - name: Copy files to VPS
+        run: |
+          ssh ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "mkdir -p /opt/podigger-staging"
+          rsync -avz --delete \
+            --exclude '.git' \
+            --exclude 'node_modules' \
+            --exclude '.venv' \
+            --exclude '__pycache__' \
+            --exclude '.next' \
+            ./ ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/opt/podigger-staging/
+      
+      - name: Deploy to staging
+        run: |
+          ssh ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'ENDSSH'
+            cd /opt/podigger-staging
+            
+            # Export environment variable for docker-compose
+            export DB_PASSWORD_STAGING=${{ secrets.DB_PASSWORD_STAGING }}
+            
+            # Pull latest images and rebuild
+            docker-compose -f docker-compose.staging.yml pull || true
+            docker-compose -f docker-compose.staging.yml build --no-cache
+            
+            # Stop old containers
+            docker-compose -f docker-compose.staging.yml down
+            
+            # Start new containers
+            docker-compose -f docker-compose.staging.yml up -d
+            
+            # Wait for backend to be healthy
+            echo "Waiting for backend to be healthy..."
+            sleep 10
+            
+            # Run migrations
+            docker-compose -f docker-compose.staging.yml exec -T backend-staging python manage.py migrate --noinput
+            
+            # Collect static files
+            docker-compose -f docker-compose.staging.yml exec -T backend-staging python manage.py collectstatic --noinput
+          ENDSSH
+      
+      - name: Health check
+        run: |
+          sleep 15
+          
+          # Check backend health
+          BACKEND_STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://staging.api.podigger.perna.app/health/ || echo "000")
+          if [ "$BACKEND_STATUS" != "200" ]; then
+            echo "❌ Backend health check failed (HTTP $BACKEND_STATUS)"
+            exit 1
+          fi
+          echo "✅ Backend is healthy"
+          
+          # Check frontend health
+          FRONTEND_STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://staging.podigger.perna.app/ || echo "000")
+          if [ "$FRONTEND_STATUS" != "200" ]; then
+            echo "❌ Frontend health check failed (HTTP $FRONTEND_STATUS)"
+            exit 1
+          fi
+          echo "✅ Frontend is healthy"
+      
+      - name: Deployment summary
+        if: success()
+        run: |
+          BRANCH="${{ github.event_name == 'workflow_dispatch' && inputs.branch || 'develop' }}"
+          echo "### 🚀 Staging Deployment Successful" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Branch**: $BRANCH" >> $GITHUB_STEP_SUMMARY
+          echo "**Commit**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Triggered by**: ${{ github.event_name == 'push' && 'Automatic (merge to develop)' || 'Manual' }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Frontend**: https://staging.podigger.perna.app" >> $GITHUB_STEP_SUMMARY
+          echo "**Backend**: https://staging.api.podigger.perna.app" >> $GITHUB_STEP_SUMMARY
+          echo "**Deployed at**: $(date -u +'%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_STEP_SUMMARY
+      
+      - name: Rollback on failure
+        if: failure()
+        run: |
+          echo "⚠️ Deployment failed, attempting rollback..."
+          ssh ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'ENDSSH'
+            cd /opt/podigger-staging
+            docker-compose -f docker-compose.staging.yml down
+            # Previous containers will remain stopped
+            # Manual intervention required
+          ENDSSH
+          
+          echo "### ❌ Staging Deployment Failed" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Containers have been stopped. Manual intervention required." >> $GITHUB_STEP_SUMMARY
