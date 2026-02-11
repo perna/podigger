@@ -80,7 +80,7 @@ jobs:
       
       - name: Deploy to staging
         run: |
-          ssh ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'ENDSSH'
+          ssh -o ServerAliveInterval=60 ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'ENDSSH'
             cd /opt/podigger-staging
             
             # Export environment variable for docker-compose
@@ -88,7 +88,11 @@ jobs:
             
             # Pull latest images and rebuild
             docker compose -f docker-compose.staging.yml pull || true
-            docker compose -f docker-compose.staging.yml build --no-cache
+            # Build backend first to prevent OOM (Out Of Memory) on small VPS
+            docker compose -f docker-compose.staging.yml build --no-cache backend-staging
+            
+            # Build remaining services (will use cache from backend)
+            docker compose -f docker-compose.staging.yml build
             
             # Stop old containers
             docker compose -f docker-compose.staging.yml down
