@@ -21,13 +21,25 @@ class EpisodeSerializer(serializers.ModelSerializer):
             "description",
             "published",
             "enclosure",
-            "to_json",
             "podcast",
             "tags",
         ]
 
 
-class PodcastSerializer(serializers.ModelSerializer):
+class PodcastListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Podcast
+        fields = [
+            "id",
+            "name",
+            "feed",
+            "image",
+            "language",
+            "total_episodes",
+        ]
+
+
+class PodcastDetailSerializer(serializers.ModelSerializer):
     episodes = EpisodeSerializer(many=True, read_only=True)
 
     class Meta:
