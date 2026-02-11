@@ -55,7 +55,7 @@ jobs:
             
             # Create backup
             BACKUP_FILE="backups/backup-$(date +%Y%m%d-%H%M%S).sql.gz"
-            docker-compose -f docker-compose.production.yml exec -T db-production \
+            docker compose -f docker-compose.production.yml exec -T db-production \
               pg_dump -U podigger_production podigger_production | gzip > "$BACKUP_FILE"
             
             echo "✅ Backup created: $BACKUP_FILE"
@@ -118,24 +118,24 @@ jobs:
             export DB_PASSWORD_PRODUCTION=${{ secrets.DB_PASSWORD_PRODUCTION }}
             
             # Pull latest images and rebuild
-            docker-compose -f docker-compose.production.yml pull || true
-            docker-compose -f docker-compose.production.yml build --no-cache
+            docker compose -f docker-compose.production.yml pull || true
+            docker compose -f docker-compose.production.yml build --no-cache
             
             # Stop old containers (graceful shutdown)
-            docker-compose -f docker-compose.production.yml down --timeout 30
+            docker compose -f docker-compose.production.yml down --timeout 30
             
             # Start new containers
-            docker-compose -f docker-compose.production.yml up -d
+            docker compose -f docker-compose.production.yml up -d
             
             # Wait for backend to be healthy
             echo "Waiting for backend to be healthy..."
             sleep 15
             
             # Run migrations
-            docker-compose -f docker-compose.production.yml exec -T backend-production python manage.py migrate --noinput
+            docker compose -f docker-compose.production.yml exec -T backend-production python manage.py migrate --noinput
             
             # Collect static files
-            docker-compose -f docker-compose.production.yml exec -T backend-production python manage.py collectstatic --noinput
+            docker compose -f docker-compose.production.yml exec -T backend-production python manage.py collectstatic --noinput
           ENDSSH
       
       - name: Health check
@@ -196,13 +196,13 @@ jobs:
             cd /opt/podigger-production
             
             # Stop failed containers
-            docker-compose -f docker-compose.production.yml down
+            docker compose -f docker-compose.production.yml down
             
             # Restore from latest backup if exists
             LATEST_BACKUP=$(ls -t backups/backup-*.sql.gz 2>/dev/null | head -n 1)
             if [ -n "$LATEST_BACKUP" ]; then
               echo "📦 Restoring from backup: $LATEST_BACKUP"
-              gunzip < "$LATEST_BACKUP" | docker-compose -f docker-compose.production.yml exec -T db-production \
+              gunzip < "$LATEST_BACKUP" | docker compose -f docker-compose.production.yml exec -T db-production \
                 psql -U podigger_production podigger_production
               echo "✅ Database restored"
             else

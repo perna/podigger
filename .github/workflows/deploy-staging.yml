@@ -87,24 +87,24 @@ jobs:
             export DB_PASSWORD_STAGING=${{ secrets.DB_PASSWORD_STAGING }}
             
             # Pull latest images and rebuild
-            docker-compose -f docker-compose.staging.yml pull || true
-            docker-compose -f docker-compose.staging.yml build --no-cache
+            docker compose -f docker-compose.staging.yml pull || true
+            docker compose -f docker-compose.staging.yml build --no-cache
             
             # Stop old containers
-            docker-compose -f docker-compose.staging.yml down
+            docker compose -f docker-compose.staging.yml down
             
             # Start new containers
-            docker-compose -f docker-compose.staging.yml up -d
+            docker compose -f docker-compose.staging.yml up -d
             
             # Wait for backend to be healthy
             echo "Waiting for backend to be healthy..."
             sleep 10
             
             # Run migrations
-            docker-compose -f docker-compose.staging.yml exec -T backend-staging python manage.py migrate --noinput
+            docker compose -f docker-compose.staging.yml exec -T backend-staging python manage.py migrate --noinput
             
             # Collect static files
-            docker-compose -f docker-compose.staging.yml exec -T backend-staging python manage.py collectstatic --noinput
+            docker compose -f docker-compose.staging.yml exec -T backend-staging python manage.py collectstatic --noinput
           ENDSSH
       
       - name: Health check
@@ -146,7 +146,7 @@ jobs:
           echo "⚠️ Deployment failed, attempting rollback..."
           ssh ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'ENDSSH'
             cd /opt/podigger-staging
-            docker-compose -f docker-compose.staging.yml down
+            docker compose -f docker-compose.staging.yml down
             # Previous containers will remain stopped
             # Manual intervention required
           ENDSSH
