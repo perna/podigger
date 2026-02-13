@@ -67,6 +67,24 @@ jobs:
           NEXT_PUBLIC_ENVIRONMENT=staging
           EOF
       
+      - name: Backup database
+        run: |
+          echo "📦 Creating database backup..."
+          ssh ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'ENDSSH'
+            cd /opt/podigger-staging
+            
+            # Create backup directory if not exists
+            mkdir -p backups
+            
+            # Create backup
+            BACKUP_FILE="backups/backup-$(date +%Y%m%d-%H%M%S).sql.gz"
+            docker compose -f docker-compose.staging.yml exec -T db-staging \
+              pg_dump -U podigger_staging podigger_staging | gzip > "$BACKUP_FILE" 2>/dev/null || echo "⚠️ Backup failed (database may not exist yet)"
+            
+            # Keep only last 3 backups
+            ls -t backups/backup-*.sql.gz 2>/dev/null | tail -n +4 | xargs -r rm
+          ENDSSH
+      
       - name: Copy files to VPS
         run: |
           ssh ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "mkdir -p /opt/podigger-staging"
@@ -76,29 +94,42 @@ jobs:
             --exclude '.venv' \
             --exclude '__pycache__' \
             --exclude '.next' \
+            --exclude 'backups' \
             ./ ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/opt/podigger-staging/
       
       - name: Deploy to staging
+        env:
+          DB_PASSWORD_STAGING: ${{ secrets.DB_PASSWORD_STAGING }}
         run: |
-          ssh ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'ENDSSH'
+          ssh ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "DB_PASSWORD_STAGING='${DB_PASSWORD_STAGING}'" bash -s << 'ENDSSH'
             cd /opt/podigger-staging
             
-            # Export environment variable for docker-compose
-            export DB_PASSWORD_STAGING=${{ secrets.DB_PASSWORD_STAGING }}
+            # Pull apenas imagens base (não rebuildar tudo)
+            docker compose -f docker-compose.staging.yml pull db-staging redis-staging || true
             
-            # Pull latest images and rebuild
-            docker compose -f docker-compose.staging.yml pull || true
-            docker compose -f docker-compose.staging.yml build --no-cache
+            # Build sem --no-cache (usa cache de layers)
+            docker compose -f docker-compose.staging.yml build
             
-            # Stop old containers
-            docker compose -f docker-compose.staging.yml down
+            # Stop old containers (graceful shutdown)
+            docker compose -f docker-compose.staging.yml down --timeout 30
             
             # Start new containers
             docker compose -f docker-compose.staging.yml up -d
             
-            # Wait for backend to be healthy
+            # Wait for backend to be healthy (retry adaptativo)
             echo "Waiting for backend to be healthy..."
-            sleep 10
+            for i in {1..12}; do
+              if docker compose -f docker-compose.staging.yml exec -T backend-staging curl -f http://localhost:8000/health/ 2>/dev/null; then
+                echo "✅ Backend is healthy"
+                break
+              fi
+              if [ $i -eq 12 ]; then
+                echo "❌ Backend failed to become healthy"
+                exit 1
+              fi
+              echo "⏳ Waiting... (attempt $i/12)"
+              sleep 5
+            done
             
             # Run migrations
             docker compose -f docker-compose.staging.yml exec -T backend-staging python manage.py migrate --noinput
@@ -142,15 +173,42 @@ jobs:
       
       - name: Rollback on failure
         if: failure()
+        env:
+          DB_PASSWORD_STAGING: ${{ secrets.DB_PASSWORD_STAGING }}
         run: |
           echo "⚠️ Deployment failed, attempting rollback..."
-          ssh ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'ENDSSH'
+          
+          ssh ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "DB_PASSWORD_STAGING='${DB_PASSWORD_STAGING}'" bash -s << 'ENDSSH'
             cd /opt/podigger-staging
+            
+            # Stop failed containers
             docker compose -f docker-compose.staging.yml down
-            # Previous containers will remain stopped
-            # Manual intervention required
+            
+            # Restore from latest backup if exists
+            LATEST_BACKUP=$(ls -t backups/backup-*.sql.gz 2>/dev/null | head -n 1)
+            if [ -n "$LATEST_BACKUP" ]; then
+              echo "📦 Restoring from backup: $LATEST_BACKUP"
+              
+              # Start only database
+              docker compose -f docker-compose.staging.yml up -d db-staging
+              sleep 10
+              
+              # Restore backup
+              gunzip < "$LATEST_BACKUP" | docker compose -f docker-compose.staging.yml exec -T db-staging \
+                psql -U podigger_staging podigger_staging
+              
+              echo "✅ Database restored"
+              
+              # Try to start previous version
+              git checkout HEAD~1 2>/dev/null || echo "⚠️ Could not checkout previous version"
+              docker compose -f docker-compose.staging.yml up -d
+            else
+              echo "⚠️ No backup found, database not restored"
+            fi
           ENDSSH
           
           echo "### ❌ Staging Deployment Failed" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "Containers have been stopped. Manual intervention required." >> $GITHUB_STEP_SUMMARY
+          echo "**Rollback attempted**. Please check logs and restore manually if needed." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Action required**: Investigate failure and redeploy when ready." >> $GITHUB_STEP_SUMMARY

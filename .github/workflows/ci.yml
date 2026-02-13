@@ -30,7 +30,7 @@ jobs:
 
   test-backend:
     needs: changes
-    if: ${{ needs.changes.outputs.backend == 'true' || github.base_ref == 'main' }}
+    if: ${{ needs.changes.outputs.backend == 'true' || contains(fromJSON('["main", "master"]'), github.base_ref) }}
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -64,6 +64,8 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+          cache: 'pip'
+          cache-dependency-path: backend/requirements.txt
 
       - name: Install dependencies
         run: |
@@ -72,7 +74,6 @@ jobs:
 
       - name: Validate commit messages
         if: github.event_name == 'pull_request'
-        continue-on-error: true
         run: |
           pip install commitizen>=3.13.0
           cd backend
@@ -89,6 +90,29 @@ jobs:
         run: |
           cd backend
           ruff check .
+
+      - name: Run ruff format check
+        run: |
+          cd backend
+          ruff format --check .
+
+      - name: Check for missing migrations
+        env:
+          DATABASE_HOST: localhost
+          DATABASE_PORT: 5432
+          DATABASE_NAME: podigger
+          DATABASE_USER: postgres
+          DATABASE_PASSWORD: postgres
+          DJANGO_SECRET_KEY: test-secret-key-for-ci-only
+          DJANGO_SETTINGS_MODULE: config.settings
+        run: |
+          cd backend
+          python manage.py makemigrations --check --dry-run --noinput
+
+      - name: Install health check tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y postgresql-client redis-tools
 
       - name: Wait for services
         run: |
@@ -115,18 +139,26 @@ jobs:
           cd backend
           python manage.py migrate --noinput
 
-      - name: Run tests
+      - name: Run tests with coverage
         env:
           DATABASE_HOST: localhost
           DATABASE_PORT: 5432
           DATABASE_NAME: podigger
-          DATABASE_USER: ${{ secrets.DB_USER || 'postgres' }}
-          DATABASE_PASSWORD: ${{ secrets.DB_PASSWORD || 'postgres' }}
-          DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY || 'test-secret-key-for-ci-only' }}
+          DATABASE_USER: postgres
+          DATABASE_PASSWORD: postgres
+          DJANGO_SECRET_KEY: test-secret-key-for-ci-only
           DJANGO_SETTINGS_MODULE: config.settings
         run: |
           cd backend
-          pytest -v --tb=short --strict-markers
+          pytest -v --tb=short --strict-markers --cov=podcasts --cov-report=term-missing --cov-report=xml
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        if: always()
+        with:
+          file: ./backend/coverage.xml
+          flags: backend
+          fail_ci_if_error: false
 
   test-frontend:
     needs: changes
@@ -151,3 +183,8 @@ jobs:
         run: |
           cd frontend
           npm run lint
+
+      - name: Run type check
+        run: |
+          cd frontend
+          npx tsc --noEmit
