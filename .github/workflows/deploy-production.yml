@@ -110,16 +110,17 @@ jobs:
             ./ ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/opt/podigger-production/
       
       - name: Deploy to production
+        env:
+          DB_PASSWORD_PRODUCTION: ${{ secrets.DB_PASSWORD_PRODUCTION }}
         run: |
-          ssh ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'ENDSSH'
+          ssh ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "DB_PASSWORD_PRODUCTION='${DB_PASSWORD_PRODUCTION}'" bash -s << 'ENDSSH'
             cd /opt/podigger-production
             
-            # Export environment variable for docker-compose
-            export DB_PASSWORD_PRODUCTION=${{ secrets.DB_PASSWORD_PRODUCTION }}
+            # Pull apenas imagens base (não rebuildar tudo)
+            docker compose -f docker-compose.production.yml pull db-production redis-production || true
             
-            # Pull latest images and rebuild
-            docker compose -f docker-compose.production.yml pull || true
-            docker compose -f docker-compose.production.yml build --no-cache
+            # Build sem --no-cache (usa cache de layers)
+            docker compose -f docker-compose.production.yml build
             
             # Stop old containers (graceful shutdown)
             docker compose -f docker-compose.production.yml down --timeout 30
@@ -127,9 +128,20 @@ jobs:
             # Start new containers
             docker compose -f docker-compose.production.yml up -d
             
-            # Wait for backend to be healthy
+            # Wait for backend to be healthy (retry adaptativo)
             echo "Waiting for backend to be healthy..."
-            sleep 15
+            for i in {1..12}; do
+              if docker compose -f docker-compose.production.yml exec -T backend-production curl -f http://localhost:8000/health/ 2>/dev/null; then
+                echo "✅ Backend is healthy"
+                break
+              fi
+              if [ $i -eq 12 ]; then
+                echo "❌ Backend failed to become healthy"
+                exit 1
+              fi
+              echo "⏳ Waiting... (attempt $i/12)"
+              sleep 5
+            done
             
             # Run migrations
             docker compose -f docker-compose.production.yml exec -T backend-production python manage.py migrate --noinput
@@ -189,10 +201,12 @@ jobs:
       
       - name: Rollback on failure
         if: failure()
+        env:
+          DB_PASSWORD_PRODUCTION: ${{ secrets.DB_PASSWORD_PRODUCTION }}
         run: |
           echo "⚠️ Deployment failed, attempting rollback..."
           
-          ssh ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'ENDSSH'
+          ssh ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "DB_PASSWORD_PRODUCTION='${DB_PASSWORD_PRODUCTION}'" bash -s << 'ENDSSH'
             cd /opt/podigger-production
             
             # Stop failed containers
@@ -202,9 +216,20 @@ jobs:
             LATEST_BACKUP=$(ls -t backups/backup-*.sql.gz 2>/dev/null | head -n 1)
             if [ -n "$LATEST_BACKUP" ]; then
               echo "📦 Restoring from backup: $LATEST_BACKUP"
+              
+              # Start only database
+              docker compose -f docker-compose.production.yml up -d db-production
+              sleep 10
+              
+              # Restore backup
               gunzip < "$LATEST_BACKUP" | docker compose -f docker-compose.production.yml exec -T db-production \
                 psql -U podigger_production podigger_production
+              
               echo "✅ Database restored"
+              
+              # Try to start previous version
+              git checkout HEAD~1 2>/dev/null || echo "⚠️ Could not checkout previous version"
+              docker compose -f docker-compose.production.yml up -d
             else
               echo "⚠️ No backup found, database not restored"
             fi

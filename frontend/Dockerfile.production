@@ -1,68 +1,80 @@
-# Multi-stage Dockerfile for Next.js Frontend (Production)
-# Optimized for production deployment
+# syntax=docker/dockerfile:1
 
-# Stage 1: Dependencies
+########################################
+# Stage 1 — Base deps (cached heavily)
+########################################
 FROM node:20-alpine AS deps
 
 WORKDIR /app
 
-# Copy package files
-COPY package.json package-lock.json* ./
+# Instalar libc compat (necessário para alguns pacotes)
+RUN apk add --no-cache libc6-compat
 
-# Install dependencies
-RUN npm ci --only=production
+COPY package.json package-lock.json ./
 
-# Stage 2: Builder
+# Instalar TODAS dependências (necessário para build)
+RUN npm ci
+
+
+########################################
+# Stage 2 — Builder
+########################################
 FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Copy dependencies from deps stage
+RUN apk add --no-cache libc6-compat
+
 COPY --from=deps /app/node_modules ./node_modules
 
-# Copy application code
-COPY . .
+# Copiar arquivos de configuração primeiro (melhor cache)
+COPY next.config.ts postcss.config.js tailwind.config.ts tsconfig.json ./
+COPY package.json package-lock.json ./
 
-# Build arguments for environment variables
+# Copiar código-fonte por último
+COPY public ./public
+COPY src ./src
+
 ARG NEXT_PUBLIC_API_URL
 ARG NEXT_PUBLIC_ENVIRONMENT
 
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 ENV NEXT_PUBLIC_ENVIRONMENT=$NEXT_PUBLIC_ENVIRONMENT
 ENV NEXT_TELEMETRY_DISABLED=1
+ENV NODE_ENV=production
 
-# Build Next.js application
+# Build com standalone output habilitado (next.config.js: output: 'standalone')
+# Isso reduz drasticamente o tamanho da imagem final
 RUN npm run build
 
-# Stage 3: Runner
+
+########################################
+# Stage 3 — Minimal runner
+########################################
 FROM node:20-alpine AS runner
 
 WORKDIR /app
 
-# Create non-root user
-RUN addgroup --system --gid 1001 nodejs && \
-    adduser --system --uid 1001 nextjs
+# Segurança e compatibilidade
+RUN apk add --no-cache libc6-compat && \
+    addgroup -S nextjs -g 1001 && \
+    adduser -S nextjs -u 1001
 
-# Set environment to production
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
+ENV PORT=3000
+ENV HOSTNAME=0.0.0.0
 
-# Copy built application
-COPY --from=builder --chown=nextjs:nodejs /app/public ./public
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+# Copiar apenas o necessário
+COPY --from=builder --chown=nextjs:nextjs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nextjs /app/.next/static ./.next/static
+COPY --from=builder --chown=nextjs:nextjs /app/public ./public
 
-# Switch to non-root user
 USER nextjs
 
 EXPOSE 3000
 
-ENV PORT=3000
-ENV HOSTNAME="0.0.0.0"
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+    CMD node -e "require('http').get('http://localhost:3000/api/health',r=>process.exit(r.statusCode===200?0:1))"
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-    CMD node -e "require('http').get('http://localhost:3000/api/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"
-
-# Start Next.js server
 CMD ["node", "server.js"]

@@ -31,8 +31,22 @@ DJANGO_SETTINGS_MODULE = "config.settings"
 python_files = ["test_*.py", "*_test.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
-addopts = "-v --tb=short --strict-markers"
+addopts = "-v --tb=short --strict-markers --cov=podcasts --cov-report=term-missing --cov-report=xml --cov-fail-under=70"
 testpaths = ["podcasts/tests"]
+
+[tool.coverage.run]
+source = ["podcasts"]
+omit = ["*/tests/*", "*/migrations/*", "*/management/*"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+]
 
 [tool.commitizen]
 name = "cz_conventional_commits"

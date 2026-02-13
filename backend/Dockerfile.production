@@ -1,5 +1,6 @@
 # Multi-stage Dockerfile for Django Backend (Production)
 # Optimized for production deployment with minimal image size
+# Stage 1: Builder - compila dependências Python com cache mount para pip
 
 # Stage 1: Builder
 FROM python:3.12-slim as builder
@@ -15,9 +16,10 @@ RUN apt-get update && \
 
 WORKDIR /app
 
-# Install Python dependencies
+# Install Python dependencies com cache mount para melhor performance
 COPY requirements.txt .
-RUN pip install --no-cache-dir --user -r requirements.txt
+RUN --mount=type=cache,target=/root/.cache/pip \
+    pip install --user -r requirements.txt
 
 # Stage 2: Runtime
 FROM python:3.12-slim
@@ -39,8 +41,13 @@ WORKDIR /app
 # Copy Python dependencies from builder
 COPY --from=builder --chown=app:app /root/.local /home/app/.local
 
-# Copy application code
-COPY --chown=app:app . .
+# Copy application code (ordem otimizada para cache)
+# Copiar arquivos de configuração primeiro
+COPY --chown=app:app manage.py pyproject.toml pytest.ini ./
+COPY --chown=app:app config ./config
+
+# Copiar código da aplicação
+COPY --chown=app:app podcasts ./podcasts
 
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1 \
