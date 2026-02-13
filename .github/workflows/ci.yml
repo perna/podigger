@@ -59,6 +59,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch all history for commit validation
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -76,8 +78,9 @@ jobs:
         if: github.event_name == 'pull_request'
         run: |
           pip install commitizen>=3.13.0
-          cd backend
-          # Validate commits in PR
+          # Fetch base branch to compare commits
+          git fetch origin ${{ github.base_ref }}:refs/remotes/origin/${{ github.base_ref }}
+          # Validate commits in PR (from root, not backend/)
           cz check --rev-range origin/${{ github.base_ref }}..HEAD || {
             echo "::warning::❌ Commit messages do not follow Conventional Commits format"
             echo "Please use the format: type(scope): subject"
