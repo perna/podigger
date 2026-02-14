@@ -28,7 +28,7 @@ RUN apk add --no-cache libc6-compat
 COPY --from=deps /app/node_modules ./node_modules
 
 # Copiar arquivos de configuração primeiro (melhor cache)
-COPY next.config.ts postcss.config.js tailwind.config.ts tsconfig.json ./
+COPY next.config.ts postcss.config.mjs tsconfig.json ./
 COPY package.json package-lock.json ./
 
 # Copiar código-fonte por último
