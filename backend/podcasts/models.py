@@ -87,14 +87,14 @@ class EpisodeManager(models.Manager):
         config = "portuguese"
         
         # Search Vectors
-        vector = models.SearchVector("title", weight="A", config=config) + \
-                 models.SearchVector("description", weight="B", config=config)
-        search_query = models.SearchQuery(query, config=config)
+        vector = SearchVector("title", weight="A", config=config) + \
+                 SearchVector("description", weight="B", config=config)
+        search_query = SearchQuery(query, config=config)
 
         # Base queryset with annotations
         qs = self.get_queryset().annotate(
-            rank=models.SearchRank(vector, search_query),
-            trigram=models.TrigramSimilarity("title", query),
+            rank=SearchRank(vector, search_query),
+            trigram=TrigramSimilarity("title", query),
         )
 
         # FTS results
