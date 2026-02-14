@@ -1,0 +1,102 @@
+import { render, screen, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { EpisodeList } from '../EpisodeList';
+import * as api from '@/lib/api';
+
+vi.mock('@/lib/api', () => ({
+  fetchEpisodes: vi.fn(),
+}));
+
+const mockEpisodes = [
+  {
+    id: 1,
+    title: 'Episode One',
+    link: 'https://ep1.com',
+    description: 'First episode',
+    published: '2024-01-01',
+    enclosure: null,
+    podcast: { id: 10, name: 'Podcast A', image: null },
+    tags: [],
+  },
+];
+
+describe('EpisodeList', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.mocked(api.fetchEpisodes).mockResolvedValue({
+      count: 1,
+      next: null,
+      previous: null,
+      results: mockEpisodes,
+    });
+  });
+
+  it('shows loading state initially', () => {
+    vi.mocked(api.fetchEpisodes).mockImplementation(
+      () => new Promise(() => {})
+    );
+    const { container } = render(<EpisodeList searchTerm="" />);
+    expect(within(container).getByText(/Episódios recentes/i)).toBeInTheDocument();
+    expect(api.fetchEpisodes).toHaveBeenCalledWith(undefined, 1);
+  });
+
+  it('renders episodes when fetch succeeds', async () => {
+    const { container } = render(<EpisodeList searchTerm="" />);
+    expect(await within(container).findByText('Episode One')).toBeInTheDocument();
+    expect(api.fetchEpisodes).toHaveBeenCalledWith(undefined, 1);
+  });
+
+  it('shows search results title when searchTerm is set', async () => {
+    const { container } = render(<EpisodeList searchTerm="design" />);
+    expect(await within(container).findByText(/Resultados para "design"/)).toBeInTheDocument();
+    expect(api.fetchEpisodes).toHaveBeenCalledWith('design', 1);
+  });
+
+  it('shows empty state when no episodes and no search', async () => {
+    vi.mocked(api.fetchEpisodes).mockResolvedValue({
+      count: 0,
+      next: null,
+      previous: null,
+      results: [],
+    });
+    const { container } = render(<EpisodeList searchTerm="" />);
+    expect(await within(container).findByText(/Ainda não há episódios/)).toBeInTheDocument();
+  });
+
+  it('shows no-results empty state when search returns empty', async () => {
+    vi.mocked(api.fetchEpisodes).mockResolvedValue({
+      count: 0,
+      next: null,
+      previous: null,
+      results: [],
+    });
+    const { container } = render(<EpisodeList searchTerm="xyz" />);
+    expect(await within(container).findByText(/Nenhum episódio encontrado para "xyz"/)).toBeInTheDocument();
+  });
+
+  it('shows error state and retry on failure', async () => {
+    vi.mocked(api.fetchEpisodes)
+      .mockRejectedValueOnce(new Error('Network error'))
+      .mockResolvedValueOnce({
+        count: 1,
+        next: null,
+        previous: null,
+        results: mockEpisodes,
+      });
+    const { container } = render(<EpisodeList searchTerm="" />);
+    expect(await within(container).findByText(/Algo deu errado/)).toBeInTheDocument();
+    const retryBtn = within(container).getByRole('button', { name: /Tentar novamente/i });
+    await userEvent.click(retryBtn);
+    expect(await within(container).findByText('Episode One')).toBeInTheDocument();
+    expect(api.fetchEpisodes).toHaveBeenCalledTimes(2);
+  });
+
+  it('calls onLoadingChange when loading state changes', async () => {
+    const onLoadingChange = vi.fn();
+    const { container } = render(<EpisodeList searchTerm="" onLoadingChange={onLoadingChange} />);
+    expect(onLoadingChange).toHaveBeenCalledWith(true);
+    expect(await within(container).findByText('Episode One')).toBeInTheDocument();
+    expect(onLoadingChange).toHaveBeenCalledWith(false);
+  });
+});
