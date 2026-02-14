@@ -9,8 +9,17 @@ class TagSerializer(serializers.ModelSerializer):
         fields = ["id", "name"]
 
 
+class PodcastMinimalSerializer(serializers.ModelSerializer):
+    """Minimal podcast data for embedding in episode list/search responses."""
+
+    class Meta:
+        model = Podcast
+        fields = ["id", "name", "image"]
+
+
 class EpisodeSerializer(serializers.ModelSerializer):
     tags = TagSerializer(many=True, read_only=True)
+    podcast = PodcastMinimalSerializer(read_only=True)
 
     class Meta:
         model = Episode
