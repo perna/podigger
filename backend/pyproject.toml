@@ -99,11 +99,13 @@ select = [
 ignore = [
     "D100",      # Missing docstring in public module
     "D104",      # Missing docstring in public package
+    "DJ001",     # Avoid using null=True on string-based fields
 ]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/**/*.py" = ["S101", "PLR2004"]
-"**/migrations/*.py" = ["E501"]
+"**/tests/*.py" = ["S101", "E501", "S106", "PLR2004", "D"]
+"**/migrations/*.py" = ["E501", "D", "RUF012"]
+"**/management/commands/*.py" = ["S311", "PLR2004", "E501", "D", "RUF012", "C901", "PLR0915", "ARG"]
 
 [tool.ruff.lint.mccabe]
 max-complexity = 10
