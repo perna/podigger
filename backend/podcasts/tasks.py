@@ -1,8 +1,7 @@
 import logging
 
-from django.db.models import Count
-
 from celery import shared_task
+from django.db.models import Count
 
 from .models import Podcast
 from .services.updater import EpisodeUpdater
@@ -25,9 +24,10 @@ def add_episode(feed_url):
 
 @shared_task(name="update_base")
 def update_base():
-    """Update episodes for all podcasts by running EpisodeUpdater over every podcast feed.
+    """Update episodes for all podcasts to populate feeds.
 
-    This enqueues the job that recalculates each podcast's total episode count and performs a legacy healthcheck HTTP GET (network errors are suppressed).
+    This enqueues the job that recalculates each podcast's total episode count and
+    performs a legacy healthcheck HTTP GET (network errors are suppressed).
     """
     logger.info("Starting update_base task")
     feeds = list(Podcast.objects.values_list("feed", flat=True))
@@ -56,7 +56,8 @@ def update_total_episodes():
 def remove_podcasts():
     """Delete Podcast records that have no associated episodes.
 
-    This task removes podcasts whose related episode count is zero. It also performs a legacy healthcheck ping on completion.
+    This task removes podcasts whose related episode count is zero. It also performs
+    a legacy healthcheck ping on completion.
     """
     logger.info("Starting remove_podcasts task")
 

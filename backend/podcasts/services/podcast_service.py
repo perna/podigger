@@ -11,21 +11,22 @@ logger = logging.getLogger(__name__)
 
 
 class PodcastCreateResult(TypedDict):
+    """Result dictionary for podcast creation."""
     id: int | None
     status: str
     message: str | None
 
 
 class PodcastService:
+    """Service for managing Podcast operations."""
     @staticmethod
     def create_podcast(name: str, feed: str) -> PodcastCreateResult:
-        """
-        Create a new podcast or return existing one.
-        
+        """Create a new podcast or return existing one.
+
         Args:
             name: The name of the podcast
             feed: The RSS feed URL
-            
+
         Returns:
             PodcastCreateResult dict with id, status, and message
         """

@@ -6,18 +6,20 @@ import feedparser
 
 logger = logging.getLogger(__name__)
 
-# Rough HTML tag stripper (keeps text content). For more robust needs consider BeautifulSoup.
+# Rough HTML tag stripper (keeps text content). For more robust needs consider
+# BeautifulSoup.
 _TAG_RE = re.compile(r"(<!--.*?-->|<[^>]*>)", re.DOTALL)
 
 
 def _strip_html(text: str | None) -> str:
-    """Remove HTML tags and comments from the given text and trim leading/trailing whitespace.
+    """Strip HTML tags/comments and trim whitespace.
 
     Parameters:
         text (str | None): Input text to clean.
 
     Returns:
-        str: The cleaned text with HTML tags/comments removed and surrounding whitespace trimmed.
+        str: The cleaned text with HTML tags/comments removed and surrounding whitespace
+            trimmed.
     """
     if not text:
         return ""
@@ -43,7 +45,8 @@ def parse_feed(
         default_image (str): Fallback image URL used when the feed has no image.
 
     Returns:
-        dict[str, Any]: A normalized feed dictionary as described above. Returns an empty dict on parse errors (the exception is logged).
+        dict[str, Any]: A normalized feed dictionary as described above. Returns an
+            empty dict on parse errors (the exception is logged).
     """
     try:
         d = feedparser.parse(url)
@@ -114,7 +117,8 @@ def is_valid_feed(url: str) -> bool:
         url (str): The feed URL to validate.
 
     Returns:
-        `true` if feedparser reports no bozo errors (`bozo == 0`), `false` otherwise (including when parsing raises an exception).
+        `true` if feedparser reports no bozo errors (`bozo == 0`), `false`
+            otherwise (including when parsing raises an exception).
     """
     try:
         d = feedparser.parse(url)
