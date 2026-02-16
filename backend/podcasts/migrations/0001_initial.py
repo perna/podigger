@@ -6,21 +6,37 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
             name="PodcastLanguage",
             fields=[
-                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
                 ("created_at", models.DateTimeField(default=django.utils.timezone.now)),
                 ("updated_at", models.DateTimeField(auto_now=True, null=True)),
-                ("code", models.CharField(blank=True, default="pt", max_length=10, null=True)),
-                ("name", models.CharField(blank=True, default="português", max_length=60, null=True)),
+                (
+                    "code",
+                    models.CharField(
+                        blank=True, default="pt", max_length=10, null=True
+                    ),
+                ),
+                (
+                    "name",
+                    models.CharField(
+                        blank=True, default="português", max_length=60, null=True
+                    ),
+                ),
             ],
             options={
                 "abstract": False,
@@ -29,7 +45,15 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="PopularTerm",
             fields=[
-                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
                 ("created_at", models.DateTimeField(default=django.utils.timezone.now)),
                 ("updated_at", models.DateTimeField(auto_now=True, null=True)),
                 ("term", models.CharField(db_index=True, max_length=255)),
@@ -43,7 +67,15 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="Tag",
             fields=[
-                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
                 ("created_at", models.DateTimeField(default=django.utils.timezone.now)),
                 ("updated_at", models.DateTimeField(auto_now=True, null=True)),
                 ("name", models.CharField(max_length=255, unique=True)),
@@ -55,7 +87,15 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="TopicSuggestion",
             fields=[
-                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
                 ("created_at", models.DateTimeField(default=django.utils.timezone.now)),
                 ("updated_at", models.DateTimeField(auto_now=True, null=True)),
                 ("title", models.CharField(db_index=True, max_length=255)),
@@ -69,14 +109,38 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="Podcast",
             fields=[
-                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
                 ("created_at", models.DateTimeField(default=django.utils.timezone.now)),
                 ("updated_at", models.DateTimeField(auto_now=True, null=True)),
                 ("name", models.CharField(max_length=128, unique=True)),
                 ("feed", models.URLField(unique=True)),
-                ("image", models.CharField(blank=True, default="/static/dist/img/podcast-banner.png", max_length=255, null=True)),
+                (
+                    "image",
+                    models.CharField(
+                        blank=True,
+                        default="/static/dist/img/podcast-banner.png",
+                        max_length=255,
+                        null=True,
+                    ),
+                ),
                 ("total_episodes", models.IntegerField(default=0)),
-                ("language", models.ForeignKey(default=None, null=True, on_delete=django.db.models.deletion.SET_NULL, to="podcasts.podcastlanguage")),
+                (
+                    "language",
+                    models.ForeignKey(
+                        default=None,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        to="podcasts.podcastlanguage",
+                    ),
+                ),
             ],
             options={
                 "abstract": False,
@@ -85,15 +149,35 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="Episode",
             fields=[
-                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
                 ("title", models.CharField(max_length=1024)),
                 ("link", models.URLField(unique=True)),
                 ("description", models.TextField(blank=True, null=True)),
                 ("published", models.DateTimeField(blank=True, null=True)),
                 ("enclosure", models.CharField(blank=True, max_length=1024, null=True)),
                 ("to_json", models.JSONField(blank=True, null=True)),
-                ("podcast", models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name="episodes", to="podcasts.podcast")),
-                ("tags", models.ManyToManyField(blank=True, related_name="episodes", to="podcasts.tag")),
+                (
+                    "podcast",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="episodes",
+                        to="podcasts.podcast",
+                    ),
+                ),
+                (
+                    "tags",
+                    models.ManyToManyField(
+                        blank=True, related_name="episodes", to="podcasts.tag"
+                    ),
+                ),
             ],
         ),
     ]

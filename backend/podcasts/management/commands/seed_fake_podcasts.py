@@ -3,7 +3,6 @@ import random
 from django.core.management.base import BaseCommand
 from django.db import transaction
 from django.utils import timezone
-
 from faker import Faker
 
 from podcasts.models import (
@@ -23,8 +22,7 @@ class Command(BaseCommand):
     )
 
     def add_arguments(self, parser):
-        """
-        Add command-line options that control seeding behavior for the management command.
+        """Add command-line options that control seeding behavior for the management command.
 
         Parameters:
             parser (argparse.ArgumentParser): Django-provided argument parser to which options are added.

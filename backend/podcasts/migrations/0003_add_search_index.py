@@ -2,7 +2,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     # Create the GIN expression index for full-text search using Portuguese
     # configuration. This runs `CREATE INDEX CONCURRENTLY` and therefore must
     # be non-atomic.
