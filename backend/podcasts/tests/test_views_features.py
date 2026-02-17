@@ -13,11 +13,14 @@ class TestPodcastViewSetFeatures:
         """
         self.client = APIClient()
         from django.contrib.auth.models import User
+
         self.user = User.objects.create_user(username="testuser", password="password")
         self.client.force_authenticate(user=self.user)
 
     def test_create_podcast(self, mocker):
-        mocker.patch("podcasts.services.podcast_service.is_valid_feed", return_value=True)
+        mocker.patch(
+            "podcasts.services.podcast_service.is_valid_feed", return_value=True
+        )
         mock_task = mocker.patch("podcasts.services.podcast_service.add_episode.delay")
         data = {"name": "New Pod", "feed": "http://newfeed.com"}
         response = self.client.post("/api/podcasts/", data)
@@ -27,7 +30,9 @@ class TestPodcastViewSetFeatures:
         mock_task.assert_called_once_with("http://newfeed.com")
 
     def test_create_duplicate_podcast(self, mocker):
-        mocker.patch("podcasts.services.podcast_service.is_valid_feed", return_value=True)
+        mocker.patch(
+            "podcasts.services.podcast_service.is_valid_feed", return_value=True
+        )
         Podcast.objects.create(name="Existing", feed="http://exist.com")
         data = {"name": "Existing", "feed": "http://exist.com"}
         response = self.client.post("/api/podcasts/", data)
@@ -72,7 +77,9 @@ class TestPodcastViewSetFeatures:
 
     def test_create_podcast_validates_feed(self, mocker):
         # Mock is_valid_feed to return False
-        mocker.patch("podcasts.services.podcast_service.is_valid_feed", return_value=False)
+        mocker.patch(
+            "podcasts.services.podcast_service.is_valid_feed", return_value=False
+        )
 
         data = {"name": "Bad Feed", "feed": "http://bad.com"}
         response = self.client.post("/api/podcasts/", data)
