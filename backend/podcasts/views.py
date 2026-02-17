@@ -1,3 +1,5 @@
+from typing import ClassVar
+
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, status, viewsets
 from rest_framework.decorators import action
@@ -15,11 +17,14 @@ from .services.podcast_service import PodcastService
 
 
 class PodcastViewSet(viewsets.ModelViewSet):
-    queryset = Podcast.objects.all().order_by("-id")
-    filter_backends = [filters.SearchFilter]
-    search_fields = ["name"]
+    """ViewSet for viewing and creating Podcasts."""
+
+    queryset: ClassVar = Podcast.objects.all().order_by("-id")
+    filter_backends: ClassVar = [filters.SearchFilter]
+    search_fields: ClassVar = ["name"]
 
     def get_serializer_class(self):
+        """Return the serializer class based on the action."""
         if self.action in ["list"]:
             return PodcastListSerializer
         return PodcastDetailSerializer
@@ -28,17 +33,19 @@ class PodcastViewSet(viewsets.ModelViewSet):
         """Create a Podcast from JSON request data and enqueue episode import.
 
         Parameters:
-            request (rest_framework.request.Request): Expect `request.data` to include `name` (string) and `feed` (URL or string).
+            request (rest_framework.request.Request): Expect `request.data` to include
+                `name` (string) and `feed` (URL or string).
 
         Returns:
             rest_framework.response.Response:
-                - 201 with `{"id": <int>, "status": "created"}` when a new Podcast is created.
-                - 200 with `{"id": <int>, "message": "...", "status": "existing"}` when already exists.
+                - 201 with `{"id": <int>, "status": "created"}` when a new
+                  Podcast is created.
+                - 200 with `{"id": <int>, "message": "...", "status": "existing"}`
+                  when already exists.
                 - 400 with `{"message": "..."}` on validation error.
         """
         result = PodcastService.create_podcast(
-            name=request.data.get("name"),
-            feed=request.data.get("feed")
+            name=request.data.get("name"), feed=request.data.get("feed")
         )
 
         if result["status"] == "error":
@@ -52,14 +59,13 @@ class PodcastViewSet(viewsets.ModelViewSet):
                 {
                     "id": result["id"],
                     "message": result["message"],
-                    "status": "none", # maintaining compatibility with frontend expected status
+                    "status": "none",  # compatibility with frontend expected status
                 },
                 status=status.HTTP_200_OK,
             )
 
         return Response(
-            {"id": result["id"], "status": "created"},
-            status=status.HTTP_201_CREATED
+            {"id": result["id"], "status": "created"}, status=status.HTTP_201_CREATED
         )
 
     @action(detail=False, methods=["get"])
@@ -67,7 +73,8 @@ class PodcastViewSet(viewsets.ModelViewSet):
         """Return the six most recently created podcasts.
 
         Returns:
-            Response: Serialized list of up to six Podcast objects ordered by descending `id`.
+            Response: Serialized list of up to six Podcast objects ordered by
+                descending `id`.
         """
         _ = request
         recent_podcasts = Podcast.objects.order_by("-id")[:6]
@@ -81,26 +88,33 @@ class EpisodeViewSet(viewsets.ModelViewSet):
     Use `GET /api/episodes/?q=termo` to search episodes by title and description.
     """
 
-    queryset = Episode.objects.all().order_by("-published")
-    serializer_class = EpisodeSerializer
-    filter_backends = [DjangoFilterBackend]
-    filterset_fields = ["podcast"]
+    queryset: ClassVar = Episode.objects.all().order_by("-published")
+    serializer_class: ClassVar = EpisodeSerializer
+    filter_backends: ClassVar = [DjangoFilterBackend]
+    filterset_fields: ClassVar = ["podcast"]
 
     def get_queryset(self):
+        """Return the queryset, optionally filtered by search term."""
         qs = super().get_queryset()
-        q = self.request.query_params.get("q") or self.request.query_params.get("search")
-        
+        q = self.request.query_params.get("q") or self.request.query_params.get(
+            "search"
+        )
+
         if q:
             return Episode.objects.search(q)
-            
+
         return qs
 
 
 class TopicSuggestionViewSet(viewsets.ModelViewSet):
-    queryset = TopicSuggestion.objects.all().order_by("-id")
-    serializer_class = TopicSuggestionSerializer
+    """ViewSet for handling Topic Suggestions."""
+
+    queryset: ClassVar = TopicSuggestion.objects.all().order_by("-id")
+    serializer_class: ClassVar = TopicSuggestionSerializer
 
 
 class PopularTermViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = PopularTerm.objects.all().order_by("-times")
-    serializer_class = PopularTermSerializer
+    """ViewSet for viewing Popular Terms."""
+
+    queryset: ClassVar = PopularTerm.objects.all().order_by("-times")
+    serializer_class: ClassVar = PopularTermSerializer

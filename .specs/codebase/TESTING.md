@@ -222,12 +222,21 @@ def test_search_episodes(self):
 
 ## Frontend Testing
 
-**Status:** Not implemented yet
-**Package.json script:** `"test": "echo \"Error: no test specified\" && exit 0"`
-**Future consideration:**
-- Jest for unit tests
-- React Testing Library for component tests
-- Playwright/Cypress for E2E tests
+**Status:** Implemented (Vitest + React Testing Library)
+**Framework:** Vitest 4.x, @testing-library/react, jsdom
+**Package.json scripts:** `"test": "vitest run"`, `"test:watch": "vitest"`
+
+**Location:** `frontend/src/**/__tests__/*.test.{ts,tsx}`
+
+**Coverage:**
+- `lib/__tests__/api.test.ts` — fetchEpisodes (query, page, error handling)
+- `components/home/__tests__/EmptyState.test.tsx` — no-results, no-episodes, error, retry
+- `components/home/__tests__/EpisodeCard.test.tsx` — title, podcast, links, placeholder
+- `components/home/__tests__/EpisodeList.test.tsx` — loading, results, empty, error, pagination
+- `components/home/__tests__/SearchHeader.test.tsx` — input, search button, callbacks
+- `components/home/__tests__/BottomNav.test.tsx` — nav items, active state
+
+**Run:** `cd frontend && npm run test` or `make frontend-test`
 
 ## CI/CD Testing
 

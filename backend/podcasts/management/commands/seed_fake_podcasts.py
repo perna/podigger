@@ -3,7 +3,6 @@ import random
 from django.core.management.base import BaseCommand
 from django.db import transaction
 from django.utils import timezone
-
 from faker import Faker
 
 from podcasts.models import (
@@ -23,8 +22,7 @@ class Command(BaseCommand):
     )
 
     def add_arguments(self, parser):
-        """
-        Add command-line options that control seeding behavior for the management command.
+        """Add command-line options that control seeding behavior for the management command.
 
         Parameters:
             parser (argparse.ArgumentParser): Django-provided argument parser to which options are added.
@@ -185,8 +183,9 @@ class Command(BaseCommand):
                 k = max(1, int(random.gauss(avg_tags, 1)))
                 k = min(k, len(tag_list))
                 tags_for_ep = random.sample(tag_list, k=k)
-                for t in tags_for_ep:
-                    m2m_rows.append(through(episode_id=ep.id, tag_id=t.id))
+                m2m_rows.extend(
+                    through(episode_id=ep.id, tag_id=t.id) for t in tags_for_ep
+                )
 
             # bulk insert m2m in chunks
             for i in range(0, len(m2m_rows), 2000):

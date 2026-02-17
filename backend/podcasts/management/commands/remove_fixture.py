@@ -10,8 +10,7 @@ class Command(BaseCommand):
     help = "Remove records present in a fixture JSON file (careful: deletes by PK)."
 
     def add_arguments(self, parser):
-        """
-        Register command-line arguments used by this management command.
+        """Register command-line arguments used by this management command.
 
         Adds a positional optional `fixture` argument (path to the JSON fixture; defaults to
         backend/podcasts/fixtures/initial_fake_seed.json) and a `--dry-run` flag to simulate deletions.
