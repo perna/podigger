@@ -3,8 +3,9 @@ from typing import TypedDict
 
 from django.db import transaction
 
-from ..models import Podcast
-from ..tasks import add_episode
+from podcasts.models import Podcast
+from podcasts.tasks import add_episode
+
 from .feed_parser import is_valid_feed
 
 logger = logging.getLogger(__name__)
@@ -12,6 +13,7 @@ logger = logging.getLogger(__name__)
 
 class PodcastCreateResult(TypedDict):
     """Result dictionary for podcast creation."""
+
     id: int | None
     status: str
     message: str | None
@@ -19,6 +21,7 @@ class PodcastCreateResult(TypedDict):
 
 class PodcastService:
     """Service for managing Podcast operations."""
+
     @staticmethod
     def create_podcast(name: str, feed: str) -> PodcastCreateResult:
         """Create a new podcast or return existing one.

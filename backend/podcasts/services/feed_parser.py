@@ -26,6 +26,48 @@ def _strip_html(text: str | None) -> str:
     return _TAG_RE.sub("", text).strip()
 
 
+def _parse_entry(entry: Any) -> dict[str, Any]:
+    """Parse a single feed entry into a normalized item dictionary.
+
+    Parameters:
+        entry (Any): The feed entry object from feedparser.
+
+    Returns:
+        dict[str, Any]: A normalized item dictionary.
+    """
+    item: dict[str, Any] = {
+        "title": entry.get("title", ""),
+        "link": entry.get("link", ""),
+        "published": entry.get("published", ""),
+        "description": _strip_html(
+            entry.get("description", "") or entry.get("summary", "")
+        ),
+    }
+
+    # tags
+    tags: list[str] = []
+    for t in entry.get("tags", []) or []:
+        term = t.get("term") if isinstance(t, dict) else getattr(t, "term", None)
+        if term:
+            tags.append(term)
+    if tags:
+        item["tags"] = tags
+
+    # enclosure (audio file)
+    encs = entry.get("enclosures", []) or []
+    if encs:
+        first = encs[0]
+        enclosure = (
+            first.get("href", "")
+            if isinstance(first, dict)
+            else getattr(first, "href", "")
+        )
+        if enclosure:
+            item["enclosure"] = enclosure
+
+    return item
+
+
 def parse_feed(
     url: str, default_image: str = "/static/dist/img/podcast-banner.png"
 ) -> dict[str, Any]:
@@ -63,49 +105,13 @@ def parse_feed(
         }
 
         entries = getattr(d, "entries", []) or []
-        for entry in entries:
-            item: dict[str, Any] = {}
+        result["items"] = [_parse_entry(entry) for entry in entries]
 
-            item["title"] = entry.get("title", "")
-            item["link"] = entry.get("link", "")
-            item["published"] = entry.get("published", "")
-            item["description"] = _strip_html(
-                entry.get("description", "") or entry.get("summary", "")
-            )
-
-            # tags
-            tags: list[str] = []
-            for t in entry.get("tags", []) or []:
-                # feedparser may expose tags as dicts with 'term' key
-                term = None
-                if isinstance(t, dict):
-                    term = t.get("term")
-                else:
-                    term = getattr(t, "term", None)
-                if term:
-                    tags.append(term)
-            if tags:
-                item["tags"] = tags
-
-            # enclosure (audio file)
-            enclosure = ""
-            encs = entry.get("enclosures", []) or []
-            if encs:
-                first = encs[0]
-                if isinstance(first, dict):
-                    enclosure = first.get("href", "")
-                else:
-                    enclosure = getattr(first, "href", "")
-            if enclosure:
-                item["enclosure"] = enclosure
-
-            result["items"].append(item)
-
-        return result
-
-    except Exception as exc:  # pragma: no cover - defensive logging
-        logger.exception("Failed to parse feed %s: %s", url, exc)
+    except Exception:  # pragma: no cover - defensive logging
+        logger.exception("Failed to parse feed %s", url)
         return {}
+    else:
+        return result
 
 
 def is_valid_feed(url: str) -> bool:

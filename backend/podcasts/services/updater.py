@@ -14,6 +14,7 @@ logger = logging.getLogger(__name__)
 
 class EpisodeUpdater:
     """Service to update episodes from podcast feeds."""
+
     def __init__(self, feeds):
         """Initialize the updater with the list of feed URLs to process.
 
@@ -98,5 +99,5 @@ class EpisodeUpdater:
                     ).count()
                     podcast_obj.save()
 
-            except Exception as e:
-                logger.error("Falha ao processar o feed %s: %s", feed_url, e)
+            except Exception:
+                logger.exception("Falha ao processar o feed %s", feed_url)
