@@ -27,6 +27,7 @@ class PodcastMinimalSerializer(serializers.ModelSerializer):
 
 class EpisodeSerializer(serializers.ModelSerializer):
     """Serializer for Episode model."""
+
     tags = TagSerializer(many=True, read_only=True)
     podcast = PodcastMinimalSerializer(read_only=True)
 
