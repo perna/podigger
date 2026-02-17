@@ -47,7 +47,7 @@ jobs:
         if: ${{ github.event_name == 'push' || !inputs.skip_backup }}
         run: |
           echo "📦 Creating database backup..."
-          ssh ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'ENDSSH'
+          ssh -o ServerAliveInterval=60 -o ServerAliveCountMax=10 ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'ENDSSH'
             cd /opt/podigger-production
             
             # Create backup directory if not exists
@@ -99,8 +99,9 @@ jobs:
       
       - name: Copy files to VPS
         run: |
-          ssh ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "mkdir -p /opt/podigger-production"
+          ssh -o ServerAliveInterval=60 -o ServerAliveCountMax=10 ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "mkdir -p /opt/podigger-production"
           rsync -avz --delete \
+            -e "ssh -o ServerAliveInterval=60 -o ServerAliveCountMax=10" \
             --exclude '.git' \
             --exclude 'node_modules' \
             --exclude '.venv' \
@@ -113,7 +114,7 @@ jobs:
         env:
           DB_PASSWORD_PRODUCTION: ${{ secrets.DB_PASSWORD_PRODUCTION }}
         run: |
-          ssh ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "DB_PASSWORD_PRODUCTION='${DB_PASSWORD_PRODUCTION}'" bash -s << 'ENDSSH'
+          ssh -o ServerAliveInterval=60 -o ServerAliveCountMax=10 ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "DB_PASSWORD_PRODUCTION='${DB_PASSWORD_PRODUCTION}'" bash -s << 'ENDSSH'
             cd /opt/podigger-production
             
             # Pull apenas imagens base (não rebuildar tudo)
@@ -206,7 +207,7 @@ jobs:
         run: |
           echo "⚠️ Deployment failed, attempting rollback..."
           
-          ssh ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "DB_PASSWORD_PRODUCTION='${DB_PASSWORD_PRODUCTION}'" bash -s << 'ENDSSH'
+          ssh -o ServerAliveInterval=60 -o ServerAliveCountMax=10 ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "DB_PASSWORD_PRODUCTION='${DB_PASSWORD_PRODUCTION}'" bash -s << 'ENDSSH'
             cd /opt/podigger-production
             
             # Stop failed containers

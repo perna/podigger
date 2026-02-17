@@ -70,7 +70,7 @@ jobs:
       - name: Backup database
         run: |
           echo "📦 Creating database backup..."
-          ssh ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'ENDSSH'
+          ssh -o ServerAliveInterval=60 -o ServerAliveCountMax=10 ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'ENDSSH'
             cd /opt/podigger-staging
             
             # Create backup directory if not exists
@@ -87,8 +87,9 @@ jobs:
       
       - name: Copy files to VPS
         run: |
-          ssh ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "mkdir -p /opt/podigger-staging"
+          ssh -o ServerAliveInterval=60 -o ServerAliveCountMax=10 ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "mkdir -p /opt/podigger-staging"
           rsync -avz --delete \
+            -e "ssh -o ServerAliveInterval=60 -o ServerAliveCountMax=10" \
             --exclude '.git' \
             --exclude 'node_modules' \
             --exclude '.venv' \
@@ -101,7 +102,7 @@ jobs:
         env:
           DB_PASSWORD_STAGING: ${{ secrets.DB_PASSWORD_STAGING }}
         run: |
-          ssh ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "DB_PASSWORD_STAGING='${DB_PASSWORD_STAGING}'" bash -s << 'ENDSSH'
+          ssh -o ServerAliveInterval=60 -o ServerAliveCountMax=10 ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "DB_PASSWORD_STAGING='${DB_PASSWORD_STAGING}'" bash -s << 'ENDSSH'
             cd /opt/podigger-staging
             
             # Pull apenas imagens base (não rebuildar tudo)
@@ -178,7 +179,7 @@ jobs:
         run: |
           echo "⚠️ Deployment failed, attempting rollback..."
           
-          ssh ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "DB_PASSWORD_STAGING='${DB_PASSWORD_STAGING}'" bash -s << 'ENDSSH'
+          ssh -o ServerAliveInterval=60 -o ServerAliveCountMax=10 ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "DB_PASSWORD_STAGING='${DB_PASSWORD_STAGING}'" bash -s << 'ENDSSH'
             cd /opt/podigger-staging
             
             # Stop failed containers
