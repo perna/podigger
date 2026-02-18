@@ -5,7 +5,6 @@
 #   docker-compose -f docker-compose.production.yml up -d
 #   docker-compose -f docker-compose.production.yml down
 
-
 services:
   # Backend Django + DRF
   backend-production:
@@ -13,6 +12,7 @@ services:
       file: docker-compose.base.yml
       service: backend
     build:
+      context: ./backend
       dockerfile: Dockerfile.production
       args:
         - ENVIRONMENT=production
@@ -48,6 +48,7 @@ services:
       file: docker-compose.base.yml
       service: frontend
     build:
+      context: ./frontend
       dockerfile: Dockerfile.production
       args:
         - NEXT_PUBLIC_API_URL=https://api.podigger.perna.app
@@ -56,7 +57,8 @@ services:
     expose:
       - "3000"
     depends_on:
-      - backend-production
+      backend-production:
+        condition: service_healthy
     networks:
       - podigger-production
     logging:
@@ -111,6 +113,7 @@ services:
       file: docker-compose.base.yml
       service: celery
     build:
+      context: ./backend
       dockerfile: Dockerfile.production
       args:
         - ENVIRONMENT=production
@@ -143,6 +146,7 @@ services:
       file: docker-compose.base.yml
       service: celery-beat
     build:
+      context: ./backend
       dockerfile: Dockerfile.production
       args:
         - ENVIRONMENT=production

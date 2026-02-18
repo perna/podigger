@@ -15,6 +15,7 @@ jobs:
       backend: ${{ steps.filter.outputs.backend }}
       frontend: ${{ steps.filter.outputs.frontend }}
     steps:
+      - uses: actions/checkout@v4
       - uses: dorny/paths-filter@v3
         id: filter
         with:
@@ -107,9 +108,9 @@ jobs:
           DATABASE_HOST: localhost
           DATABASE_PORT: 5432
           DATABASE_NAME: podigger
-          DATABASE_USER: ${{ secrets.DB_USER || 'postgres' }}
-          DATABASE_PASSWORD: ${{ secrets.DB_PASSWORD || 'postgres' }}
-          DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY || 'test-secret-key-for-ci-only' }}
+          DATABASE_USER: postgres
+          DATABASE_PASSWORD: postgres
+          DJANGO_SECRET_KEY: test-secret-key-for-ci-only
           DJANGO_SETTINGS_MODULE: config.settings
         run: |
           cd backend
@@ -120,9 +121,9 @@ jobs:
           DATABASE_HOST: localhost
           DATABASE_PORT: 5432
           DATABASE_NAME: podigger
-          DATABASE_USER: ${{ secrets.DB_USER || 'postgres' }}
-          DATABASE_PASSWORD: ${{ secrets.DB_PASSWORD || 'postgres' }}
-          DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY || 'test-secret-key-for-ci-only' }}
+          DATABASE_USER: postgres
+          DATABASE_PASSWORD: postgres
+          DJANGO_SECRET_KEY: test-secret-key-for-ci-only
           DJANGO_SETTINGS_MODULE: config.settings
         run: |
           cd backend
@@ -151,3 +152,8 @@ jobs:
         run: |
           cd frontend
           npm run lint
+
+      - name: Run build
+        run: |
+          cd frontend
+          npm run build
