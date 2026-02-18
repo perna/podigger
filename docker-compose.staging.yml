@@ -5,7 +5,6 @@
 #   docker-compose -f docker-compose.staging.yml up -d
 #   docker-compose -f docker-compose.staging.yml down
 
-
 services:
   # Backend Django + DRF
   backend-staging:
@@ -13,6 +12,7 @@ services:
       file: docker-compose.base.yml
       service: backend
     build:
+      context: ./backend
       dockerfile: Dockerfile.production
       args:
         - ENVIRONMENT=staging
@@ -43,6 +43,7 @@ services:
       file: docker-compose.base.yml
       service: frontend
     build:
+      context: ./frontend
       dockerfile: Dockerfile.production
       args:
         - NEXT_PUBLIC_API_URL=https://staging.api.podigger.perna.app
@@ -51,7 +52,8 @@ services:
     expose:
       - "3000"
     depends_on:
-      - backend-staging
+      backend-staging:
+        condition: service_healthy
     networks:
       - podigger-staging
 
@@ -90,6 +92,7 @@ services:
       file: docker-compose.base.yml
       service: celery
     build:
+      context: ./backend
       dockerfile: Dockerfile.production
       args:
         - ENVIRONMENT=staging
@@ -117,6 +120,7 @@ services:
       file: docker-compose.base.yml
       service: celery-beat
     build:
+      context: ./backend
       dockerfile: Dockerfile.production
       args:
         - ENVIRONMENT=staging

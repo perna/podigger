@@ -1,9 +1,10 @@
 name: Deploy to Staging
 
 on:
-  push:
-    branches:
-      - develop
+  workflow_run:
+    workflows: ["CI"]
+    branches: [develop]
+    types: [completed]
   workflow_dispatch:  # Keep manual option for emergency deployments
     inputs:
       branch:
@@ -18,6 +19,8 @@ permissions:
 jobs:
   deploy-staging:
     runs-on: ubuntu-latest
+    # Only deploy if CI passed (or manual trigger)
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     environment:
       name: staging
       url: https://staging.podigger.perna.app
@@ -44,7 +47,7 @@ jobs:
           DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY_STAGING }}
           DJANGO_DEBUG=False
           DJANGO_SETTINGS_MODULE=config.settings
-          ALLOWED_HOSTS=staging.api.podigger.perna.app
+          DJANGO_ALLOWED_HOSTS=staging.api.podigger.perna.app
           CORS_ALLOWED_ORIGINS=https://staging.podigger.perna.app
           
           DATABASE_HOST=db-staging
@@ -99,44 +102,61 @@ jobs:
             ./ ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/opt/podigger-staging/
       
       - name: Deploy to staging
-        env:
-          DB_PASSWORD_STAGING: ${{ secrets.DB_PASSWORD_STAGING }}
         run: |
-          ssh -o ServerAliveInterval=60 -o ServerAliveCountMax=10 ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "DB_PASSWORD_STAGING='${DB_PASSWORD_STAGING}'" bash -s << 'ENDSSH'
+          ssh -o ServerAliveInterval=60 -o ServerAliveCountMax=10 ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} bash -s << ENDSSH
+            export DB_PASSWORD_STAGING='${{ secrets.DB_PASSWORD_STAGING }}'
             cd /opt/podigger-staging
             
             # Pull apenas imagens base (não rebuildar tudo)
             docker compose -f docker-compose.staging.yml pull db-staging redis-staging || true
             
-            # Build sem --no-cache (usa cache de layers)
+            # Build application images
             docker compose -f docker-compose.staging.yml build
+            
+            # Run migrations via one-off container BEFORE starting services
+            docker compose -f docker-compose.staging.yml up -d db-staging redis-staging
+            
+            # Wait for database to be healthy
+            echo "Waiting for database to be healthy..."
+            for i in {1..30}; do
+              if docker compose -f docker-compose.staging.yml exec -T db-staging pg_isready -U podigger_staging -d podigger_staging 2>/dev/null; then
+                echo "✅ Database is healthy"
+                break
+              fi
+              if [ \$i -eq 30 ]; then
+                echo "❌ Database failed to become healthy"
+                exit 1
+              fi
+              echo "⏳ Waiting for database... (attempt \$i/30)"
+              sleep 2
+            done
+            
+            # Run migrations BEFORE starting backend
+            docker compose -f docker-compose.staging.yml run --rm backend-staging python manage.py migrate --noinput
+            
+            # Collect static files
+            docker compose -f docker-compose.staging.yml run --rm backend-staging python manage.py collectstatic --noinput
             
             # Stop old containers (graceful shutdown)
             docker compose -f docker-compose.staging.yml down --timeout 30
             
-            # Start new containers
+            # Start all containers
             docker compose -f docker-compose.staging.yml up -d
             
-            # Wait for backend to be healthy (retry adaptativo)
+            # Wait for backend to be healthy
             echo "Waiting for backend to be healthy..."
             for i in {1..12}; do
               if docker compose -f docker-compose.staging.yml exec -T backend-staging curl -f http://localhost:8000/health/ 2>/dev/null; then
                 echo "✅ Backend is healthy"
                 break
               fi
-              if [ $i -eq 12 ]; then
+              if [ \$i -eq 12 ]; then
                 echo "❌ Backend failed to become healthy"
                 exit 1
               fi
-              echo "⏳ Waiting... (attempt $i/12)"
+              echo "⏳ Waiting... (attempt \$i/12)"
               sleep 5
             done
-            
-            # Run migrations
-            docker compose -f docker-compose.staging.yml exec -T backend-staging python manage.py migrate --noinput
-            
-            # Collect static files
-            docker compose -f docker-compose.staging.yml exec -T backend-staging python manage.py collectstatic --noinput
           ENDSSH
       
       - name: Health check
@@ -167,41 +187,39 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Branch**: $BRANCH" >> $GITHUB_STEP_SUMMARY
           echo "**Commit**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
-          echo "**Triggered by**: ${{ github.event_name == 'push' && 'Automatic (merge to develop)' || 'Manual' }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Triggered by**: ${{ github.event_name == 'workflow_dispatch' && 'Manual' || 'Automatic (CI passed on develop)' }}" >> $GITHUB_STEP_SUMMARY
           echo "**Frontend**: https://staging.podigger.perna.app" >> $GITHUB_STEP_SUMMARY
           echo "**Backend**: https://staging.api.podigger.perna.app" >> $GITHUB_STEP_SUMMARY
           echo "**Deployed at**: $(date -u +'%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_STEP_SUMMARY
       
       - name: Rollback on failure
         if: failure()
-        env:
-          DB_PASSWORD_STAGING: ${{ secrets.DB_PASSWORD_STAGING }}
         run: |
           echo "⚠️ Deployment failed, attempting rollback..."
           
-          ssh -o ServerAliveInterval=60 -o ServerAliveCountMax=10 ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "DB_PASSWORD_STAGING='${DB_PASSWORD_STAGING}'" bash -s << 'ENDSSH'
+          ssh -o ServerAliveInterval=60 -o ServerAliveCountMax=10 ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} bash -s << ENDSSH
+            export DB_PASSWORD_STAGING='${{ secrets.DB_PASSWORD_STAGING }}'
             cd /opt/podigger-staging
             
             # Stop failed containers
             docker compose -f docker-compose.staging.yml down
             
             # Restore from latest backup if exists
-            LATEST_BACKUP=$(ls -t backups/backup-*.sql.gz 2>/dev/null | head -n 1)
-            if [ -n "$LATEST_BACKUP" ]; then
-              echo "📦 Restoring from backup: $LATEST_BACKUP"
+            LATEST_BACKUP=\$(ls -t backups/backup-*.sql.gz 2>/dev/null | head -n 1)
+            if [ -n "\$LATEST_BACKUP" ]; then
+              echo "📦 Restoring from backup: \$LATEST_BACKUP"
               
               # Start only database
               docker compose -f docker-compose.staging.yml up -d db-staging
               sleep 10
               
               # Restore backup
-              gunzip < "$LATEST_BACKUP" | docker compose -f docker-compose.staging.yml exec -T db-staging \
+              gunzip < "\$LATEST_BACKUP" | docker compose -f docker-compose.staging.yml exec -T db-staging \
                 psql -U podigger_staging podigger_staging
               
               echo "✅ Database restored"
               
-              # Try to start previous version
-              git checkout HEAD~1 2>/dev/null || echo "⚠️ Could not checkout previous version"
+              # Restart all services with existing images
               docker compose -f docker-compose.staging.yml up -d
             else
               echo "⚠️ No backup found, database not restored"
