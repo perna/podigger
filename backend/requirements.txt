@@ -19,3 +19,4 @@ feedparser>=6.0.10
 requests>=2.31.0
 commitizen>=3.13.0
 urllib3>=2.6.3 # not directly required, pinned by Snyk to avoid a vulnerability
+zipp>=3.19.1 # not directly required, pinned by Snyk to avoid a vulnerability
