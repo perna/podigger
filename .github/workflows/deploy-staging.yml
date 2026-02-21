@@ -76,13 +76,27 @@ jobs:
           ssh -o ServerAliveInterval=60 -o ServerAliveCountMax=10 ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'ENDSSH'
             cd /opt/podigger-staging
             
+            # Skip if compose file is missing
+            if [ ! -f docker-compose.staging.yml ]; then
+              echo "⚠️ docker-compose.staging.yml not found, skipping backup."
+              exit 0
+            fi
+            
+            # Skip if database container is not running
+            if ! docker compose -f docker-compose.staging.yml ps | grep -q db-staging; then
+              echo "⚠️ db-staging container not running, skipping backup."
+              exit 0
+            fi
+            
             # Create backup directory if not exists
             mkdir -p backups
             
             # Create backup
             BACKUP_FILE="backups/backup-$(date +%Y%m%d-%H%M%S).sql.gz"
             docker compose -f docker-compose.staging.yml exec -T db-staging \
-              pg_dump -U podigger_staging podigger_staging | gzip > "$BACKUP_FILE" 2>/dev/null || echo "⚠️ Backup failed (database may not exist yet)"
+              pg_dump -U podigger_staging podigger_staging | gzip > "$BACKUP_FILE"
+            
+            echo "✅ Backup created: $BACKUP_FILE"
             
             # Keep only last 3 backups
             ls -t backups/backup-*.sql.gz 2>/dev/null | tail -n +4 | xargs -r rm

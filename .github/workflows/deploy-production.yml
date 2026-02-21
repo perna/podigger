@@ -53,6 +53,18 @@ jobs:
           ssh -o ServerAliveInterval=60 -o ServerAliveCountMax=10 ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'ENDSSH'
             cd /opt/podigger-production
             
+            # Skip if compose file is missing
+            if [ ! -f docker-compose.production.yml ]; then
+              echo "⚠️ docker-compose.production.yml not found, skipping backup."
+              exit 0
+            fi
+            
+            # Skip if database container is not running
+            if ! docker compose -f docker-compose.production.yml ps | grep -q db-production; then
+              echo "⚠️ db-production container not running, skipping backup."
+              exit 0
+            fi
+            
             # Create backup directory if not exists
             mkdir -p backups
             
@@ -64,7 +76,7 @@ jobs:
             echo "✅ Backup created: $BACKUP_FILE"
             
             # Keep only last 7 backups
-            ls -t backups/backup-*.sql.gz | tail -n +8 | xargs -r rm
+            ls -t backups/backup-*.sql.gz 2>/dev/null | tail -n +8 | xargs -r rm
           ENDSSH
       
       - name: Create .env.production file
