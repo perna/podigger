@@ -175,23 +175,33 @@ jobs:
       
       - name: Health check
         run: |
-          sleep 15
+          echo "Waiting for services to settle..."
+          sleep 20
           
           # Check backend health
+          echo "🔍 Checking backend health..."
           BACKEND_STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://staging.api.podigger.perna.app/health/ || echo "000")
+          # Remove any potential duplicate 000 from failed curl
+          BACKEND_STATUS=${BACKEND_STATUS:0:3}
+          
           if [ "$BACKEND_STATUS" != "200" ]; then
             echo "❌ Backend health check failed (HTTP $BACKEND_STATUS)"
+            echo "Possible reasons: DNS not propagated, Nginx Proxy Manager configuration, or service crashed."
             exit 1
           fi
-          echo "✅ Backend is healthy"
+          echo "✅ Backend is healthy (HTTP 200)"
           
           # Check frontend health
+          echo "🔍 Checking frontend health..."
           FRONTEND_STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://staging.podigger.perna.app/ || echo "000")
+          FRONTEND_STATUS=${FRONTEND_STATUS:0:3}
+          
           if [ "$FRONTEND_STATUS" != "200" ]; then
             echo "❌ Frontend health check failed (HTTP $FRONTEND_STATUS)"
+            echo "Possible reasons: DNS not propagated, Nginx Proxy Manager configuration, or service crashed."
             exit 1
           fi
-          echo "✅ Frontend is healthy"
+          echo "✅ Frontend is healthy (HTTP 200)"
       
       - name: Deployment summary
         if: success()
