@@ -1,0 +1,156 @@
+# Docker Compose for Staging Environment
+# Deploy on VPS for testing before production
+#
+# Usage:
+#   docker-compose -f docker-compose.staging.yml up -d
+#   docker-compose -f docker-compose.staging.yml down
+
+services:
+  # Backend Django + DRF
+  backend-staging:
+    extends:
+      file: docker-compose.base.yml
+      service: backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.production
+      args:
+        - ENVIRONMENT=staging
+    container_name: podigger-staging-backend
+    command: gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 2 --timeout 60
+    expose:
+      - "8000"
+    volumes:
+      - static_staging:/app/staticfiles
+      - media_staging:/app/media
+    depends_on:
+      db-staging:
+        condition: service_healthy
+      redis-staging:
+        condition: service_healthy
+    env_file:
+      - ./backend/.env.staging
+    environment:
+      - DATABASE_HOST=db-staging
+      - REDIS_URL=redis://redis-staging:6379/1
+      - CELERY_BROKER_URL=redis://redis-staging:6379/0
+    networks:
+      - podigger-staging
+
+  # Frontend Next.js
+  frontend-staging:
+    extends:
+      file: docker-compose.base.yml
+      service: frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.production
+      args:
+        - NEXT_PUBLIC_API_URL=https://staging.api.podigger.perna.app
+        - NEXT_PUBLIC_ENVIRONMENT=staging
+    container_name: podigger-staging-frontend
+    expose:
+      - "3000"
+    depends_on:
+      backend-staging:
+        condition: service_healthy
+    networks:
+      - podigger-staging
+
+  # PostgreSQL Database
+  db-staging:
+    extends:
+      file: docker-compose.base.yml
+      service: db
+    container_name: podigger-staging-db
+    environment:
+      POSTGRES_DB: podigger_staging
+      POSTGRES_USER: podigger_staging
+      POSTGRES_PASSWORD: ${DB_PASSWORD_STAGING}
+    volumes:
+      - pgdata_staging:/var/lib/postgresql/data
+    networks:
+      - podigger-staging
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U podigger_staging -d podigger_staging" ]
+
+  # Redis for cache and Celery broker
+  redis-staging:
+    extends:
+      file: docker-compose.base.yml
+      service: redis
+    container_name: podigger-staging-redis
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_staging:/data
+    networks:
+      - podigger-staging
+
+  # Celery Worker
+  celery-staging:
+    extends:
+      file: docker-compose.base.yml
+      service: celery
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.production
+      args:
+        - ENVIRONMENT=staging
+    container_name: podigger-staging-celery
+    command: celery -A config worker --loglevel=info --concurrency=2
+    depends_on:
+      db-staging:
+        condition: service_healthy
+      redis-staging:
+        condition: service_healthy
+    env_file:
+      - ./backend/.env.staging
+    environment:
+      - DATABASE_HOST=db-staging
+      - REDIS_URL=redis://redis-staging:6379/1
+      - CELERY_BROKER_URL=redis://redis-staging:6379/0
+    networks:
+      - podigger-staging
+    volumes:
+      - media_staging:/app/media
+
+  # Celery Beat
+  celery-beat-staging:
+    extends:
+      file: docker-compose.base.yml
+      service: celery-beat
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.production
+      args:
+        - ENVIRONMENT=staging
+    container_name: podigger-staging-celery-beat
+    command: celery -A config beat --loglevel=info
+    depends_on:
+      db-staging:
+        condition: service_healthy
+      redis-staging:
+        condition: service_healthy
+    env_file:
+      - ./backend/.env.staging
+    environment:
+      - DATABASE_HOST=db-staging
+      - REDIS_URL=redis://redis-staging:6379/1
+      - CELERY_BROKER_URL=redis://redis-staging:6379/0
+    networks:
+      - podigger-staging
+
+volumes:
+  pgdata_staging:
+    name: podigger-staging-pgdata
+  redis_staging:
+    name: podigger-staging-redis
+  static_staging:
+    name: podigger-staging-static
+  media_staging:
+    name: podigger-staging-media
+
+networks:
+  podigger-staging:
+    name: podigger-staging
+    driver: bridge

@@ -1,7 +1,7 @@
 import { InputHTMLAttributes, forwardRef } from 'react';
 import { cn } from '@/lib/utils';
 
-export interface InputProps extends InputHTMLAttributes<HTMLInputElement> { }
+export type InputProps = InputHTMLAttributes<HTMLInputElement>;
 
 /**
  * Standard input component for forms and searches.

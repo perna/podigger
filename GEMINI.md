@@ -22,7 +22,7 @@
 
 - **Backend Legado**: Flask (`app/`) - DEPRECADO
 - **Backend Novo**: Django + DRF (`backend/`) - ATIVO
-- **Frontend**: Angular + TypeScript (planejado)
+- **Frontend**: Next.js + Tailwind CSS (em desenvolvimento)
 - **Database**: PostgreSQL
 - **Migrations**: Alembic (Flask) + Django migrations
 - **Infra**: Docker Compose
@@ -58,7 +58,7 @@ podigger/
 │   ├── requirements.txt
 │   └── Dockerfile
 │
-├── frontend/               # Angular (aguardando setup)
+├── frontend/               # Next.js (em desenvolvimento)
 │   ├── package.json
 │   └── README.md
 │
@@ -90,7 +90,7 @@ podigger/
 1. ✅ **Models** (iniciado em `backend/podcasts/models.py`)
 2. ⏳ **API Endpoints** (Flask → DRF)
 3. ✅ **Business Logic** (`app/parser/` → `backend/podcasts/services/`)
-4. ⏳ **Templates** (Jinja2 → Angular components)
+4. ⏳ **Templates** (Jinja2 → React components)
 5. ⏳ **Admin** (Flask → Django Admin)
 
 ### Mapeamento de Código
@@ -101,7 +101,7 @@ podigger/
 | SQLAlchemy | Django ORM |
 | Alembic migrations | Django migrations |
 | Flask-RESTful | Django REST Framework |
-| Jinja2 templates | Angular components |
+| Jinja2 templates | React components |
 
 ### Migrações de Dados
 
@@ -188,21 +188,21 @@ python manage.py clear_fake_seed
 python manage.py runserver 0.0.0.0:8000
 ```
 
-### Angular/TypeScript
+### Next.js/React
 
 ```bash
 # Setup
-npm install -g @angular/cli
-ng new frontend
+npx create-next-app@latest frontend
+cd frontend
 
 # Dev workflow
-ng serve
-ng build
-ng test
-
-# Lint
+npm run dev
+npm run build
+npm run start
 npm run lint
-npm run lint:fix
+
+# Testes
+npm run test
 ```
 
 ### Docker
@@ -341,7 +341,7 @@ ruff format .          # Format
 ruff format --check .  # Check formatting
 ```
 
-### TypeScript/Angular
+### TypeScript/Next.js
 
 **Tipagem:**
 - Interfaces para entidades
@@ -349,10 +349,10 @@ ruff format --check .  # Check formatting
 - Evite `any`, prefira `unknown`
 
 **Estrutura:**
-- Componentes com tipagem forte
-- Lógica em services
-- RxJS para reatividade
-- NgRx/Signals para estado complexo
+- Componentes Funcionais (React)
+- Server/Client Components
+- Hooks para lógica reutilizável
+- Context API/Zustand para estado global
 
 **Nomenclatura:**
 - Components: `PascalCase`
@@ -510,8 +510,8 @@ import pdb; pdb.set_trace()  # Python debugger
 
 ### Frontend
 ```typescript
-// Angular DevTools
-// Redux DevTools (se usar Redux)
+// React DevTools
+// Next.js Debugging
 // Console logging estratégico
 // Source maps habilitados
 ```
@@ -534,15 +534,15 @@ import pdb; pdb.set_trace()  # Python debugger
 - [ ] Remover código Flask
 
 ### Frontend
-- [ ] Setup Angular + TypeScript
-- [ ] Componentes principais
-- [ ] Integração com API Django
-- [ ] Roteamento (Angular Router)
-- [ ] Estado global (Services/Signals/NgRx)
-- [ ] Formulários
+- [ ] Setup Next.js + Tailwind
+- [ ] Componentes principais (Server/Client)
+- [ ] Integração com API Django (fetch/axios)
+- [ ] Roteamento (App Router)
+- [ ] Estado global (Context/Zustand)
+- [ ] Formulários (React Hook Form + Zod)
 - [ ] Listagens com paginação
 - [ ] Search/filters
-- [ ] Testes (Vitest/Testing Library)
+- [ ] Testes (Jest/React Testing Library)
 - [ ] Build de produção
 
 ### Infraestrutura
@@ -574,12 +574,12 @@ import pdb; pdb.set_trace()  # Python debugger
 - Melhor suporte para testes
 - Comunidade mais ativa
 
-### Por que Angular + TypeScript?
-- Framework completo e opinativo
-- Injeção de dependência nativa
-- Estrutura robusta para enterprise
-- TypeScript como first-class citizen
-- Performance com Ivy Compiler
+### Por que Next.js?
+- Server Side Rendering (SSR) e Static Site Generation (SSG)
+- Otimização automática de imagens e fontes
+- Roteamento simplificado (App Router)
+- Ecossistema React robusto
+- TypeScript first-class citizen
 
 ### Estrutura de Services
 
@@ -630,7 +630,7 @@ Mantenha atualizado:
 ## 🔗 Referências
 
 - [Django Docs](https://docs.djangoproject.com/)
-- [Angular Docs](https://angular.dev/)
+- [Next.js Docs](https://nextjs.org/docs)
 - [TypeScript Handbook](https://www.typescriptlang.org/docs/)
 - [Docker Docs](https://docs.docker.com/)
 

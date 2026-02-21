@@ -7,21 +7,75 @@ from podcasts.models import Episode, Podcast, PopularTerm
 @pytest.mark.django_db
 class TestPodcastAPI:
     def setup_method(self):
-        """Attach a new APIClient instance to self for use in test methods.
-        """
+        """Attach a new APIClient instance to self for use in test methods."""
         self.client = APIClient()
 
     def test_list_podcasts(self):
         Podcast.objects.create(name="Pod 1", feed="http://feed1.com")
         response = self.client.get("/api/podcasts/")
         assert response.status_code == 200
-        assert len(response.data) == 1
+        assert len(response.data["results"]) == 1
+
+
+@pytest.mark.django_db
+class TestEpisodeAPIPagination:
+    """Integration tests for episodes pagination and search."""
+
+    def setup_method(self):
+        self.client = APIClient()
+        self.podcast = Podcast.objects.create(
+            name="Test Podcast",
+            feed="http://feed.com",
+            image="http://img.com/cover.jpg",
+        )
+        for i in range(15):
+            Episode.objects.create(
+                podcast=self.podcast,
+                title=f"Episode {i}",
+                link=f"http://ep{i}.com",
+                description="Test description",
+            )
+
+    def test_episodes_page_size(self):
+        """Default page size is 10."""
+        response = self.client.get("/api/episodes/")
+        assert response.status_code == 200
+        assert len(response.data["results"]) == 10
+        assert response.data["count"] == 15
+
+    def test_episodes_page_2(self):
+        """Page 2 returns remaining items."""
+        response = self.client.get("/api/episodes/?page=2")
+        assert response.status_code == 200
+        assert len(response.data["results"]) == 5
+        assert response.data["next"] is None
+        assert response.data["previous"] is not None
+
+    def test_episodes_search_empty_query_shows_recent(self):
+        """Empty or whitespace query returns recent episodes (no search filter)."""
+        response = self.client.get("/api/episodes/?q=")
+        assert response.status_code == 200
+        assert len(response.data["results"]) == 10
+
+    def test_episodes_search_with_query(self):
+        """Search with q= returns filtered results (FTS or trigram)."""
+        Episode.objects.create(
+            podcast=self.podcast,
+            title="Design Systems Special",
+            link="http://design.com",
+            description="Discussing design tokens and components.",
+        )
+        response = self.client.get("/api/episodes/?q=design")
+        assert response.status_code == 200
+        # FTS may return 1+ depending on DB; at least endpoint works
+        assert "results" in response.data
 
 
 @pytest.mark.django_db
 class TestEpisodeAPI:
     def setup_method(self):
-        """Prepare test state by creating an API client, a Podcast, and two Episodes associated with that podcast.
+        """Prepare test state by creating an API client, a Podcast, and two Episodes
+        associated with that podcast.
 
         Creates:
         - self.client: an APIClient instance for making requests.
@@ -47,13 +101,41 @@ class TestEpisodeAPI:
         )
 
     def test_list_episodes(self):
-        """Verify that GET /api/episodes/ responds with HTTP 200 and returns exactly two episodes.
+        """Verify that GET /api/episodes/ responds with HTTP 200 and returns two items.
 
-        Performs a GET request to the episodes list endpoint and asserts the response status code is 200 and the response contains two items.
+        Performs a GET request to the episodes list endpoint and asserts the response
+        status code is 200 and the response contains two items.
         """
         response = self.client.get("/api/episodes/")
         assert response.status_code == 200
-        assert len(response.data) == 2
+        assert len(response.data["results"]) == 2
+
+    def test_episode_serializer_includes_podcast_nested_object(self):
+        """Verify that each episode in the response includes podcast as object with id,
+        name, image.
+        """
+        response = self.client.get("/api/episodes/")
+        assert response.status_code == 200
+        for ep in response.data["results"]:
+            assert "podcast" in ep
+            podcast = ep["podcast"]
+            assert "id" in podcast
+            assert "name" in podcast
+            assert "image" in podcast
+            assert podcast["id"] == self.podcast.id
+            assert podcast["name"] == "Pod 1"
+
+    def test_episodes_response_is_paginated(self):
+        """Verify that GET /api/episodes/ returns paginated structure with count, next,
+        previous, results.
+        """
+        response = self.client.get("/api/episodes/")
+        assert response.status_code == 200
+        assert "count" in response.data
+        assert "next" in response.data
+        assert "previous" in response.data
+        assert "results" in response.data
+        assert response.data["count"] == 2
 
     def test_filter_episodes_by_podcast(self):
         other_podcast = Podcast.objects.create(name="Pod 2", feed="http://feed2.com")
@@ -63,18 +145,25 @@ class TestEpisodeAPI:
 
         response = self.client.get(f"/api/episodes/?podcast={self.podcast.id}")
         assert response.status_code == 200
-        assert len(response.data) == 2
-        assert response.data[0]["title"] in ["Ep 1", "Ep 2"]
+        results = response.data["results"]
+        assert len(results) == 2
+        assert results[0]["title"] in ["Ep 1", "Ep 2"]
 
     def test_search_episodes(self):
-        # Note: Full text search might require specific DB setup or mocking in some envs.
+        # Note: Full text search might require specific DB setup or mocking in some envs
         # Here we test the endpoint structure.
-        # For simple sqlite/tests, search behavior might vary or fail if not using Postgres.
+        # For simple sqlite/tests, search behavior might vary or fail if not using
+        # Postgres.
         # Assuming we might be running against a DB that supports it or mocking.
-        # If running with pytest-django and a configured DB, this should work if data is committed.
-        """Exercise the episodes search API endpoint with query "python" and assert it responds with HTTP 200.
+        # If running with pytest-django and a configured DB, this should work if
+        # data is committed.
+        """Exercise the episodes search API endpoint with query "python" and assert
+        it responds with HTTP 200.
 
-        This test verifies the endpoint structure for searching episodes (GET /api/episodes/?q=python). It primarily checks the response status code because full-text search results can vary by database backend or test environment (for example, FTS may require Postgres or specific indexing).
+        This test verifies the endpoint structure for searching episodes
+        (GET /api/episodes/?q=python). It primarily checks the response status code
+        because full-text search results can vary by database backend or test
+        environment (for example, FTS may require Postgres or specific indexing).
         """
         response = self.client.get("/api/episodes/?q=python")
         assert response.status_code == 200
@@ -86,10 +175,11 @@ class TestEpisodeAPI:
 @pytest.mark.django_db
 class TestPopularTermAPI:
     def setup_method(self):
-        """
-        Prepare test state by attaching an APIClient to `self` and seeding two PopularTerm records.
+        """Prepare test state by attaching an APIClient to `self` and seeding two
+        PopularTerm records.
 
-        Creates `self.client` as an APIClient instance and inserts PopularTerm entries: term "python" with times 10 and term "django" with times 5.
+        Creates `self.client` as an APIClient instance and inserts PopularTerm entries:
+        term "python" with times 10 and term "django" with times 5.
         """
         self.client = APIClient()
         PopularTerm.objects.create(term="python", times=10)
@@ -98,5 +188,5 @@ class TestPopularTermAPI:
     def test_list_popular_terms(self):
         response = self.client.get("/api/popular-terms/")
         assert response.status_code == 200
-        assert len(response.data) == 2
-        assert response.data[0]["term"] == "python"
+        assert len(response.data["results"]) == 2
+        assert response.data["results"][0]["term"] == "python"

@@ -31,8 +31,22 @@ DJANGO_SETTINGS_MODULE = "config.settings"
 python_files = ["test_*.py", "*_test.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
-addopts = "-v --tb=short --strict-markers"
+addopts = "-v --tb=short --strict-markers --cov=podcasts --cov-report=term-missing --cov-report=xml --cov-fail-under=70"
 testpaths = ["podcasts/tests"]
+
+[tool.coverage.run]
+source = ["podcasts"]
+omit = ["*/tests/*", "*/migrations/*", "*/management/*"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+]
 
 [tool.commitizen]
 name = "cz_conventional_commits"
@@ -48,3 +62,83 @@ changelog_incremental = true
 changelog_start_rev = "HEAD"
 
 
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+
+[tool.ruff.lint]
+select = [
+    "E", "W",    # pycodestyle
+    "F",         # pyflakes
+    "I",         # isort
+    "C90",       # mccabe
+    "N",         # pep8-naming
+    "D",         # pydocstyle
+    "UP",        # pyupgrade
+    "S",         # bandit security
+    "B",         # bugbear
+    "A",         # builtins
+    "C4",        # comprehensions
+    "DTZ",       # datetimez
+    "T10",       # debugger
+    "DJ",        # django
+    "EM",        # errmsg
+    "ISC",       # implicit-str-concat
+    "ICN",       # import-conventions
+    "PIE",       # pie
+    "PT",        # pytest-style
+    "Q",         # quotes
+    "RET",       # return
+    "SIM",       # simplify
+    "ARG",       # unused-arguments
+    "PTH",       # use-pathlib
+    "ERA",       # eradicate
+    "PL",        # pylint
+    "RUF",       # ruff-specific
+    "ASYNC",     # flake8-async
+    "EXE",       # flake8-executable
+    "FA",        # flake8-future-annotations
+    "FLY",       # flynt
+    "FURB",      # refurb
+    "G",         # flake8-logging-format
+    "LOG",       # flake8-logging
+    "PGH",       # pygrep-hooks
+    "PERF",      # perflint
+    "SLOT",      # flake8-slots
+    "T20",       # flake8-print
+    "TID",       # flake8-tidy-imports
+    "TRY",       # tryceratops
+    "TCH",       # flake8-type-checking
+]
+ignore = [
+    "D100",      # Missing docstring in public module
+    "D104",      # Missing docstring in public package
+    "D101",      # Missing docstring in public class (optional, but common in rapid dev)
+    "D102",      # Missing docstring in public method
+    "D103",      # Missing docstring in public function
+    "D105",      # Missing docstring in magic method
+    "D106",      # Missing docstring in public nested class
+    "D107",      # Missing docstring in __init__
+    "DJ001",     # Avoid using null=True on string-based fields
+    "TRY003",    # Avoid specifying long messages outside the exception class
+    "ISC001",    # Avoid conflicts with the formatter
+]
+
+[tool.ruff.lint.per-file-ignores]
+"**/tests/**/*.py" = ["S101", "E501", "S106", "PLR2004", "D", "ARG", "F811"]
+"**/migrations/*.py" = ["E501", "D", "RUF012"]
+"**/management/commands/*.py" = ["S311", "PLR2004", "E501", "D", "RUF012", "C901", "PLR0915", "ARG"]
+"**/settings.py" = ["E501"]
+"**/apps.py" = ["F401"]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 10
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"

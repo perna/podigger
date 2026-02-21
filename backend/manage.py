@@ -4,9 +4,10 @@ import sys
 
 
 def main():
-    """Set the default Django settings module (if unset) and invoke Django's command-line utility with the current process arguments.
+    """Set default settings and invoke Django's command-line utility.
 
-    This function ensures DJANGO_SETTINGS_MODULE is set to "config.settings" when not already defined and then calls Django's management entry point to handle the process's command-line arguments.
+    Ensures DJANGO_SETTINGS_MODULE is set to "config.settings" if undefined, then
+    calls Django's management entry point.
 
     Raises:
         ImportError: If Django cannot be imported.
@@ -15,9 +16,11 @@ def main():
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:
-        raise ImportError(
-            "Couldn't import Django. Are you sure it's installed and available on your PYTHONPATH environment variable?"
-        ) from exc
+        msg = (
+            "Couldn't import Django. Are you sure it's installed and available on "
+            "your PYTHONPATH environment variable?"
+        )
+        raise ImportError(msg) from exc
     execute_from_command_line(sys.argv)
 
 

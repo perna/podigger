@@ -1,0 +1,80 @@
+# syntax=docker/dockerfile:1
+
+########################################
+# Stage 1 — Base deps (cached heavily)
+########################################
+FROM node:20-alpine AS deps
+
+WORKDIR /app
+
+# Instalar libc compat (necessário para alguns pacotes)
+RUN apk add --no-cache libc6-compat
+
+COPY package.json package-lock.json ./
+
+# Instalar TODAS dependências (necessário para build)
+RUN npm ci
+
+
+########################################
+# Stage 2 — Builder
+########################################
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+
+RUN apk add --no-cache libc6-compat
+
+COPY --from=deps /app/node_modules ./node_modules
+
+# Copiar arquivos de configuração primeiro (melhor cache)
+COPY next.config.ts postcss.config.mjs tsconfig.json ./
+COPY package.json package-lock.json ./
+
+# Copiar código-fonte por último
+COPY public ./public
+COPY src ./src
+
+ARG NEXT_PUBLIC_API_URL
+ARG NEXT_PUBLIC_ENVIRONMENT
+
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_ENVIRONMENT=$NEXT_PUBLIC_ENVIRONMENT
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV NODE_ENV=production
+
+# Build com standalone output habilitado (next.config.js: output: 'standalone')
+# Isso reduz drasticamente o tamanho da imagem final
+RUN npm run build
+
+
+########################################
+# Stage 3 — Minimal runner
+########################################
+FROM node:20-alpine AS runner
+
+WORKDIR /app
+
+# Segurança e compatibilidade
+RUN apk add --no-cache libc6-compat && \
+    addgroup -S nextjs -g 1001 && \
+    adduser -S nextjs -u 1001
+
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV PORT=3000
+ENV HOSTNAME=0.0.0.0
+
+# Copiar apenas o necessário
+COPY --from=builder --chown=nextjs:nextjs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nextjs /app/.next/static ./.next/static
+COPY --from=builder --chown=nextjs:nextjs /app/public ./public
+
+USER nextjs
+
+EXPOSE 3000
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+    CMD node -e "require('http').get('http://localhost:3000/api/health',r=>process.exit(r.statusCode===200?0:1))"
+
+CMD ["node", "server.js"]

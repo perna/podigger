@@ -13,18 +13,26 @@ logger = logging.getLogger(__name__)
 
 
 class EpisodeUpdater:
+    """Service to update episodes from podcast feeds."""
+
     def __init__(self, feeds):
         """Initialize the updater with the list of feed URLs to process.
 
         Parameters:
-            feeds (Iterable[str]): An iterable of podcast feed URLs that populate will process.
+            feeds (Iterable[str]): An iterable of podcast feed URLs that populate will
+                process.
         """
         self.feeds = feeds
 
     def populate(self):
         """Synchronizes podcasts and their episodes from the instance's feed URLs.
 
-        For each feed URL, updates the matching Podcast's image and language, creates Episode records for new items, and creates/associates Tag records for episode tags. Skips feeds with no matching Podcast, skips items whose published date is invalid, and skips episodes whose link already exists. Each feed is processed atomically; failures for one feed are logged and do not stop processing of other feeds.
+        For each feed URL, updates the matching Podcast's image and language,
+        creates Episode records for new items, and creates/associates Tag records
+        for episode tags. Skips feeds with no matching Podcast, skips items whose
+        published date is invalid, and skips episodes whose link already exists. Each
+        feed is processed atomically; failures for one feed are logged and do not stop
+        processing of other feeds.
         """
         for feed_url in self.feeds:
             try:
@@ -91,5 +99,5 @@ class EpisodeUpdater:
                     ).count()
                     podcast_obj.save()
 
-            except Exception as e:
-                logger.error("Falha ao processar o feed %s: %s", feed_url, e)
+            except Exception:
+                logger.exception("Falha ao processar o feed %s", feed_url)

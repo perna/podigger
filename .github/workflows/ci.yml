@@ -2,12 +2,36 @@ name: CI
 
 on:
   pull_request:
-    branches: [ main, master ]
+    branches: [ main, develop ]
   push:
-    branches: [ feature/migrate-flask-to-django ]
+    branches: [ develop ]
 
 jobs:
-  test:
+  changes:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+    outputs:
+      backend: ${{ steps.filter.outputs.backend }}
+      frontend: ${{ steps.filter.outputs.frontend }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            backend:
+              - 'backend/**'
+              - 'migrations/**'
+              - 'docker-compose**'
+              - '.github/workflows/ci.yml'
+            frontend:
+              - 'frontend/**'
+              - '.github/workflows/ci.yml'
+
+  test-backend:
+    needs: changes
+    if: ${{ needs.changes.outputs.backend == 'true' || github.base_ref == 'main' }}
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -84,9 +108,9 @@ jobs:
           DATABASE_HOST: localhost
           DATABASE_PORT: 5432
           DATABASE_NAME: podigger
-          DATABASE_USER: ${{ secrets.DB_USER || 'postgres' }}
-          DATABASE_PASSWORD: ${{ secrets.DB_PASSWORD || 'postgres' }}
-          DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY || 'test-secret-key-for-ci-only' }}
+          DATABASE_USER: postgres
+          DATABASE_PASSWORD: postgres
+          DJANGO_SECRET_KEY: test-secret-key-for-ci-only
           DJANGO_SETTINGS_MODULE: config.settings
         run: |
           cd backend
@@ -97,10 +121,39 @@ jobs:
           DATABASE_HOST: localhost
           DATABASE_PORT: 5432
           DATABASE_NAME: podigger
-          DATABASE_USER: ${{ secrets.DB_USER || 'postgres' }}
-          DATABASE_PASSWORD: ${{ secrets.DB_PASSWORD || 'postgres' }}
-          DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY || 'test-secret-key-for-ci-only' }}
+          DATABASE_USER: postgres
+          DATABASE_PASSWORD: postgres
+          DJANGO_SECRET_KEY: test-secret-key-for-ci-only
           DJANGO_SETTINGS_MODULE: config.settings
         run: |
           cd backend
           pytest -v --tb=short --strict-markers
+
+  test-frontend:
+    needs: changes
+    if: ${{ needs.changes.outputs.frontend == 'true' || github.base_ref == 'main' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: |
+          cd frontend
+          npm ci
+
+      - name: Run lint
+        run: |
+          cd frontend
+          npm run lint
+
+      - name: Run build
+        run: |
+          cd frontend
+          npm run build
