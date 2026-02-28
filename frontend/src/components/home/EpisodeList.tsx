@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { fetchEpisodes, type Episode } from '@/lib/api';
 import { EpisodeCard } from './EpisodeCard';
+import { EpisodeCardCompact } from '@/components/episodes/EpisodeCardCompact';
 import { EmptyState } from './EmptyState';
 import { LoadingSpinner } from '@/components/ui/Loading';
 
@@ -76,59 +77,44 @@ export function EpisodeList({ searchTerm, onLoadingChange }: EpisodeListProps) {
     return () => observer.disconnect();
   }, [hasMore, isLoading, isLoadingMore, searchTerm, load]);
 
-  const title = searchTerm
-    ? `Resultados para "${searchTerm}"`
-    : 'Episódios recentes';
-
   if (isLoading) {
     return (
-      <main className="max-w-2xl mx-auto p-4 space-y-6">
-        <h2 className="text-slate-900 dark:text-white text-xl font-bold leading-tight tracking-tight">
-          {title}
-        </h2>
-        <div className="flex flex-col items-center justify-center py-12">
-          <LoadingSpinner className="size-10 text-primary" />
-        </div>
-      </main>
+      <div className="flex flex-col items-center justify-center py-12">
+        <LoadingSpinner className="size-10 text-primary" />
+      </div>
     );
   }
 
   if (error) {
-    return (
-      <main className="max-w-2xl mx-auto p-4 space-y-6">
-        <h2 className="text-slate-900 dark:text-white text-xl font-bold leading-tight tracking-tight">
-          {title}
-        </h2>
-        <EmptyState type="error" onRetry={() => load(searchTerm, 1, false)} />
-      </main>
-    );
+    return <EmptyState type="error" onRetry={() => load(searchTerm, 1, false)} />;
   }
 
   if (episodes.length === 0) {
     const emptyType = searchTerm ? 'no-results' : 'no-episodes';
     return (
-      <main className="max-w-2xl mx-auto p-4 space-y-6">
-        <h2 className="text-slate-900 dark:text-white text-xl font-bold leading-tight tracking-tight">
-          {title}
-        </h2>
-        <EmptyState
-          type={emptyType}
-          query={searchTerm || undefined}
-        />
-      </main>
+      <EmptyState
+        type={emptyType}
+        query={searchTerm || undefined}
+      />
     );
   }
 
   return (
-    <main className="max-w-2xl mx-auto p-4 space-y-6">
-      <h2 className="text-slate-900 dark:text-white text-xl font-bold leading-tight tracking-tight">
-        {title}
-      </h2>
-      <div className="space-y-6">
+    <>
+      {/* Desktop: responsive grid with compact cards */}
+      <div className="hidden md:grid grid-cols-1 xl:grid-cols-2 gap-6">
+        {episodes.map((ep) => (
+          <EpisodeCardCompact key={ep.id} episode={ep} />
+        ))}
+      </div>
+
+      {/* Mobile: single column with large cards */}
+      <div className="md:hidden space-y-6">
         {episodes.map((ep) => (
           <EpisodeCard key={ep.id} episode={ep} />
         ))}
       </div>
+
       {hasMore && (
         <div
           ref={loadMoreRef}
@@ -138,13 +124,13 @@ export function EpisodeList({ searchTerm, onLoadingChange }: EpisodeListProps) {
             <>
               <div className="size-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
               <p className="text-slate-400 dark:text-slate-500 text-xs font-medium uppercase tracking-widest">
-                Carregando mais episódios
+                Loading more episodes...
               </p>
             </>
           )}
         </div>
       )}
-      <div className="h-24" />
-    </main>
+    </>
   );
 }
+
