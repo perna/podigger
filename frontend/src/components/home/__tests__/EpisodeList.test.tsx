@@ -64,7 +64,7 @@ describe('EpisodeList', () => {
       results: [],
     });
     const { container } = render(<EpisodeList searchTerm="" />);
-    expect(await within(container).findByText(/Ainda não há episódios/)).toBeInTheDocument();
+    expect(await within(container).findByText(/No episodes found yet/)).toBeInTheDocument();
   });
 
   it('shows no-results empty state when search returns empty', async () => {
@@ -75,7 +75,7 @@ describe('EpisodeList', () => {
       results: [],
     });
     const { container } = render(<EpisodeList searchTerm="xyz" />);
-    expect(await within(container).findByText(/Nenhum episódio encontrado para "xyz"/)).toBeInTheDocument();
+    expect(await within(container).findByText(/No episodes found for "xyz"/)).toBeInTheDocument();
   });
 
   it('shows error state and retry on failure', async () => {
@@ -88,8 +88,8 @@ describe('EpisodeList', () => {
         results: mockEpisodes,
       });
     const { container } = render(<EpisodeList searchTerm="" />);
-    expect(await within(container).findByText(/Algo deu errado/)).toBeInTheDocument();
-    const retryBtn = within(container).getByRole('button', { name: /Tentar novamente/i });
+    expect(await within(container).findByText(/Something went wrong/)).toBeInTheDocument();
+    const retryBtn = within(container).getByRole('button', { name: /Try again/i });
     await userEvent.click(retryBtn);
     const items = await within(container).findAllByText('Episode One');
     expect(items.length).toBeGreaterThanOrEqual(1);

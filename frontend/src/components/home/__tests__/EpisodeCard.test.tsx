@@ -46,7 +46,7 @@ describe('EpisodeCard', () => {
     const links = within(container).getAllByRole('link');
     const viewLink = links.find((l) => l.getAttribute('href') === '/podcasts/10');
     expect(viewLink).toBeDefined();
-    expect(viewLink?.textContent).toMatch(/Ver podcast/i);
+    expect(viewLink?.textContent).toMatch(/View Podcast/i);
   });
 
   it('falls back to Podcast when podcast name missing', () => {
