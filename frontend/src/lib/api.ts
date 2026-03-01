@@ -20,6 +20,22 @@ export interface EpisodesResponse {
   results: Episode[];
 }
 
+export interface Podcast {
+  id: number;
+  name: string;
+  feed: string;
+  image: string | null;
+  language: number | null;
+  total_episodes: number;
+}
+
+export interface PodcastsResponse {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: Podcast[];
+}
+
 const API_BASE =
   typeof window !== 'undefined'
     ? process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
@@ -38,6 +54,26 @@ export async function fetchEpisodes(
     params.set('page', String(page));
   }
   const url = `${API_BASE}/api/episodes/${params.toString() ? `?${params.toString()}` : ''}`;
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`API error: ${response.status}`);
+  }
+  return response.json();
+}
+
+export async function fetchPodcasts(
+  query?: string,
+  page = 1
+): Promise<PodcastsResponse> {
+  const params = new URLSearchParams();
+  const trimmed = query?.trim();
+  if (trimmed) {
+    params.set('search', trimmed);
+  }
+  if (page > 1) {
+    params.set('page', String(page));
+  }
+  const url = `${API_BASE}/api/podcasts/${params.toString() ? `?${params.toString()}` : ''}`;
   const response = await fetch(url);
   if (!response.ok) {
     throw new Error(`API error: ${response.status}`);

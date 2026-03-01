@@ -1,4 +1,4 @@
-.PHONY: help setup install dev services services-stop migrate test lint format clean shell superuser seed version bump-patch bump-minor bump-major changelog frontend-setup frontend-dev frontend-test frontend-build
+.PHONY: help setup install dev services services-stop migrate makemigrations test lint format clean shell superuser seed version bump-patch bump-minor bump-major changelog frontend-setup frontend-dev frontend-test frontend-lint frontend-build
 
 # Default target
 help:
@@ -16,6 +16,7 @@ help:
 	@echo ""
 	@echo "Database:"
 	@echo "  make migrate        - Run Django migrations"
+	@echo "  make makemigrations - Create new Django migrations"
 	@echo "  make superuser      - Create Django superuser"
 	@echo "  make seed           - Seed database with sample data"
 	@echo ""
@@ -39,6 +40,7 @@ help:
 	@echo "  make frontend-setup - Setup frontend environment (NVM, Node.js 24)"
 	@echo "  make frontend-dev   - Start frontend dev server"
 	@echo "  make frontend-test  - Run frontend tests"
+	@echo "  make frontend-lint  - Run frontend linting"
 	@echo "  make frontend-build - Build frontend for production"
 
 # Setup UV and create virtual environment
@@ -77,6 +79,12 @@ migrate:
 	@echo "Running migrations..."
 	@cd backend && uv run python manage.py migrate
 	@echo "Migrations complete!"
+
+# Create Django migrations
+makemigrations:
+	@echo "Creating Django migrations..."
+	@cd backend && uv run python manage.py makemigrations
+	@echo "Migrations created!"
 
 # Create Django superuser
 superuser:
@@ -157,6 +165,10 @@ frontend-dev:
 frontend-test:
 	@echo "Running frontend tests..."
 	@cd frontend && npm test
+
+frontend-lint:
+	@echo "Running frontend linting..."
+	@cd frontend && npm run lint
 
 frontend-build:
 	@echo "Building frontend for production..."

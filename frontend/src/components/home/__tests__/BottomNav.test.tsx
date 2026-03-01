@@ -6,9 +6,9 @@ describe('BottomNav', () => {
   it('renders all nav items', () => {
     render(<BottomNav />);
     expect(screen.getByText('Home')).toBeDefined();
-    expect(screen.getByText('Busca')).toBeDefined();
-    expect(screen.getByText('Biblioteca')).toBeDefined();
-    expect(screen.getByText('Config')).toBeDefined();
+    expect(screen.getByText('Search')).toBeDefined();
+    expect(screen.getByText('Library')).toBeDefined();
+    expect(screen.getByText('Settings')).toBeDefined();
   });
 
   it('home link points to /', () => {
@@ -28,7 +28,7 @@ describe('BottomNav', () => {
   it('highlights search when activeItem is search', () => {
     render(<BottomNav activeItem="search" />);
     const links = screen.getAllByRole('link');
-    const searchLink = links.find((l) => l.textContent?.includes('Busca'));
+    const searchLink = links.find((l) => l.textContent?.includes('Search'));
     expect(searchLink?.querySelector('.text-primary')).toBeDefined();
   });
 });

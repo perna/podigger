@@ -76,6 +76,15 @@ podigger/
 
 ---
 
+## CHANGELOG
+
+## [Unreleased]
+
+### Added
+- `make makemigrations` command to `Makefile` for Django migration creation.
+
+## [2.0.0] - 2026-02-07-
+
 ## 🔄 Estratégia de Migração
 
 ### Princípios
@@ -144,6 +153,7 @@ make dev
 | `make services` | Apenas Postgres + Redis |
 | `make services-stop` | Parar services |
 | `make migrate` | Rodar migrations |
+| `make makemigrations` | Criar novas migrations |
 | `make test` | Rodar testes |
 | `make lint` | Linting (Ruff) |
 | `make format` | Formatação (Ruff) |

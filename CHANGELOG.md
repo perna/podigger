@@ -5,13 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [2.1.0] - 2026-02-28
 
 ### Added
-- Semantic versioning automation with Commitizen
-- GitHub Actions workflow for automated releases
-- Commit message validation in CI
-- Test coverage for episode counter update logic
+- Podcast search functionality in the frontend.
+- `PodcastCard` component for search results.
+- `fetchPodcasts` method in frontend API.
+- Support for `Material Symbols Outlined` icons.
+- `make makemigrations` command to `Makefile`.
+- `make frontend-lint` command to `Makefile`.
+- Semantic versioning automation with Commitizen.
+- GitHub Actions workflow for automated releases.
+- Commit message validation in CI.
+- Test coverage for episode counter update logic.
+
+### Fixed
+- CORS configuration in backend for local development.
+- English translation of UI components (EmptyState, SearchHeader, cards, nav).
+- Updated tests to use English and support search functionality.
 
 ### Changed
 - **BREAKING**: Complete migration from Flask to Django
