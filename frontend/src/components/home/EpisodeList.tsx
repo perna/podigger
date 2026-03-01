@@ -14,7 +14,7 @@ interface EpisodeListProps {
 
 export function EpisodeList({ searchTerm, onLoadingChange }: EpisodeListProps) {
   const [episodes, setEpisodes] = useState<Episode[]>([]);
-  const [page, setPage] = useState(1);
+  const [, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);

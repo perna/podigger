@@ -75,7 +75,7 @@ export function HomeClient() {
                   </div>
                 ) : (
                   <p className="text-sm text-slate-500 dark:text-slate-400 italic">
-                    No podcasts found for "{searchTerm}".
+                    No podcasts found for &quot;{searchTerm}&quot;.
                   </p>
                 )}
               </section>

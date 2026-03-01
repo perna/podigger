@@ -2,7 +2,6 @@
 
 import { Button } from '@/components/ui/Button';
 import { Icon } from '@/components/ui/Icon';
-import { cn } from '@/lib/utils';
 
 interface SearchHeaderProps {
   query: string;
