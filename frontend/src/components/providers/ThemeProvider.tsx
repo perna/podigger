@@ -25,16 +25,17 @@ export function useTheme() {
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-    const [theme, setTheme] = useState<Theme>('dark');
-
-    useEffect(() => {
+    const [theme, setTheme] = useState<Theme>(() => {
+        if (typeof window === 'undefined') return 'dark';
         const stored = localStorage.getItem('podigger-theme') as Theme | null;
         if (stored === 'light' || stored === 'dark') {
-            setTheme(stored);
-        } else if (window.matchMedia('(prefers-color-scheme: light)').matches) {
-            setTheme('light');
+            return stored;
         }
-    }, []);
+        if (window.matchMedia('(prefers-color-scheme: light)').matches) {
+            return 'light';
+        }
+        return 'dark';
+    });
 
     useEffect(() => {
         const root = document.documentElement;
