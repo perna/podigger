@@ -1,4 +1,4 @@
-.PHONY: help setup install dev services services-stop migrate test lint format clean shell superuser seed version bump-patch bump-minor bump-major changelog frontend-setup frontend-dev frontend-test frontend-build
+.PHONY: help setup install dev services services-stop migrate makemigrations test lint format clean shell superuser seed version bump-patch bump-minor bump-major changelog frontend-setup frontend-dev frontend-test frontend-build
 
 # Default target
 help:
@@ -16,6 +16,7 @@ help:
 	@echo ""
 	@echo "Database:"
 	@echo "  make migrate        - Run Django migrations"
+	@echo "  make makemigrations - Create new Django migrations"
 	@echo "  make superuser      - Create Django superuser"
 	@echo "  make seed           - Seed database with sample data"
 	@echo ""
@@ -77,6 +78,12 @@ migrate:
 	@echo "Running migrations..."
 	@cd backend && uv run python manage.py migrate
 	@echo "Migrations complete!"
+
+# Create Django migrations
+makemigrations:
+	@echo "Creating Django migrations..."
+	@cd backend && uv run python manage.py makemigrations
+	@echo "Migrations created!"
 
 # Create Django superuser
 superuser:
