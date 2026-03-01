@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `fetchPodcasts` method in frontend API.
 - Support for `Material Symbols Outlined` icons.
 - `make makemigrations` command to `Makefile`.
+- `make frontend-lint` command to `Makefile`.
 - Semantic versioning automation with Commitizen.
 - GitHub Actions workflow for automated releases.
 - Commit message validation in CI.
