@@ -9,8 +9,8 @@ interface IconProps extends React.HTMLAttributes<HTMLSpanElement> {
 }
 
 /**
- * Icon component that renders a Material Symbol Rounded.
- * Requires the Material Symbols Rounded font to be loaded in the layout.
+ * Icon component that renders a Material Symbol Outlined.
+ * Requires the Material Symbols Outlined font to be loaded in the layout.
  */
 export function Icon({
     name,
@@ -23,7 +23,7 @@ export function Icon({
 }: IconProps) {
     return (
         <span
-            className={cn('material-symbols-rounded select-none', className)}
+            className={cn('material-symbols-outlined select-none', className)}
             style={{
                 fontVariationSettings: `'FILL' ${fill ? 1 : 0}, 'wght' ${weight}, 'GRAD' ${grade}, 'opsz' ${opticalSize}`,
             }}
