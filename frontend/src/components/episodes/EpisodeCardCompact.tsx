@@ -88,8 +88,8 @@ export function EpisodeCardCompact({ episode }: EpisodeCardCompactProps) {
                     rel="noopener noreferrer"
                     className="w-full flex items-center justify-center gap-2 bg-primary text-background-dark font-bold py-2 rounded-full hover:bg-primary/90 transition-colors text-sm"
                 >
-                    <Icon name="play_circle" opticalSize={20} />
-                    Play Episode
+                    <Icon name="play_arrow" opticalSize={20} />
+                    Play
                 </a>
             </div>
         </Card>

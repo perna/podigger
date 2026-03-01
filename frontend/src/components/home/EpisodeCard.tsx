@@ -56,7 +56,7 @@ export function EpisodeCard({ episode }: EpisodeCardProps) {
                 href={`/podcasts/${podcastId}`}
                 className="text-slate-500 dark:text-slate-400 text-sm font-semibold flex items-center gap-1 hover:text-primary transition-colors"
               >
-                Ver podcast
+                View Podcast
                 <Icon name="arrow_forward_ios" opticalSize={12} />
               </Link>
             )}
