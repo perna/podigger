@@ -29,7 +29,7 @@ export function SearchHeader({
         <button
           type="button"
           className="flex size-10 items-center justify-center overflow-hidden rounded-full bg-slate-200 dark:bg-slate-800 text-slate-900 dark:text-white"
-          aria-label="Conta"
+          aria-label="Account"
         >
           <Icon name="account_circle" opticalSize={24} />
         </button>
@@ -48,7 +48,7 @@ export function SearchHeader({
                 onKeyDown={(e) => e.key === 'Enter' && onSearch()}
                 placeholder="Episodes, podcasts, or RSS..."
                 className="form-input flex w-full min-w-0 flex-1 border-none bg-transparent focus:outline-0 focus:ring-0 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-muted-dark px-3 text-base font-normal leading-normal"
-                aria-label="Buscar episódios"
+                aria-label="Search episodes"
               />
             </div>
           </label>
@@ -59,7 +59,7 @@ export function SearchHeader({
             isLoading={isSearching}
             className="rounded-xl h-12 px-6"
           >
-            Buscar
+            Search
           </Button>
         </div>
       </div>
@@ -68,19 +68,25 @@ export function SearchHeader({
           type="button"
           className="text-sm font-semibold text-primary border-b-2 border-primary pb-1 whitespace-nowrap"
         >
-          Todos
+          All Results
         </button>
         <button
           type="button"
           className="text-sm font-medium text-slate-500 dark:text-slate-400 pb-1 whitespace-nowrap"
         >
-          Recentes
+          Latest
         </button>
         <button
           type="button"
           className="text-sm font-medium text-slate-500 dark:text-slate-400 pb-1 whitespace-nowrap"
         >
-          Populares
+          Popular
+        </button>
+        <button
+          type="button"
+          className="text-sm font-medium text-slate-500 dark:text-slate-400 pb-1 whitespace-nowrap"
+        >
+          Short Clips
         </button>
       </div>
     </header>
