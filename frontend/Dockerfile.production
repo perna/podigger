@@ -43,8 +43,8 @@ ENV NEXT_PUBLIC_ENVIRONMENT=$NEXT_PUBLIC_ENVIRONMENT
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
 
-# Build com standalone output habilitado (next.config.js: output: 'standalone')
-# Isso reduz drasticamente o tamanho da imagem final
+# Garantir que a instalação ocorra se o cache estiver corrompido ou o .bin não vier
+RUN npm list next || npm install
 RUN npm run build
 
 
