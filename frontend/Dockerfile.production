@@ -45,6 +45,7 @@ ENV NODE_ENV=production
 
 # Garantir que a instalação ocorra se o cache estiver corrompido ou o .bin não vier
 RUN npm list next || npm install
+RUN npm install -g typescript
 RUN npm run build
 
 
