@@ -60,7 +60,6 @@ USER app
 
 # Collect static files (needs a dummy secret key at build time)
 ARG DJANGO_SECRET_KEY=build-only-dummy-key
-ENV DJANGO_SECRET_KEY=$DJANGO_SECRET_KEY
 RUN python manage.py collectstatic --noinput || true
 
 EXPOSE 8000

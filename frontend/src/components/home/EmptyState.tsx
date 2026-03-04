@@ -10,10 +10,10 @@ interface EmptyStateProps {
 
 const messages = {
   'no-results': (q?: string) =>
-    q ? `Nenhum episódio encontrado para "${q}".` : 'Nenhum episódio encontrado.',
+    q ? `No episodes found for "${q}".` : 'No episodes found.',
   'no-episodes':
-    'Ainda não há episódios. Adicione podcasts para começar.',
-  error: 'Algo deu errado. Tente novamente.',
+    'No episodes found yet. Add some podcasts to get started.',
+  error: 'Something went wrong. Please try again.',
 };
 
 export function EmptyState({ type, query, onRetry, className }: EmptyStateProps) {
@@ -32,7 +32,7 @@ export function EmptyState({ type, query, onRetry, className }: EmptyStateProps)
       </p>
       {type === 'error' && onRetry && (
         <Button variant="outline" size="sm" onClick={onRetry} className="mt-4">
-          Tentar novamente
+          Try again
         </Button>
       )}
     </div>
