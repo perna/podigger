@@ -6,6 +6,55 @@
 #   docker-compose -f docker-compose.production.yml down
 
 services:
+  # Traefik Reverse Proxy — Ponto de entrada único, SSL automático via Let's Encrypt
+  traefik-production:
+    image: traefik:v3.3
+    container_name: podigger-production-traefik
+    restart: unless-stopped
+    command:
+      # API e dashboard
+      - "--api.dashboard=true"
+      - "--api.insecure=true" # Dashboard na porta 8080 (sem auth — acesse via SSH tunnel)
+      # Docker provider: detecta containers na mesma rede via labels
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--providers.docker.network=podigger-production"
+      # Entrypoints HTTP e HTTPS
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      # Redirect global HTTP → HTTPS
+      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+      # Let's Encrypt via HTTP challenge
+      - "--certificatesresolvers.letsencrypt.acme.httpchallenge=true"
+      - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
+      - "--certificatesresolvers.letsencrypt.acme.email=${LETSENCRYPT_EMAIL}"
+      - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
+      # Logging
+      - "--log.level=WARNING"
+      - "--accesslog=true"
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080" # Dashboard Traefik — acesse via: ssh -L 8080:localhost:8080 user@vps
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - letsencrypt_production:/letsencrypt
+    networks:
+      - podigger-production
+    labels:
+      - "traefik.enable=true"
+      # Dashboard do Traefik (acesse via SSH tunnel)
+      - "traefik.http.routers.traefik-production-dashboard.rule=Host(`traefik.podigger.perna.app`)"
+      - "traefik.http.routers.traefik-production-dashboard.entrypoints=websecure"
+      - "traefik.http.routers.traefik-production-dashboard.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.traefik-production-dashboard.service=api@internal"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
   # Backend Django + DRF
   backend-production:
     extends:
@@ -36,6 +85,15 @@ services:
       - CELERY_BROKER_URL=redis://redis-production:6379/0
     networks:
       - podigger-production
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.backend-production.rule=Host(`api.podigger.perna.app`)"
+      - "traefik.http.routers.backend-production.entrypoints=websecure"
+      - "traefik.http.routers.backend-production.tls.certresolver=letsencrypt"
+      - "traefik.http.services.backend-production.loadbalancer.server.port=8000"
+      # Header X-Forwarded-Proto para o Django
+      - "traefik.http.middlewares.backend-production-headers.headers.customrequestheaders.X-Forwarded-Proto=https"
+      - "traefik.http.routers.backend-production.middlewares=backend-production-headers"
     logging:
       driver: "json-file"
       options:
@@ -61,6 +119,12 @@ services:
         condition: service_healthy
     networks:
       - podigger-production
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend-production.rule=Host(`podigger.perna.app`)"
+      - "traefik.http.routers.frontend-production.entrypoints=websecure"
+      - "traefik.http.routers.frontend-production.tls.certresolver=letsencrypt"
+      - "traefik.http.services.frontend-production.loadbalancer.server.port=3000"
     logging:
       driver: "json-file"
       options:
@@ -202,6 +266,8 @@ volumes:
     name: podigger-production-static
   media_production:
     name: podigger-production-media
+  letsencrypt_production:
+    name: podigger-production-letsencrypt
 
 networks:
   podigger-production:
