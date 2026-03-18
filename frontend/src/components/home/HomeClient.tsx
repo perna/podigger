@@ -123,7 +123,7 @@ export function HomeClient() {
               </div>
 
               {/* Podigger Pro CTA */}
-              <div className="p-6 rounded-xl bg-gradient-to-br from-primary to-blue-600 text-background-dark shadow-lg shadow-primary/20">
+              <div className="p-6 rounded-xl bg-linear-to-br from-primary to-blue-600 text-background-dark shadow-lg shadow-primary/20">
                 <div className="flex items-center gap-2 mb-2">
                   <span className="material-symbols-rounded font-bold">
                     verified
