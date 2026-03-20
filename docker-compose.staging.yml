@@ -6,54 +6,6 @@
 #   docker-compose -f docker-compose.staging.yml down
 
 services:
-  # Traefik Reverse Proxy — Ponto de entrada único, SSL automático via Let's Encrypt
-  traefik-staging:
-    image: traefik:v3.3
-    container_name: podigger-staging-traefik
-    restart: unless-stopped
-    command:
-      # API e dashboard (acessível internamente via SSH tunnel)
-      - "--api.dashboard=true"
-      - "--api.insecure=true" # Dashboard na porta 8080 (sem auth — acesse via SSH tunnel)
-      # Docker provider: detecta containers na mesma rede via labels
-      - "--providers.docker=true"
-      - "--providers.docker.exposedbydefault=false"
-      - "--providers.docker.network=podigger-staging"
-      # Entrypoints HTTP e HTTPS
-      - "--entrypoints.web.address=:80"
-      - "--entrypoints.websecure.address=:443"
-      # Redirect global HTTP → HTTPS
-      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
-      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
-      # Let's Encrypt via HTTP challenge
-      - "--certificatesresolvers.letsencrypt.acme.httpchallenge=true"
-      - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
-      - "--certificatesresolvers.letsencrypt.acme.email=${LETSENCRYPT_EMAIL}"
-      - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
-      # Logging
-      - "--log.level=INFO"
-      - "--accesslog=true"
-    ports:
-      - "80:80"
-      - "443:443"
-      - "8080:8080" # Dashboard Traefik — acesse via: ssh -L 8080:localhost:8080 user@vps
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - letsencrypt_staging:/letsencrypt
-    networks:
-      - podigger-staging
-    labels:
-      - "traefik.enable=true"
-      # Dashboard do Traefik (opcional — acesse via SSH tunnel)
-      - "traefik.http.routers.traefik-staging-dashboard.rule=Host(`traefik.staging.podigger.perna.app`)"
-      - "traefik.http.routers.traefik-staging-dashboard.entrypoints=websecure"
-      - "traefik.http.routers.traefik-staging-dashboard.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.traefik-staging-dashboard.service=api@internal"
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "5m"
-        max-file: "2"
 
   # Backend Django + DRF
   backend-staging:
@@ -85,15 +37,8 @@ services:
       - CELERY_BROKER_URL=redis://redis-staging:6379/0
     networks:
       - podigger-staging
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.backend-staging.rule=Host(`staging.api.podigger.perna.app`)"
-      - "traefik.http.routers.backend-staging.entrypoints=websecure"
-      - "traefik.http.routers.backend-staging.tls.certresolver=letsencrypt"
-      - "traefik.http.services.backend-staging.loadbalancer.server.port=8000"
+      - podigger-proxy
       # Timeouts para o Django (uploads, queries lentas)
-      - "traefik.http.middlewares.backend-staging-headers.headers.customrequestheaders.X-Forwarded-Proto=https"
-      - "traefik.http.routers.backend-staging.middlewares=backend-staging-headers"
 
   # Frontend Next.js
   frontend-staging:
@@ -114,12 +59,7 @@ services:
         condition: service_healthy
     networks:
       - podigger-staging
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.frontend-staging.rule=Host(`staging.podigger.perna.app`)"
-      - "traefik.http.routers.frontend-staging.entrypoints=websecure"
-      - "traefik.http.routers.frontend-staging.tls.certresolver=letsencrypt"
-      - "traefik.http.services.frontend-staging.loadbalancer.server.port=3000"
+      - podigger-proxy
 
   # PostgreSQL Database
   db-staging:
@@ -135,6 +75,7 @@ services:
       - pgdata_staging:/var/lib/postgresql/data
     networks:
       - podigger-staging
+      - podigger-proxy
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U podigger_staging -d podigger_staging" ]
 
@@ -149,6 +90,7 @@ services:
       - redis_staging:/data
     networks:
       - podigger-staging
+      - podigger-proxy
 
   # Celery Worker
   celery-staging:
@@ -175,6 +117,7 @@ services:
       - CELERY_BROKER_URL=redis://redis-staging:6379/0
     networks:
       - podigger-staging
+      - podigger-proxy
     volumes:
       - media_staging:/app/media
 
@@ -203,6 +146,7 @@ services:
       - CELERY_BROKER_URL=redis://redis-staging:6379/0
     networks:
       - podigger-staging
+      - podigger-proxy
 
 volumes:
   pgdata_staging:
@@ -213,10 +157,9 @@ volumes:
     name: podigger-staging-static
   media_staging:
     name: podigger-staging-media
-  letsencrypt_staging:
-    name: podigger-staging-letsencrypt
-
 networks:
   podigger-staging:
     name: podigger-staging
     driver: bridge
+  podigger-proxy:
+    external: true
