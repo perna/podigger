@@ -140,7 +140,6 @@ jobs:
             cd /opt/podigger-nginx-proxy
             docker volume create podigger-production-static || true
             docker volume create podigger-production-media || true
-            docker network create podigger-proxy 2>/dev/null || true
             docker compose up -d || echo "⚠️ Nginx proxy could not start. Are the certs placed at /opt/podigger-nginx-proxy/certs?"
             
             cd /opt/podigger-production
@@ -259,7 +258,6 @@ jobs:
             cd /opt/podigger-nginx-proxy
             docker volume create podigger-production-static || true
             docker volume create podigger-production-media || true
-            docker network create podigger-proxy 2>/dev/null || true
             docker compose up -d || echo "⚠️ Nginx proxy could not start. Are the certs placed at /opt/podigger-nginx-proxy/certs?"
             
             cd /opt/podigger-production
