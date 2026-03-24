@@ -47,7 +47,7 @@ jobs:
           DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY_STAGING }}
           DJANGO_DEBUG=False
           DJANGO_SETTINGS_MODULE=config.settings
-          DJANGO_ALLOWED_HOSTS=staging.api.podigger.perna.app
+          DJANGO_ALLOWED_HOSTS=staging.api.podigger.perna.app,localhost,127.0.0.1
           CORS_ALLOWED_ORIGINS=https://staging.podigger.perna.app
           
           DATABASE_HOST=db-staging
