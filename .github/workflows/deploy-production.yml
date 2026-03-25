@@ -156,7 +156,7 @@ jobs:
             docker compose -f docker-compose.production.yml down --remove-orphans || true
             
             # Start database and redis first for migrations
-            docker compose -f docker-compose.production.yml up -d db-production redis-production
+            docker compose -f docker-compose.production.yml up -d --remove-orphans db-production redis-production
             
             # Wait for database to be healthy
             echo "Waiting for database to be healthy..."
@@ -183,7 +183,7 @@ jobs:
             docker compose -f docker-compose.production.yml down --timeout 30 --remove-orphans
             
             # Start all containers
-            docker compose -f docker-compose.production.yml up -d
+            docker compose -f docker-compose.production.yml up -d --remove-orphans
             
             # Wait for backend to be healthy (retry adaptativo)
             echo "Waiting for backend to be healthy..."
@@ -278,7 +278,7 @@ jobs:
               echo "📦 Restoring from backup: \$LATEST_BACKUP"
               
               # Start only database
-              docker compose -f docker-compose.production.yml up -d db-production
+              docker compose -f docker-compose.production.yml up -d --remove-orphans db-production
               sleep 10
               
               # Restore backup
