@@ -146,7 +146,7 @@ jobs:
             docker compose -f docker-compose.staging.yml down --remove-orphans || true
             
             # Run migrations via one-off container BEFORE starting services
-            docker compose -f docker-compose.staging.yml up -d db-staging redis-staging
+            docker compose -f docker-compose.staging.yml up -d --remove-orphans db-staging redis-staging
             
             # Wait for database to be healthy
             echo "Waiting for database to be healthy..."
@@ -173,7 +173,7 @@ jobs:
             docker compose -f docker-compose.staging.yml down --timeout 30 --remove-orphans
             
             # Start all containers
-            docker compose -f docker-compose.staging.yml up -d
+            docker compose -f docker-compose.staging.yml up -d --remove-orphans
             
             # Wait for backend to be healthy
             echo "Waiting for backend to be healthy..."
@@ -260,7 +260,7 @@ jobs:
               echo "📦 Restoring from backup: \$LATEST_BACKUP"
               
               # Start only database
-              docker compose -f docker-compose.staging.yml up -d db-staging
+              docker compose -f docker-compose.staging.yml up -d --remove-orphans db-staging
               sleep 10
               
               # Restore backup
