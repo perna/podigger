@@ -140,6 +140,9 @@ jobs:
             # Build application images
             docker compose -f docker-compose.staging.yml build
             
+            # Clean up potentially conflicting old containers before starting
+            docker compose -f docker-compose.staging.yml down --remove-orphans || true
+            
             # Run migrations via one-off container BEFORE starting services
             docker compose -f docker-compose.staging.yml up -d db-staging redis-staging
             
@@ -165,7 +168,7 @@ jobs:
             docker compose -f docker-compose.staging.yml run --rm backend-staging python manage.py collectstatic --noinput
             
             # Stop old containers (graceful shutdown)
-            docker compose -f docker-compose.staging.yml down --timeout 30
+            docker compose -f docker-compose.staging.yml down --timeout 30 --remove-orphans
             
             # Start all containers
             docker compose -f docker-compose.staging.yml up -d
@@ -245,7 +248,7 @@ jobs:
             cd /opt/podigger-staging
             
             # Stop failed containers
-            docker compose -f docker-compose.staging.yml down
+            docker compose -f docker-compose.staging.yml down --remove-orphans
             
             # Restore from latest backup if exists
             LATEST_BACKUP=\$(ls -t backups/backup-*.sql.gz 2>/dev/null | head -n 1)
