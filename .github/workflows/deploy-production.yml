@@ -150,6 +150,9 @@ jobs:
             # Build application images
             docker compose -f docker-compose.production.yml build
             
+            # Clean up potentially conflicting old containers before starting
+            docker compose -f docker-compose.production.yml down --remove-orphans || true
+            
             # Start database and redis first for migrations
             docker compose -f docker-compose.production.yml up -d db-production redis-production
             
@@ -175,7 +178,7 @@ jobs:
             docker compose -f docker-compose.production.yml run --rm backend-production python manage.py collectstatic --noinput
             
             # Stop old containers (graceful shutdown)
-            docker compose -f docker-compose.production.yml down --timeout 30
+            docker compose -f docker-compose.production.yml down --timeout 30 --remove-orphans
             
             # Start all containers
             docker compose -f docker-compose.production.yml up -d
@@ -263,7 +266,7 @@ jobs:
             cd /opt/podigger-production
             
             # Stop failed containers
-            docker compose -f docker-compose.production.yml down
+            docker compose -f docker-compose.production.yml down --remove-orphans
             
             # Restore from latest backup if exists
             LATEST_BACKUP=\$(ls -t backups/backup-*.sql.gz 2>/dev/null | head -n 1)
