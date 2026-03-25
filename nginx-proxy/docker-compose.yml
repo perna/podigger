@@ -30,8 +30,7 @@ services:
 
 networks:
   podigger-proxy:
-    name: podigger-proxy
-    driver: bridge
+    external: true
 
 volumes:
   podigger-staging-static:
