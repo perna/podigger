@@ -23,7 +23,7 @@ jobs:
     if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     environment:
       name: staging
-      url: https://staging.podigger.perna.app
+      url: https://staging-podigger.perna.app
     
     steps:
       - name: Checkout code
@@ -47,8 +47,8 @@ jobs:
           DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY_STAGING }}
           DJANGO_DEBUG=False
           DJANGO_SETTINGS_MODULE=config.settings
-          DJANGO_ALLOWED_HOSTS=staging.api.podigger.perna.app,localhost,127.0.0.1
-          CORS_ALLOWED_ORIGINS=https://staging.podigger.perna.app
+          DJANGO_ALLOWED_HOSTS=staging-api-podigger.perna.app,localhost,127.0.0.1
+          CORS_ALLOWED_ORIGINS=https://staging-podigger.perna.app
           
           DATABASE_HOST=db-staging
           DATABASE_PORT=5432
@@ -66,7 +66,7 @@ jobs:
       - name: Create .env.staging for frontend
         run: |
           cat > frontend/.env.staging << EOF
-          NEXT_PUBLIC_API_URL=https://staging.api.podigger.perna.app
+          NEXT_PUBLIC_API_URL=https://staging-api-podigger.perna.app
           NEXT_PUBLIC_ENVIRONMENT=staging
           EOF
       
@@ -198,7 +198,7 @@ jobs:
           
           # Check backend health
           echo "🔍 Checking backend health..."
-          BACKEND_STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://staging.api.podigger.perna.app/health/ || echo "000")
+          BACKEND_STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://staging-api-podigger.perna.app/health/ || echo "000")
           # Remove any potential duplicate 000 from failed curl
           BACKEND_STATUS=${BACKEND_STATUS:0:3}
           
@@ -211,7 +211,7 @@ jobs:
           
           # Check frontend health
           echo "🔍 Checking frontend health..."
-          FRONTEND_STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://staging.podigger.perna.app/ || echo "000")
+          FRONTEND_STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://staging-podigger.perna.app/ || echo "000")
           FRONTEND_STATUS=${FRONTEND_STATUS:0:3}
           
           if [ "$FRONTEND_STATUS" != "200" ]; then
@@ -230,8 +230,8 @@ jobs:
           echo "**Branch**: $BRANCH" >> $GITHUB_STEP_SUMMARY
           echo "**Commit**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
           echo "**Triggered by**: ${{ github.event_name == 'workflow_dispatch' && 'Manual' || 'Automatic (CI passed on develop)' }}" >> $GITHUB_STEP_SUMMARY
-          echo "**Frontend**: https://staging.podigger.perna.app" >> $GITHUB_STEP_SUMMARY
-          echo "**Backend**: https://staging.api.podigger.perna.app" >> $GITHUB_STEP_SUMMARY
+          echo "**Frontend**: https://staging-podigger.perna.app" >> $GITHUB_STEP_SUMMARY
+          echo "**Backend**: https://staging-api-podigger.perna.app" >> $GITHUB_STEP_SUMMARY
           echo "**Deployed at**: $(date -u +'%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_STEP_SUMMARY
       
       - name: Rollback on failure

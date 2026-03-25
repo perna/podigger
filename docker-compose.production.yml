@@ -54,7 +54,7 @@ services:
       context: ./frontend
       dockerfile: Dockerfile.production
       args:
-        - NEXT_PUBLIC_API_URL=https://api.podigger.perna.app
+        - NEXT_PUBLIC_API_URL=https://api-podigger.perna.app
         - NEXT_PUBLIC_ENVIRONMENT=production
     container_name: podigger-production-frontend
     expose:
