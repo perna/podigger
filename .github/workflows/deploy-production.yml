@@ -85,7 +85,7 @@ jobs:
           DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY_PRODUCTION }}
           DJANGO_DEBUG=False
           DJANGO_SETTINGS_MODULE=config.settings
-          DJANGO_ALLOWED_HOSTS=api.podigger.perna.app
+          DJANGO_ALLOWED_HOSTS=api.podigger.perna.app,localhost,127.0.0.1
           CORS_ALLOWED_ORIGINS=https://podigger.perna.app
           
           DATABASE_HOST=db-production
@@ -140,7 +140,6 @@ jobs:
             cd /opt/podigger-nginx-proxy
             docker volume create podigger-production-static || true
             docker volume create podigger-production-media || true
-            docker network create podigger-proxy 2>/dev/null || true
             docker compose up -d || echo "⚠️ Nginx proxy could not start. Are the certs placed at /opt/podigger-nginx-proxy/certs?"
             
             cd /opt/podigger-production
@@ -259,7 +258,6 @@ jobs:
             cd /opt/podigger-nginx-proxy
             docker volume create podigger-production-static || true
             docker volume create podigger-production-media || true
-            docker network create podigger-proxy 2>/dev/null || true
             docker compose up -d || echo "⚠️ Nginx proxy could not start. Are the certs placed at /opt/podigger-nginx-proxy/certs?"
             
             cd /opt/podigger-production
