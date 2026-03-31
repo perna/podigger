@@ -61,7 +61,7 @@ services:
       - "3000"
     depends_on:
       backend-production:
-        condition: service_healthy
+        condition: service_started
     networks:
       - podigger-production
       - podigger-proxy
