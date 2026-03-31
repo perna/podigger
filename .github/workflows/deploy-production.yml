@@ -179,9 +179,6 @@ jobs:
             # Collect static files
             docker compose -f docker-compose.production.yml run --rm backend-production python manage.py collectstatic --noinput
             
-            # Stop old containers (graceful shutdown)
-            docker compose -f docker-compose.production.yml down --timeout 30 --remove-orphans
-            
             # Start all containers
             docker compose -f docker-compose.production.yml up -d --remove-orphans
             
