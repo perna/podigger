@@ -222,4 +222,5 @@ networks:
     name: podigger-production
     driver: bridge
   podigger-proxy:
+    name: podigger-proxy
     external: true
