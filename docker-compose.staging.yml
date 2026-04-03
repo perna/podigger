@@ -18,7 +18,7 @@ services:
       args:
         - ENVIRONMENT=staging
     container_name: podigger-staging-backend
-    command: gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 2 --timeout 60
+    command: gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 4 --timeout 120
     expose:
       - "8000"
     volumes:
@@ -85,7 +85,7 @@ services:
       file: docker-compose.base.yml
       service: redis
     container_name: podigger-staging-redis
-    command: redis-server --appendonly yes
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
     volumes:
       - redis_staging:/data
     networks:
@@ -103,7 +103,7 @@ services:
       args:
         - ENVIRONMENT=staging
     container_name: podigger-staging-celery
-    command: celery -A config worker --loglevel=info --concurrency=2
+    command: celery -A config worker --loglevel=warning --concurrency=4
     depends_on:
       db-staging:
         condition: service_healthy
@@ -147,6 +147,8 @@ services:
     networks:
       - podigger-staging
       - podigger-proxy
+    volumes:
+      - media_staging:/app/media
 
 volumes:
   pgdata_staging:
