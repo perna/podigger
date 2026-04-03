@@ -30,7 +30,6 @@ services:
 
 networks:
   podigger-proxy:
-    name: podigger-proxy
     external: true
 
 volumes:

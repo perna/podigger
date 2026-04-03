@@ -164,5 +164,4 @@ networks:
     name: podigger-staging
     driver: bridge
   podigger-proxy:
-    name: podigger-proxy
     external: true
