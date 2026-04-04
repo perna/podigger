@@ -43,7 +43,7 @@ jobs:
       
       - name: Create .env.staging file
         run: |
-          cat > backend/.env.staging << EOF
+          sed 's/^[[:space:]]*//' > backend/.env.staging << EOF
           DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY_STAGING }}
           DJANGO_DEBUG=False
           DJANGO_SETTINGS_MODULE=config.settings
@@ -65,7 +65,7 @@ jobs:
       
       - name: Create .env.staging for frontend
         run: |
-          cat > frontend/.env.staging << EOF
+          sed 's/^[[:space:]]*//' > frontend/.env.staging << EOF
           NEXT_PUBLIC_API_URL=https://staging-api-podigger.perna.app
           NEXT_PUBLIC_ENVIRONMENT=staging
           EOF
