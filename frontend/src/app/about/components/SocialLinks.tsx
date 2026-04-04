@@ -23,7 +23,7 @@ export function SocialLinks() {
           aria-label="Email us"
           className="flex size-12 items-center justify-center rounded-full bg-primary text-white shadow-lg shadow-primary/30 transition-transform active:scale-90 hover:scale-105"
         >
-          <span className="material-symbols-outlined" aria-hidden="true" style={{ fontVariationSettings: "'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24" }}>
+          <span className="material-symbols-rounded" aria-hidden="true" style={{ fontVariationSettings: "'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24" }}>
             alternate_email
           </span>
         </a>
@@ -47,7 +47,7 @@ export function SocialLinks() {
           aria-label="RSS feed"
           className="flex size-12 items-center justify-center rounded-full bg-primary text-white shadow-lg shadow-primary/30 transition-transform active:scale-90 hover:scale-105"
         >
-          <span className="material-symbols-outlined" aria-hidden="true" style={{ fontVariationSettings: "'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24" }}>
+          <span className="material-symbols-rounded" aria-hidden="true" style={{ fontVariationSettings: "'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24" }}>
             rss_feed
           </span>
         </a>
