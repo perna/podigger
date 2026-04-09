@@ -32,12 +32,12 @@ jobs:
     
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
         with:
           ref: ${{ github.event_name == 'workflow_dispatch' && inputs.branch || 'main' }}
       
       - name: Setup SSH
-        uses: webfactory/ssh-agent@v0.10.0
+        uses: webfactory/ssh-agent@v0.9.0
         with:
           ssh-private-key: ${{ secrets.VPS_SSH_KEY }}
       
@@ -85,12 +85,9 @@ jobs:
           DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY_PRODUCTION }}
           DJANGO_DEBUG=False
           DJANGO_SETTINGS_MODULE=config.settings
-<<<<<<< HEAD
           DJANGO_ALLOWED_HOSTS=api-podigger.perna.app,backend-production,localhost,127.0.0.1
-=======
-          DJANGO_ALLOWED_HOSTS=api-podigger.perna.app,localhost,127.0.0.1
->>>>>>> ca5d257 (fix: remove orphans)
           CORS_ALLOWED_ORIGINS=https://podigger.perna.app
+          CSRF_TRUSTED_ORIGINS=https://podigger.perna.app
           
           DATABASE_HOST=db-production
           DATABASE_PORT=5432
@@ -183,6 +180,9 @@ jobs:
             # Collect static files
             docker compose -f docker-compose.production.yml run --rm backend-production python manage.py collectstatic --noinput
             
+            # Stop old containers (graceful shutdown)
+            docker compose -f docker-compose.production.yml down --timeout 30 --remove-orphans
+            
             # Start all containers
             docker compose -f docker-compose.production.yml up -d --remove-orphans
             
@@ -214,8 +214,9 @@ jobs:
               break
             fi
             if [ $i -eq 3 ]; then
-              echo "⚠️ Backend public health check failed after 3 attempts (HTTP $BACKEND_STATUS)"
-              echo "This is often a false positive due to DNS caching in the runner or Cloudflare blocking curl."
+              echo "❌ Backend health check failed after 3 attempts (HTTP $BACKEND_STATUS)"
+              echo "Possible reasons: DNS not propagated, Nginx Proxy configuration, certificate not yet issued, or service crashed."
+              exit 1
             fi
             echo "⏳ Backend not ready, retrying in 10s... (attempt $i/3)"
             sleep 10
@@ -229,8 +230,9 @@ jobs:
               break
             fi
             if [ $i -eq 3 ]; then
-              echo "⚠️ Frontend public health check failed after 3 attempts (HTTP $FRONTEND_STATUS)"
-              echo "This is often a false positive due to DNS caching in the runner or Cloudflare blocking curl."
+              echo "❌ Frontend health check failed after 3 attempts (HTTP $FRONTEND_STATUS)"
+              echo "Possible reasons: DNS not propagated, Nginx Proxy configuration, certificate not yet issued, or service crashed."
+              exit 1
             fi
             echo "⏳ Frontend not ready, retrying in 10s... (attempt $i/3)"
             sleep 10
