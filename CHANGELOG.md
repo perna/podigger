@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `addPodcast` service in the frontend API client.
 - `CSRF_TRUSTED_ORIGINS` configuration in backend and CI workflows for staging/production.
 - `SECURE_PROXY_SSL_HEADER` configuration to trust Nginx proxy HTTPS identification.
+- Unit tests for `addPodcast` API service and `AddPodcastPage` component.
 
 ## [2.1.0] - 2026-02-28
 
