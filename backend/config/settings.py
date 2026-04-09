@@ -26,6 +26,9 @@ SECRET_KEY = env(
 DEBUG = env.bool("DJANGO_DEBUG", default=os.environ.get("DJANGO_DEBUG", "1") == "1")
 ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=["*"])
 
+# Trust the X-Forwarded-Proto header from the proxy (Nginx) for HTTPS identification
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
 # Applications
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -162,11 +165,14 @@ REST_FRAMEWORK = {
 }
 
 # CORS
+CORS_ALLOW_CREDENTIALS = True
+
 if DEBUG:
     CORS_ALLOW_ALL_ORIGINS = True
 else:
     CORS_ALLOW_ALL_ORIGINS = False
     CORS_ALLOWED_ORIGINS = env.list("CORS_ALLOWED_ORIGINS", default=[])
+    CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=[])
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
