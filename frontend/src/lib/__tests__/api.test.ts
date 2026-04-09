@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { fetchEpisodes } from '../api';
+import { addPodcast, fetchEpisodes, fetchPodcasts } from '../api';
 
 describe('fetchEpisodes', () => {
   beforeEach(() => {
@@ -102,5 +102,98 @@ describe('fetchEpisodes', () => {
     } as Response);
 
     await expect(fetchEpisodes()).rejects.toThrow('API error: 500');
+  });
+});
+
+describe('fetchPodcasts', () => {
+  beforeEach(() => {
+    vi.stubGlobal('fetch', vi.fn());
+  });
+
+  it('fetches podcasts without query', async () => {
+    const mockData = { count: 0, next: null, previous: null, results: [] };
+    vi.mocked(fetch).mockResolvedValueOnce({
+      ok: true,
+      json: () => Promise.resolve(mockData),
+    } as Response);
+
+    await fetchPodcasts();
+
+    expect(fetch).toHaveBeenCalledWith(
+      expect.stringMatching(/^https?:\/\/.+\/api\/podcasts\/?$/)
+    );
+  });
+
+  it('adds search param when query is provided', async () => {
+    const mockData = { count: 0, next: null, previous: null, results: [] };
+    vi.mocked(fetch).mockResolvedValueOnce({
+      ok: true,
+      json: () => Promise.resolve(mockData),
+    } as Response);
+
+    await fetchPodcasts('design');
+
+    expect(fetch).toHaveBeenCalledWith(
+      expect.stringContaining('search=design')
+    );
+  });
+});
+
+describe('addPodcast', () => {
+  beforeEach(() => {
+    vi.stubGlobal('fetch', vi.fn());
+  });
+
+  it('successfully creates a podcast', async () => {
+    const mockResponse = { id: 1, status: 'created' };
+    vi.mocked(fetch).mockResolvedValueOnce({
+      ok: true,
+      json: () => Promise.resolve(mockResponse),
+    } as Response);
+
+    const result = await addPodcast('Test Podcast', 'https://test.com/feed');
+
+    expect(result).toEqual(mockResponse);
+    expect(fetch).toHaveBeenCalledWith(
+      expect.stringContaining('/api/podcasts/'),
+      expect.objectContaining({
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: 'Test Podcast', feed: 'https://test.com/feed' }),
+      })
+    );
+  });
+
+  it('handles existing podcast response', async () => {
+    const mockResponse = { status: 'existing', message: 'Already exists' };
+    vi.mocked(fetch).mockResolvedValueOnce({
+      ok: true,
+      json: () => Promise.resolve(mockResponse),
+    } as Response);
+
+    const result = await addPodcast('Existing Podcast', 'https://test.com/existing');
+
+    expect(result).toEqual(mockResponse);
+  });
+
+  it('throws error with message from server', async () => {
+    const errorMsg = 'Invalid RSS feed';
+    vi.mocked(fetch).mockResolvedValueOnce({
+      ok: false,
+      status: 400,
+      json: () => Promise.resolve({ message: errorMsg }),
+    } as Response);
+
+    await expect(addPodcast('Bad Podcast', 'https://bad.url')).rejects.toThrow(errorMsg);
+  });
+
+  it('throws generic error when response not ok', async () => {
+    vi.mocked(fetch).mockResolvedValueOnce({
+      ok: false,
+      status: 500,
+      json: () => Promise.resolve({}),
+    } as Response);
+
+    await expect(addPodcast('Error Podcast', 'https://error.url')).rejects.toThrow('API error: 500');
   });
 });

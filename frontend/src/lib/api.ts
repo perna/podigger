@@ -80,3 +80,30 @@ export async function fetchPodcasts(
   }
   return response.json();
 }
+
+export interface AddPodcastResponse {
+  id?: number;
+  status: 'created' | 'existing' | 'error';
+  message?: string;
+}
+
+export async function addPodcast(
+  name: string,
+  feed: string
+): Promise<AddPodcastResponse> {
+  const url = `${API_BASE}/api/podcasts/`;
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ name, feed }),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.message || `API error: ${response.status}`);
+  }
+  
+  return response.json();
+}
