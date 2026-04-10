@@ -143,6 +143,13 @@ jobs:
             # Build application images
             docker compose -f docker-compose.staging.yml build
             
+            # Force remove containers by name to prevent "container name already in use" conflicts
+            # This handles cases where a previous deploy left containers in a half-created state
+            for container in podigger-staging-backend podigger-staging-frontend podigger-staging-db podigger-staging-redis podigger-staging-celery podigger-staging-celery-beat; do
+              docker stop $container 2>/dev/null || true
+              docker rm -f $container 2>/dev/null || true
+            done
+            
             # Clean up potentially conflicting old containers before starting
             docker compose -f docker-compose.staging.yml down --remove-orphans || true
             
