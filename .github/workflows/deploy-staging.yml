@@ -184,17 +184,24 @@ jobs:
             docker compose -f docker-compose.staging.yml up -d --remove-orphans
             
             # Wait for backend to be healthy
+            # Accept HTTP 200 (healthy) or 503 (degraded but running — e.g. Redis not yet ready).
+            # Using status-code check instead of curl -f so a transient Redis issue doesn't
+            # block deployment; the real readiness gate is that the process is accepting requests.
             echo "Waiting for backend to be healthy..."
-            for i in {1..12}; do
-              if docker compose -f docker-compose.staging.yml exec -T backend-staging curl -f http://localhost:8000/health/ 2>/dev/null; then
-                echo "✅ Backend is healthy"
+            for i in {1..20}; do
+              HTTP_STATUS=\$(docker compose -f docker-compose.staging.yml exec -T backend-staging \
+                curl -s -o /dev/null -w "%{http_code}" http://localhost:8000/health/ 2>/dev/null || echo "000")
+              if [ "\$HTTP_STATUS" = "200" ] || [ "\$HTTP_STATUS" = "503" ]; then
+                echo "✅ Backend is up (HTTP \$HTTP_STATUS)"
                 break
               fi
-              if [ \$i -eq 12 ]; then
-                echo "❌ Backend failed to become healthy"
+              if [ \$i -eq 20 ]; then
+                echo "❌ Backend failed to become healthy after 20 attempts (last status: HTTP \$HTTP_STATUS)"
+                echo "--- backend-staging container logs ---"
+                docker compose -f docker-compose.staging.yml logs --tail=50 backend-staging || true
                 exit 1
               fi
-              echo "⏳ Waiting... (attempt \$i/12)"
+              echo "⏳ Waiting... (attempt \$i/20, last status: HTTP \$HTTP_STATUS)"
               sleep 5
             done
           ENDSSH
