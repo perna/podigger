@@ -29,6 +29,12 @@ services:
         condition: service_healthy
       redis-production:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/health/ || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
     env_file:
       - ./backend/.env.production
     environment:
@@ -54,7 +60,7 @@ services:
       context: ./frontend
       dockerfile: Dockerfile.production
       args:
-        - NEXT_PUBLIC_API_URL=https://api.podigger.perna.app
+        - NEXT_PUBLIC_API_URL=https://api-podigger.perna.app
         - NEXT_PUBLIC_ENVIRONMENT=production
     container_name: podigger-production-frontend
     expose:
