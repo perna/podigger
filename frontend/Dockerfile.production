@@ -10,10 +10,12 @@ WORKDIR /app
 # Instalar libc compat (necessário para alguns pacotes)
 RUN apk add --no-cache libc6-compat
 
+ENV NEXT_TELEMETRY_DISABLED=1
 COPY package.json package-lock.json ./
 
 # Instalar TODAS dependências (necessário para build)
-RUN npm ci
+RUN --mount=type=cache,target=/root/.npm \
+    npm ci --cache /root/.npm
 
 
 ########################################
@@ -43,9 +45,7 @@ ENV NEXT_PUBLIC_ENVIRONMENT=$NEXT_PUBLIC_ENVIRONMENT
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
 
-# Garantir que a instalação ocorra se o cache estiver corrompido ou o .bin não vier
-RUN npm list next || npm install
-RUN npm install -g typescript
+# TypeScript disponível em node_modules/.bin/tsc — não instalar globalmente
 RUN npm run build
 
 
