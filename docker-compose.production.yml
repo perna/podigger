@@ -7,16 +7,22 @@
 
 services:
 
-  # Backend Django + DRF
-  backend-production:
-    extends:
-      file: docker-compose.base.yml
-      service: backend
+  # Serviço dedicado ao build da imagem do backend
+  # Não executa nenhum processo — apenas constrói a imagem
+  backend-image:
     build:
       context: ./backend
       dockerfile: Dockerfile.production
       args:
         - ENVIRONMENT=production
+    image: podigger-backend:production
+
+  # Backend Django + DRF
+  backend-production:
+    extends:
+      file: docker-compose.base.yml
+      service: backend
+    image: podigger-backend:production
     container_name: podigger-production-backend
     command: gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 4 --timeout 120 --access-logfile - --error-logfile -
     expose:
@@ -25,6 +31,8 @@ services:
       - static_production:/app/staticfiles
       - media_production:/app/media
     depends_on:
+      backend-image:
+        condition: service_completed_successfully
       db-production:
         condition: service_healthy
       redis-production:
@@ -124,14 +132,12 @@ services:
     extends:
       file: docker-compose.base.yml
       service: celery
-    build:
-      context: ./backend
-      dockerfile: Dockerfile.production
-      args:
-        - ENVIRONMENT=production
+    image: podigger-backend:production
     container_name: podigger-production-celery
     command: celery -A config worker --loglevel=warning --concurrency=4
     depends_on:
+      backend-image:
+        condition: service_completed_successfully
       db-production:
         condition: service_healthy
       redis-production:
@@ -158,14 +164,12 @@ services:
     extends:
       file: docker-compose.base.yml
       service: celery-beat
-    build:
-      context: ./backend
-      dockerfile: Dockerfile.production
-      args:
-        - ENVIRONMENT=production
+    image: podigger-backend:production
     container_name: podigger-production-celery-beat
     command: celery -A config beat --loglevel=warning
     depends_on:
+      backend-image:
+        condition: service_completed_successfully
       db-production:
         condition: service_healthy
       redis-production:

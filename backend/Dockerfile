@@ -1,5 +1,7 @@
 FROM python:3.12-slim
 
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+
 # System deps
 RUN apt-get update \
     && apt-get install -y --no-install-recommends build-essential libpq-dev gcc curl \
@@ -9,8 +11,7 @@ WORKDIR /app
 
 # Python deps
 COPY requirements.txt /app/requirements.txt
-# Install Python dependencies with pip
-RUN pip install --no-cache-dir -r /app/requirements.txt
+RUN uv pip install --system --no-cache -r /app/requirements.txt
 
 # Copy project (will be overridden by bind-mount in development)
 COPY . /app

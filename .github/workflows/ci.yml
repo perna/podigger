@@ -66,16 +66,23 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Install dependencies
+      - name: Cache UV
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/uv
+          key: ${{ runner.os }}-uv-${{ hashFiles('backend/requirements-dev.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-uv-
+
+      - name: Install UV and dependencies
         run: |
-          python -m pip install --upgrade pip
-          pip install -r backend/requirements.txt
+          pip install uv
+          uv pip install --system -r backend/requirements-dev.txt
 
       - name: Validate commit messages
         if: github.event_name == 'pull_request'
         continue-on-error: true
         run: |
-          pip install commitizen>=3.13.0
           cd backend
           # Validate commits in PR
           cz check --rev-range origin/${{ github.base_ref }}..HEAD || {
@@ -89,7 +96,7 @@ jobs:
       - name: Run ruff (lint)
         run: |
           cd backend
-          ruff check .
+          uv run ruff check .
 
       - name: Wait for services
         run: |
@@ -133,6 +140,8 @@ jobs:
     needs: changes
     if: ${{ needs.changes.outputs.frontend == 'true' || github.base_ref == 'main' }}
     runs-on: ubuntu-latest
+    env:
+      NEXT_TELEMETRY_DISABLED: 1
     steps:
       - uses: actions/checkout@v5
 
@@ -142,6 +151,15 @@ jobs:
           node-version: '24.14.0'
           cache: 'npm'
           cache-dependency-path: frontend/package-lock.json
+
+      - name: Cache Next.js build
+        uses: actions/cache@v4
+        with:
+          path: frontend/.next/cache
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('frontend/package-lock.json') }}-${{ hashFiles('frontend/src/**') }}
+          restore-keys: |
+            ${{ runner.os }}-nextjs-${{ hashFiles('frontend/package-lock.json') }}-
+            ${{ runner.os }}-nextjs-
 
       - name: Install dependencies
         run: |
