@@ -1,0 +1,23 @@
+# Dependências de desenvolvimento do Podigger backend.
+# Inclui todas as dependências de produção mais ferramentas de dev/test.
+# Para instalar: uv pip install -r requirements-dev.txt
+
+-r requirements.txt
+
+# Testes
+pytest>=7.0.0
+pytest-django>=4.0.0
+pytest-mock>=3.10.0
+pytest-cov>=4.1.0
+
+# Dados de teste
+Faker==19.9.0
+
+# Qualidade de código
+ruff>=0.8.0,<0.9.0
+
+# Versionamento
+commitizen>=3.13.0
+
+# Driver PostgreSQL para dev (binário pré-compilado, mais fácil de instalar)
+psycopg2-binary==2.9.11

@@ -1,4 +1,4 @@
-.PHONY: help setup install dev services services-stop migrate makemigrations test lint format clean shell superuser seed version bump-patch bump-minor bump-major changelog frontend-setup frontend-dev frontend-test frontend-lint frontend-build
+.PHONY: help setup install dev services services-stop migrate makemigrations test lint format clean shell superuser seed version bump-patch bump-minor bump-major changelog frontend-setup frontend-dev frontend-test frontend-lint frontend-build build-analyze deps-check build-production
 
 # Default target
 help:
@@ -37,11 +37,16 @@ help:
 	@echo "  make changelog      - Generate/update CHANGELOG.md"
 	@echo ""
 	@echo "Frontend:"
-	@echo "  make frontend-setup - Setup frontend environment (NVM, Node.js 24)"
-	@echo "  make frontend-dev   - Start frontend dev server"
-	@echo "  make frontend-test  - Run frontend tests"
-	@echo "  make frontend-lint  - Run frontend linting"
-	@echo "  make frontend-build - Build frontend for production"
+	@echo "  make frontend-setup  - Setup frontend environment (NVM, Node.js 24)"
+	@echo "  make frontend-dev    - Start frontend dev server"
+	@echo "  make frontend-test   - Run frontend tests"
+	@echo "  make frontend-lint   - Run frontend linting"
+	@echo "  make frontend-build  - Build frontend for production"
+	@echo "  make build-analyze   - Analyze frontend bundle (generates reports in frontend/.next/analyze/)"
+	@echo ""
+	@echo "Build & Dependencies:"
+	@echo "  make build-production - Build production Docker images with BuildKit"
+	@echo "  make deps-check       - List outdated dependencies (backend + frontend)"
 
 # Setup UV and create virtual environment
 setup:
@@ -52,7 +57,7 @@ setup:
 # Install dependencies (assumes UV is already installed)
 install:
 	@echo "Installing dependencies..."
-	@cd backend && uv pip install -r requirements.txt
+	@cd backend && uv pip install -r requirements-dev.txt
 	@echo "Dependencies installed!"
 
 # Start local services and run Django dev server
@@ -174,3 +179,23 @@ frontend-build:
 	@echo "Building frontend for production..."
 	@cd frontend && npm run build
 	@echo "Frontend build complete!"
+
+# Análise de bundle do frontend
+build-analyze:
+	@echo "Analisando bundle do frontend..."
+	@cd frontend && ANALYZE=true npm run build
+	@echo "Relatórios gerados em frontend/.next/analyze/"
+
+# Verificação de dependências desatualizadas
+deps-check:
+	@echo "=== Backend (Python) ==="
+	@cd backend && uv pip list --outdated
+	@echo ""
+	@echo "=== Frontend (Node.js) ==="
+	@cd frontend && npm outdated || true
+
+# Build de produção com BuildKit habilitado
+build-production:
+	@echo "Construindo imagens de produção com BuildKit..."
+	@DOCKER_BUILDKIT=1 docker compose -f docker-compose.production.yml build
+	@echo "Build concluído!"

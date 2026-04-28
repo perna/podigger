@@ -1,12 +1,20 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {
-  // Enable standalone output for Docker
-  output: 'standalone',
+import type { NextConfig } from 'next';
+import bundleAnalyzer from '@next/bundle-analyzer';
 
-  // Disable telemetry in production
-  ...(process.env.NEXT_PUBLIC_ENVIRONMENT === 'production' && {
-    telemetry: false,
-  }),
+const withBundleAnalyzer = bundleAnalyzer({
+  enabled: process.env.ANALYZE === 'true',
+});
+
+const nextConfig: NextConfig = {
+  output: 'standalone',
+  compress: true,
+  poweredByHeader: false,
+  images: {
+    formats: ['image/avif', 'image/webp'],
+  },
+  experimental: {
+    optimizePackageImports: ['clsx', 'tailwind-merge'],
+  },
 };
 
-export default nextConfig;
+export default withBundleAnalyzer(nextConfig);
