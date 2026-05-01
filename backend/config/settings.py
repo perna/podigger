@@ -1,4 +1,5 @@
 import os
+from datetime import timedelta
 from pathlib import Path
 
 # Use django-environ to manage environment variables and .env files. This
@@ -39,10 +40,15 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django.contrib.postgres",
     "rest_framework",
+    "rest_framework_simplejwt",
     "django_filters",
     "corsheaders",
+    "accounts",
     "podcasts",
 ]
+
+# Custom user model — uses email as the unique identifier instead of username
+AUTH_USER_MODEL = "accounts.User"
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
@@ -151,6 +157,11 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # DRF Configuration for REST API only (no HTML rendering)
 REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "accounts.authentication.CookieJWTAuthentication",  # primary auth for API
+        "rest_framework.authentication.SessionAuthentication",  # Django Admin
+        "rest_framework.authentication.BasicAuthentication",  # Django Admin
+    ],
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.IsAuthenticatedOrReadOnly",
     ],
@@ -176,3 +187,21 @@ else:
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# JWT Configuration (djangorestframework-simplejwt)
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(
+        minutes=env.int("JWT_ACCESS_TOKEN_MINUTES", default=5)
+    ),
+    "REFRESH_TOKEN_LIFETIME": timedelta(
+        days=env.int("JWT_REFRESH_TOKEN_DAYS", default=1)
+    ),
+    "ROTATE_REFRESH_TOKENS": False,
+    "BLACKLIST_AFTER_ROTATION": False,
+    "ALGORITHM": "HS256",
+    "SIGNING_KEY": SECRET_KEY,
+    "AUTH_HEADER_TYPES": ("Bearer",),
+    "USER_ID_FIELD": "id",
+    "USER_ID_CLAIM": "user_id",
+    "TOKEN_OBTAIN_SERIALIZER": "accounts.serializers.EmailTokenObtainPairSerializer",
+}

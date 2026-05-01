@@ -3,7 +3,10 @@ from typing import ClassVar
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, status, viewsets
 from rest_framework.decorators import action
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
+
+from accounts.permissions import IsEditorOrAdmin
 
 from .models import Episode, Podcast, PopularTerm, TopicSuggestion
 from .serializers import (
@@ -15,6 +18,8 @@ from .serializers import (
 )
 from .services.podcast_service import PodcastService
 
+_READ_ACTIONS = ("list", "retrieve")
+
 
 class PodcastViewSet(viewsets.ModelViewSet):
     """ViewSet for viewing and creating Podcasts."""
@@ -22,6 +27,12 @@ class PodcastViewSet(viewsets.ModelViewSet):
     queryset: ClassVar = Podcast.objects.all().order_by("-id")
     filter_backends: ClassVar = [filters.SearchFilter]
     search_fields: ClassVar = ["name"]
+
+    def get_permissions(self):
+        """Return AllowAny for read actions; require IsEditorOrAdmin for writes."""
+        if self.action in _READ_ACTIONS:
+            return [AllowAny()]
+        return [IsEditorOrAdmin()]
 
     def get_serializer_class(self):
         """Return the serializer class based on the action."""
@@ -93,6 +104,12 @@ class EpisodeViewSet(viewsets.ModelViewSet):
     filter_backends: ClassVar = [DjangoFilterBackend]
     filterset_fields: ClassVar = ["podcast"]
 
+    def get_permissions(self):
+        """Return AllowAny for read actions; require IsEditorOrAdmin for writes."""
+        if self.action in _READ_ACTIONS:
+            return [AllowAny()]
+        return [IsEditorOrAdmin()]
+
     def get_queryset(self):
         """Return the queryset, optionally filtered by search term."""
         qs = super().get_queryset()
@@ -111,6 +128,12 @@ class TopicSuggestionViewSet(viewsets.ModelViewSet):
 
     queryset: ClassVar = TopicSuggestion.objects.all().order_by("-id")
     serializer_class: ClassVar = TopicSuggestionSerializer
+
+    def get_permissions(self):
+        """Return AllowAny for read actions; require IsEditorOrAdmin for writes."""
+        if self.action in _READ_ACTIONS:
+            return [AllowAny()]
+        return [IsEditorOrAdmin()]
 
 
 class PopularTermViewSet(viewsets.ReadOnlyModelViewSet):

@@ -5,6 +5,7 @@ from podcasts.health import health_check
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path("api/auth/", include("accounts.urls")),
     path("api/", include("podcasts.urls")),
     path("health/", health_check, name="health_check"),
 ]
