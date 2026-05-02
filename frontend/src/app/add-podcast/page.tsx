@@ -1,17 +1,50 @@
 "use client";
 
+// Feature: api-authentication-strategy
+// Requirements: 9.1, 9.2, 9.3, 9.4
+
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { addPodcast } from "@/lib/api";
+import { useAuth } from "@/contexts/AuthContext";
 import { Icon } from "@/components/ui/Icon";
 
 export default function AddPodcastPage() {
   const router = useRouter();
+  const { user } = useAuth();
   const [name, setName] = useState("");
   const [feed, setFeed] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+
+  // Requirement 9.1: Only render form for editor or admin roles
+  if (!user || (user.role !== "editor" && user.role !== "admin")) {
+    return (
+      <div className="bg-[#0a0a0a] min-h-screen flex items-center justify-center p-4 font-display">
+        <div className="relative w-full max-w-[420px] bg-[#121212] shadow-2xl overflow-hidden rounded-[3rem] flex flex-col border-[8px] border-[#2a2a2a] min-h-[400px] items-center justify-center gap-6 px-8">
+          <div className="size-20 bg-red-500/15 rounded-2xl flex items-center justify-center ring-1 ring-red-500/30 text-red-400">
+            <Icon name="lock" className="text-5xl" />
+          </div>
+          <div className="text-center">
+            <h1 className="text-white tracking-tight text-2xl font-extrabold leading-tight mb-3">
+              Acesso Negado
+            </h1>
+            <p className="text-zinc-400 text-sm px-4">
+              {!user
+                ? "Você precisa estar autenticado para acessar esta página."
+                : "Apenas editores e administradores podem cadastrar podcasts."}
+            </p>
+          </div>
+          <button
+            onClick={() => router.push(!user ? "/login" : "/")}
+            className="w-full h-12 bg-zinc-700 hover:bg-zinc-600 text-white font-semibold rounded-xl transition-all"
+          >
+            {!user ? "Ir para Login" : "Voltar ao início"}
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -20,25 +53,49 @@ export default function AddPodcastPage() {
     setSuccess(null);
 
     try {
-      const response = await addPodcast(name, feed);
-      if (response.status === "created") {
-        setSuccess("Podcast added successfully! We are syncing the episodes.");
+      // Requirement 9.3: Send via proxy Route Handler instead of direct fetch
+      const response = await fetch("/api/proxy/podcasts/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name, feed }),
+      });
+
+      if (!response.ok) {
+        // Requirement 9.4: Show appropriate error for 401/403
+        if (response.status === 401) {
+          setError("Sua sessão expirou. Por favor, faça login novamente.");
+          return;
+        }
+        if (response.status === 403) {
+          setError("Você não tem permissão para cadastrar podcasts.");
+          return;
+        }
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || `Erro: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      if (data.status === "created") {
+        setSuccess("Podcast adicionado com sucesso! Estamos sincronizando os episódios.");
         setTimeout(() => {
           router.push("/");
         }, 2000);
-      } else if (response.status === "existing") {
-        setSuccess("This podcast was already in our library.");
+      } else if (data.status === "existing") {
+        setSuccess("Este podcast já está na nossa biblioteca.");
         setTimeout(() => {
           router.push("/");
         }, 2000);
       } else {
-        setError(response.message || "An error occurred.");
+        setError(data.message || "Ocorreu um erro.");
       }
     } catch (err: unknown) {
       if (err instanceof Error) {
-        setError(err.message || "Failed to add podcast. Please check the URL.");
+        setError(err.message || "Falha ao adicionar podcast. Verifique a URL.");
       } else {
-        setError("Failed to add podcast. Please check the URL.");
+        setError("Falha ao adicionar podcast. Verifique a URL.");
       }
     } finally {
       setIsLoading(false);

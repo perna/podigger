@@ -132,6 +132,9 @@ jobs:
           DATABASE_PASSWORD: postgres
           DJANGO_SECRET_KEY: test-secret-key-for-ci-only
           DJANGO_SETTINGS_MODULE: config.settings
+          # Reduce Hypothesis examples in CI to keep test time reasonable.
+          # Full exploration (max_examples=100) is for local runs.
+          HYPOTHESIS_MAX_EXAMPLES: 20
         run: |
           cd backend
           pytest -v --tb=short --strict-markers
