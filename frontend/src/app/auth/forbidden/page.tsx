@@ -3,6 +3,7 @@
 // Feature: api-authentication-strategy
 // Requirements: 13.2, 13.6
 
+import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { Icon } from "@/components/ui/Icon";
 
@@ -53,7 +54,7 @@ export default function ForbiddenPage() {
             )}
           </div>
 
-          <a
+          <Link
             href="/"
             className="w-full h-14 bg-[#0db9f2] hover:bg-[#0db9f2]/90 text-black font-extrabold text-lg rounded-xl shadow-lg shadow-[#0db9f2]/20 transition-all flex items-center justify-center gap-2 group"
           >
@@ -61,7 +62,7 @@ export default function ForbiddenPage() {
             <div className="group-hover:translate-x-1 transition-transform flex" aria-hidden="true">
               <Icon name="home" />
             </div>
-          </a>
+          </Link>
         </div>
 
         {/* Footer home bar */}

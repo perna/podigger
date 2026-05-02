@@ -8,7 +8,14 @@ from .models import User
 class UserAdmin(BaseUserAdmin):
     """Admin configuration for the custom User model."""
 
-    list_display = ("email", "role", "approval_status", "is_active", "is_staff", "created_at")
+    list_display = (
+        "email",
+        "role",
+        "approval_status",
+        "is_active",
+        "is_staff",
+        "created_at",
+    )
     list_filter = ("role", "approval_status", "is_active", "is_staff")
     search_fields = ("email",)
     ordering = ("-created_at",)
@@ -37,7 +44,13 @@ class UserAdmin(BaseUserAdmin):
             None,
             {
                 "classes": ("wide",),
-                "fields": ("email", "password1", "password2", "role", "approval_status"),
+                "fields": (
+                    "email",
+                    "password1",
+                    "password2",
+                    "role",
+                    "approval_status",
+                ),
             },
         ),
     )

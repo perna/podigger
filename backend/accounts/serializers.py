@@ -1,12 +1,18 @@
+from __future__ import annotations
+
+from typing import ClassVar
+
 from rest_framework import serializers
 from rest_framework.exceptions import PermissionDenied
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from accounts.models import User
 
+MIN_PASSWORD_LENGTH = 8
+
 
 class EmailTokenObtainPairSerializer(TokenObtainPairSerializer):
-    """Custom JWT serializer that authenticates by email and enforces approval_status."""
+    """JWT serializer that authenticates by email and enforces approval_status."""
 
     username_field = User.USERNAME_FIELD  # "email"
 
@@ -25,9 +31,8 @@ class EmailTokenObtainPairSerializer(TokenObtainPairSerializer):
 
         # After successful credential check, enforce approval_status
         if self.user.approval_status != "approved":
-            raise PermissionDenied(
-                "Sua conta aguarda aprovação de um administrador."
-            )
+            msg = "Sua conta aguarda aprovação de um administrador."
+            raise PermissionDenied(msg)
 
         # Add role and email to the response body
         data["role"] = self.user.role
@@ -43,13 +48,12 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ["email", "password"]
+        fields: ClassVar = ["email", "password"]
 
     def validate_password(self, value):
-        if len(value) < 8:
-            raise serializers.ValidationError(
-                "A senha deve ter no mínimo 8 caracteres."
-            )
+        if len(value) < MIN_PASSWORD_LENGTH:
+            msg = "A senha deve ter no mínimo 8 caracteres."
+            raise serializers.ValidationError(msg)
         return value
 
     def create(self, validated_data):
@@ -66,5 +70,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ["id", "email", "role", "approval_status", "created_at"]
-        read_only_fields = ["id", "email", "role", "approval_status", "created_at"]
+        fields: ClassVar = ["id", "email", "role", "approval_status", "created_at"]
+        read_only_fields: ClassVar = [
+            "id", "email", "role", "approval_status", "created_at",
+        ]

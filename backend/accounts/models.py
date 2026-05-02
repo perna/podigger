@@ -1,4 +1,12 @@
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+from __future__ import annotations
+
+from typing import ClassVar
+
+from django.contrib.auth.models import (
+    AbstractBaseUser,
+    BaseUserManager,
+    PermissionsMixin,
+)
 from django.db import models
 
 
@@ -11,7 +19,8 @@ class UserManager(BaseUserManager):
         Sets approval_status to 'pending' and role to 'reader' by default.
         """
         if not email:
-            raise ValueError("The Email field must be set")
+            msg = "The Email field must be set"
+            raise ValueError(msg)
         email = self.normalize_email(email)
         extra_fields.setdefault("approval_status", "pending")
         extra_fields.setdefault("role", "reader")
@@ -31,23 +40,25 @@ class UserManager(BaseUserManager):
         extra_fields.setdefault("role", "admin")
 
         if extra_fields.get("is_staff") is not True:
-            raise ValueError("Superuser must have is_staff=True.")
+            msg = "Superuser must have is_staff=True."
+            raise ValueError(msg)
         if extra_fields.get("is_superuser") is not True:
-            raise ValueError("Superuser must have is_superuser=True.")
+            msg = "Superuser must have is_superuser=True."
+            raise ValueError(msg)
 
         return self.create_user(email, password, **extra_fields)
 
 
 class User(AbstractBaseUser, PermissionsMixin):
-    """Custom user model that uses email as the unique identifier instead of username."""
+    """Custom user model using email as the unique identifier instead of username."""
 
-    ROLE_CHOICES = [
+    ROLE_CHOICES: ClassVar = [
         ("admin", "Admin"),
         ("editor", "Editor"),
         ("reader", "Reader"),
     ]
 
-    APPROVAL_STATUS_CHOICES = [
+    APPROVAL_STATUS_CHOICES: ClassVar = [
         ("pending", "Pending"),
         ("approved", "Approved"),
     ]
@@ -68,7 +79,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     created_at = models.DateTimeField(auto_now_add=True)
 
     USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = []
+    REQUIRED_FIELDS: ClassVar = []
 
     objects = UserManager()
 

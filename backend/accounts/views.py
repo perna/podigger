@@ -1,8 +1,13 @@
+from __future__ import annotations
+
+from typing import ClassVar
+
 from django.conf import settings
 from django.db import IntegrityError
 from rest_framework import generics, status
 from rest_framework.exceptions import AuthenticationFailed, PermissionDenied
 from rest_framework.response import Response
+from rest_framework.throttling import AnonRateThrottle
 from rest_framework.views import APIView
 from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
@@ -13,11 +18,13 @@ from accounts.serializers import RegisterSerializer, UserSerializer
 
 
 class TokenObtainCookieView(TokenObtainPairView):
-    """JWT login view that stores tokens in HttpOnly cookies instead of the response body.
+    """JWT login view that stores tokens in HttpOnly cookies.
+
+    Stores tokens in HttpOnly cookies instead of the response body.
 
     Inherits from TokenObtainPairView and delegates credential validation to
-    EmailTokenObtainPairSerializer (configured via SIMPLE_JWT["TOKEN_OBTAIN_SERIALIZER"]).
-    The serializer handles:
+    EmailTokenObtainPairSerializer (configured via
+    SIMPLE_JWT["TOKEN_OBTAIN_SERIALIZER"]). The serializer handles:
       - Authentication by email field
       - Raising AuthenticationFailed for invalid credentials
       - Raising PermissionDenied for accounts with approval_status="pending"
@@ -28,9 +35,14 @@ class TokenObtainCookieView(TokenObtainPairView):
       - Returns only {"role": "...", "email": "..."} in the response body
 
     On failure:
-      - Returns HTTP 401 with {"detail": "Credenciais inválidas."} for invalid credentials
-      - Returns HTTP 403 with {"detail": "Sua conta aguarda aprovação de um administrador."} for pending accounts
+      - Returns HTTP 401 with {"detail": "Credenciais inválidas."} for invalid
+        credentials
+      - Returns HTTP 403 with {"detail": "Sua conta aguarda aprovação de um
+        administrador."} for pending accounts
     """
+
+    throttle_classes: ClassVar = [AnonRateThrottle]
+    throttle_scope = "login"
 
     def post(self, request, *args, **kwargs):
         try:
@@ -85,8 +97,9 @@ class TokenObtainCookieView(TokenObtainPairView):
 
 
 class TokenRefreshCookieView(TokenRefreshView):
-    """JWT token refresh view that reads the refresh token from an HttpOnly cookie
-    and issues a new access token as an HttpOnly cookie.
+    """JWT token refresh view that reads the refresh token from an HttpOnly cookie.
+
+    Issues a new access token as an HttpOnly cookie.
 
     Inherits from TokenRefreshView and overrides ``post()`` to:
       - Read the ``refresh_token`` cookie instead of the request body
@@ -153,21 +166,22 @@ class RegisterView(generics.CreateAPIView):
       - Returns HTTP 201 with {"email": "..."} in the response body
 
     On failure:
-      - Returns HTTP 400 with {"detail": "A senha deve ter no mínimo 8 caracteres."} for short passwords
-      - Returns HTTP 400 with {"detail": "Este email já está cadastrado."} for duplicate emails
+      - Returns HTTP 400 with {"detail": "A senha deve ter no mínimo 8
+        caracteres."} for short passwords
+      - Returns HTTP 400 with {"detail": "Este email já está cadastrado."}
+        for duplicate emails
     """
 
     serializer_class = RegisterSerializer
-    permission_classes = []
-    authentication_classes = []
+    permission_classes: ClassVar = []
+    authentication_classes: ClassVar = []
 
-    def create(self, request, *args, **kwargs):
+    throttle_classes: ClassVar = [AnonRateThrottle]
+    throttle_scope = "register"
+
+    def create(self, request, *_args, **_kwargs):
         serializer = self.get_serializer(data=request.data)
-        try:
-            serializer.is_valid(raise_exception=True)
-        except Exception as exc:
-            # Re-raise validation errors (e.g. short password) as-is
-            raise
+        serializer.is_valid(raise_exception=True)
 
         try:
             self.perform_create(serializer)
@@ -191,7 +205,7 @@ class UserListView(generics.ListAPIView):
     """
 
     serializer_class = UserSerializer
-    permission_classes = [IsAdminRole]
+    permission_classes: ClassVar = [IsAdminRole]
     queryset = User.objects.all().order_by("created_at")
 
 
@@ -204,9 +218,9 @@ class UserApproveView(APIView):
     Returns HTTP 404 if user not found.
     """
 
-    permission_classes = [IsAdminRole]
+    permission_classes: ClassVar = [IsAdminRole]
 
-    def post(self, request, pk, *args, **kwargs):
+    def post(self, _request, pk, *_args, **_kwargs):
         try:
             user = User.objects.get(pk=pk)
         except User.DoesNotExist:
@@ -235,9 +249,9 @@ class UserRoleUpdateView(APIView):
 
     VALID_ROLES = ("admin", "editor", "reader")
 
-    permission_classes = [IsAdminRole]
+    permission_classes: ClassVar = [IsAdminRole]
 
-    def patch(self, request, pk, *args, **kwargs):
+    def patch(self, request, pk, *_args, **_kwargs):
         role = request.data.get("role")
 
         if role not in self.VALID_ROLES:

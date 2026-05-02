@@ -35,8 +35,7 @@ from rest_framework.test import APIClient
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from accounts.models import User
-from podcasts.models import Episode, Podcast
-
+from podcasts.models import Podcast
 
 # ---------------------------------------------------------------------------
 # Helpers

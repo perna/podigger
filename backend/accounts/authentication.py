@@ -2,8 +2,9 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 
 
 class CookieJWTAuthentication(JWTAuthentication):
-    """JWT authentication that reads the access token from the HttpOnly cookie
-    ``access_token`` instead of the ``Authorization`` header.
+    """JWT authentication that reads the access token from the HttpOnly cookie.
+
+    Reads from ``access_token`` instead of the ``Authorization`` header.
 
     Returning ``None`` when the cookie is absent allows unauthenticated
     (public) access to endpoints that permit it, without raising an exception.

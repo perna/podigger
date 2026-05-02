@@ -3,15 +3,31 @@
 // Feature: api-authentication-strategy
 // Requirements: 13.1, 13.5
 
+import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
+import Link from "next/link";
 import { Icon } from "@/components/ui/Icon";
 
-export default function UnauthorizedPage() {
+function UnauthorizedContent() {
   const searchParams = useSearchParams();
   const next = searchParams.get("next");
 
   const loginHref = next ? `/login?next=${encodeURIComponent(next)}` : "/login";
 
+  return (
+    <Link
+      href={loginHref}
+      className="w-full h-14 bg-[#0db9f2] hover:bg-[#0db9f2]/90 text-black font-extrabold text-lg rounded-xl shadow-lg shadow-[#0db9f2]/20 transition-all flex items-center justify-center gap-2 group"
+    >
+      <span>Fazer login</span>
+      <div className="group-hover:translate-x-1 transition-transform flex" aria-hidden="true">
+        <Icon name="arrow_forward" />
+      </div>
+    </Link>
+  );
+}
+
+export default function UnauthorizedPage() {
   return (
     <div className="bg-[#0a0a0a] min-h-screen flex items-center justify-center p-4 font-display">
       <div className="relative w-full max-w-[420px] bg-[#121212] shadow-2xl overflow-hidden rounded-[3rem] flex flex-col border-[8px] border-[#2a2a2a] min-h-[600px]">
@@ -40,15 +56,21 @@ export default function UnauthorizedPage() {
             </p>
           </div>
 
-          <a
-            href={loginHref}
-            className="w-full h-14 bg-[#0db9f2] hover:bg-[#0db9f2]/90 text-black font-extrabold text-lg rounded-xl shadow-lg shadow-[#0db9f2]/20 transition-all flex items-center justify-center gap-2 group"
+          <Suspense
+            fallback={
+              <Link
+                href="/login"
+                className="w-full h-14 bg-[#0db9f2] hover:bg-[#0db9f2]/90 text-black font-extrabold text-lg rounded-xl shadow-lg shadow-[#0db9f2]/20 transition-all flex items-center justify-center gap-2 group"
+              >
+                <span>Fazer login</span>
+                <div className="group-hover:translate-x-1 transition-transform flex" aria-hidden="true">
+                  <Icon name="arrow_forward" />
+                </div>
+              </Link>
+            }
           >
-            <span>Fazer login</span>
-            <div className="group-hover:translate-x-1 transition-transform flex" aria-hidden="true">
-              <Icon name="arrow_forward" />
-            </div>
-          </a>
+            <UnauthorizedContent />
+          </Suspense>
         </div>
 
         {/* Footer home bar */}

@@ -12,7 +12,6 @@ Covers:
 """
 import jwt
 import pytest
-from django.conf import settings
 from hypothesis import HealthCheck, given
 from hypothesis import settings as hyp_settings
 from hypothesis import strategies as st
@@ -24,7 +23,11 @@ from accounts.models import User
 # Shared strategy helpers
 # ---------------------------------------------------------------------------
 
-_email_strategy = st.emails()
+# Use only lowercase emails to avoid normalization mismatches.
+# Django's UserManager.normalize_email() lowercases the domain part, so
+# "user@EXAMPLE.COM" is stored as "user@example.com". Sending the original
+# mixed-case email in the login request would fail the lookup.
+_email_strategy = st.emails().map(lambda e: e.lower())
 
 _password_strategy = st.text(
     min_size=8,
@@ -353,7 +356,7 @@ def test_property_5_token_refresh_round_trip(email, password):
     suppress_health_check=[HealthCheck.too_slow],
     deadline=None,
 )
-def test_property_15_cookie_security_attributes_in_production(email, password, settings):
+def test_property_15_cookie_security_attributes_in_production(email, password):
     """Property 15: Atributos de segurança dos cookies.
 
     For any successful login in an environment with DEBUG=False, the
@@ -362,12 +365,15 @@ def test_property_15_cookie_security_attributes_in_production(email, password, s
 
     Validates: Requirements 7.1, 7.2
     """
-    # Override DEBUG to False to simulate production environment
-    settings.DEBUG = False
+    from django.test import override_settings
 
     user = _make_approved_user(email, password)
     try:
-        response = _login(email, password)
+        # Use override_settings as a context manager to simulate DEBUG=False
+        # without relying on a function-scoped fixture (incompatible with @given)
+        with override_settings(DEBUG=False):
+            response = _login(email, password)
+
         assert response.status_code == 200
 
         for cookie_name in ("access_token", "refresh_token"):
@@ -384,5 +390,3 @@ def test_property_15_cookie_security_attributes_in_production(email, password, s
             )
     finally:
         user.delete()
-        # Restore DEBUG to True so subsequent tests are not affected
-        settings.DEBUG = True

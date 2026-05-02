@@ -43,7 +43,7 @@ Implementação da estratégia de autenticação JWT para o Podigger, cobrindo o
     - **Property 13: Token lido exclusivamente do cookie**
     - **Validates: Requirements 5.7, 14.5**
 
-- [-] 4. Implementar views de token com cookies HttpOnly
+- [x] 4. Implementar views de token com cookies HttpOnly
   - [x] 4.1 Implementar `TokenObtainCookieView` em `accounts/views.py`
     - Herdar de `TokenObtainPairView`, sobrescrever `post()` para definir cookies `access_token` e `refresh_token` com atributos `HttpOnly`, `Secure` (quando `not DEBUG`), `SameSite=Lax`
     - Retornar apenas `{"role": "...", "email": "..."}` no body (sem tokens)
@@ -55,11 +55,11 @@ Implementação da estratégia de autenticação JWT para o Podigger, cobrindo o
     - Retornar HTTP 401 quando o cookie `refresh_token` estiver ausente, expirado ou inválido
     - _Requirements: 2.1, 2.2_
 
-  - [ ] 4.3 Escrever property test para emissão de tokens (Property 1)
+  - [x] 4.3 Escrever property test para emissão de tokens (Property 1)
     - **Property 1: Login bem-sucedido emite tokens e retorna role/email**
     - **Validates: Requirements 1.1, 1.8**
 
-  - [ ] 4.4 Escrever property test para expiração do access token (Property 2)
+  - [x] 4.4 Escrever property test para expiração do access token (Property 2)
     - **Property 2: Expiração do Access Token**
     - **Validates: Requirements 1.4**
 
