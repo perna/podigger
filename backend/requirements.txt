@@ -4,7 +4,7 @@
 
 Django==5.2.13
 djangorestframework>=3.16.1,<4.0
-djangorestframework-simplejwt==5.4.0
+djangorestframework-simplejwt==5.5.1
 psycopg2==2.9.11          # compilado — não usar psycopg2-binary em produção
 django-cors-headers==4.0.0
 celery==5.5.3
