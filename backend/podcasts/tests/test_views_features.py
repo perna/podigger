@@ -1,6 +1,7 @@
 import pytest
 from rest_framework.test import APIClient
 
+from accounts.models import User
 from podcasts.models import Episode, Podcast, PopularTerm
 
 
@@ -10,11 +11,16 @@ class TestPodcastViewSetFeatures:
         """Set up a Django REST Framework APIClient instance for test methods.
 
         Assigns an APIClient to self.client for making HTTP requests in each test.
+        Uses the custom accounts.User model (email-based) instead of the default
+        Django auth.User.
         """
         self.client = APIClient()
-        from django.contrib.auth.models import User
-
-        self.user = User.objects.create_user(username="testuser", password="password")
+        self.user = User.objects.create_user(
+            email="testuser@example.com",
+            password="password123",
+            approval_status="approved",
+            role="editor",
+        )
         self.client.force_authenticate(user=self.user)
 
     def test_create_podcast(self, mocker):

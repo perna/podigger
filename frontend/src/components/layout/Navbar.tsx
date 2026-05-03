@@ -1,20 +1,43 @@
 'use client';
 
+// Feature: api-authentication-strategy
+// Requirements: 9.1, 9.2
+
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { Icon } from '@/components/ui/Icon';
 import { useTheme } from '@/components/providers/ThemeProvider';
+import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
 
-const navLinks = [
+const publicNavLinks = [
     { label: 'Search', href: '/', icon: 'search' },
-    { label: 'Add Podcast', href: '/add-podcast', icon: 'add_circle' },
     { label: 'About', href: '/about', icon: 'info' },
 ];
 
 export function Navbar() {
     const pathname = usePathname();
+    const router = useRouter();
     const { theme, toggleTheme } = useTheme();
+    const { isAuthenticated, user, logout } = useAuth();
+
+    // Show "Add Podcast" link only for editor and admin roles
+    const navLinks = [
+        ...publicNavLinks,
+        ...(isAuthenticated && user && (user.role === 'editor' || user.role === 'admin')
+            ? [{ label: 'Add Podcast', href: '/add-podcast', icon: 'add_circle' }]
+            : []),
+    ];
+
+    const handleLogout = async () => {
+        try {
+            await fetch('/api/auth/logout', { method: 'POST' });
+        } catch {
+            // Proceed with client-side logout even if the request fails
+        }
+        logout();
+        router.push('/');
+    };
 
     return (
         <nav className="sticky top-0 z-50 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
@@ -66,14 +89,33 @@ export function Navbar() {
                             />
                         </button>
 
-                        {/* User Avatar (desktop only) */}
-                        <button
-                            type="button"
-                            className="hidden md:flex items-center justify-center size-10 rounded-full bg-slate-200 dark:bg-slate-800"
-                            aria-label="User profile"
-                        >
-                            <Icon name="person" opticalSize={20} />
-                        </button>
+                        {/* Auth Actions (desktop only) */}
+                        {isAuthenticated && user ? (
+                            <div className="hidden md:flex items-center gap-3">
+                                {/* User info badge */}
+                                <span className="text-xs font-medium text-slate-500 dark:text-slate-400 capitalize">
+                                    {user.role}
+                                </span>
+                                {/* Logout button */}
+                                <button
+                                    type="button"
+                                    onClick={handleLogout}
+                                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/10 transition-colors"
+                                    aria-label="Logout"
+                                >
+                                    <Icon name="logout" opticalSize={18} />
+                                    <span>Logout</span>
+                                </button>
+                            </div>
+                        ) : (
+                            <Link
+                                href="/login"
+                                className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/10 transition-colors"
+                            >
+                                <Icon name="login" opticalSize={18} />
+                                <span>Login</span>
+                            </Link>
+                        )}
 
                         {/* Mobile Hamburger */}
                         <button

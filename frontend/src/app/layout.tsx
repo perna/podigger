@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { Navbar } from "@/components/layout/Navbar";
+import { AuthProvider } from "@/contexts/AuthContext";
 import "./globals.css";
 
 const jakarta = Plus_Jakarta_Sans({
@@ -24,10 +25,12 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
       <body className={`${jakarta.variable} antialiased font-display`}>
-        <ThemeProvider>
-          <Navbar />
-          <div className="min-h-screen">{children}</div>
-        </ThemeProvider>
+        <AuthProvider>
+          <ThemeProvider>
+            <Navbar />
+            <div className="min-h-screen">{children}</div>
+          </ThemeProvider>
+        </AuthProvider>
       </body>
     </html >
   );
