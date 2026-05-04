@@ -1,0 +1,157 @@
+name: Cleanup Old Images
+
+on:
+  # Run weekly on Sundays at 3 AM UTC
+  schedule:
+    - cron: '0 3 * * 0'
+  # Allow manual trigger
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Dry run (preview deletions without deleting)'
+        required: false
+        type: boolean
+        default: true
+      retention_days:
+        description: 'Delete images older than N days'
+        required: false
+        type: number
+        default: 30
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: [backend, frontend]
+    steps:
+      - name: Set retention days
+        id: config
+        run: |
+          # Use input if provided, otherwise default to 30 days
+          RETENTION_DAYS="${{ github.event.inputs.retention_days || '30' }}"
+          echo "retention_days=${RETENTION_DAYS}" >> $GITHUB_OUTPUT
+          
+          # Calculate cutoff date (30 days ago)
+          CUTOFF_DATE=$(date -u -d "${RETENTION_DAYS} days ago" +%Y-%m-%dT%H:%M:%SZ)
+          echo "cutoff_date=${CUTOFF_DATE}" >> $GITHUB_OUTPUT
+          
+          # Determine if this is a dry run
+          DRY_RUN="${{ github.event.inputs.dry_run || 'false' }}"
+          echo "dry_run=${DRY_RUN}" >> $GITHUB_OUTPUT
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Delete old images
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PACKAGE_NAME: ${{ github.repository }}/${{ matrix.service }}
+          CUTOFF_DATE: ${{ steps.config.outputs.cutoff_date }}
+          RETENTION_DAYS: ${{ steps.config.outputs.retention_days }}
+          DRY_RUN: ${{ steps.config.outputs.dry_run }}
+        run: |
+          echo "🧹 Cleaning up images for ${PACKAGE_NAME}"
+          echo "📅 Retention period: ${RETENTION_DAYS} days"
+          echo "🗓️  Cutoff date: ${CUTOFF_DATE}"
+          echo "🔍 Dry run: ${DRY_RUN}"
+          echo ""
+          
+          # Get package versions using GitHub API
+          PACKAGE_TYPE="container"
+          ORG_OR_USER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          PACKAGE_NAME_ENCODED=$(echo "${PACKAGE_NAME}" | sed 's/\//%2F/g')
+          
+          # Fetch all versions
+          PAGE=1
+          DELETED_COUNT=0
+          KEPT_COUNT=0
+          
+          while true; do
+            RESPONSE=$(curl -s -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+              -H "Accept: application/vnd.github+json" \
+              "https://api.github.com/users/${ORG_OR_USER}/packages/${PACKAGE_TYPE}/${PACKAGE_NAME_ENCODED}/versions?page=${PAGE}&per_page=100")
+            
+            # Check if response is empty array (no more pages)
+            if [ "$(echo "${RESPONSE}" | jq '. | length')" -eq 0 ]; then
+              break
+            fi
+            
+            # Process each version
+            echo "${RESPONSE}" | jq -c '.[]' | while read -r VERSION; do
+              VERSION_ID=$(echo "${VERSION}" | jq -r '.id')
+              CREATED_AT=$(echo "${VERSION}" | jq -r '.created_at')
+              TAGS=$(echo "${VERSION}" | jq -r '.metadata.container.tags[]?' | tr '\n' ',' | sed 's/,$//')
+              
+              # Skip if no tags (untagged images are handled separately)
+              if [ -z "${TAGS}" ]; then
+                continue
+              fi
+              
+              # Skip protected tags (latest, main, develop)
+              if echo "${TAGS}" | grep -qE '(^|,)(latest|main|develop)(,|$)'; then
+                echo "⏭️  Keeping protected version ${VERSION_ID} (tags: ${TAGS})"
+                KEPT_COUNT=$((KEPT_COUNT + 1))
+                continue
+              fi
+              
+              # Compare dates
+              if [[ "${CREATED_AT}" < "${CUTOFF_DATE}" ]]; then
+                if [ "${DRY_RUN}" = "true" ]; then
+                  echo "🔍 [DRY RUN] Would delete version ${VERSION_ID} (created: ${CREATED_AT}, tags: ${TAGS})"
+                  DELETED_COUNT=$((DELETED_COUNT + 1))
+                else
+                  echo "🗑️  Deleting version ${VERSION_ID} (created: ${CREATED_AT}, tags: ${TAGS})"
+                  DELETE_RESPONSE=$(curl -s -w "\n%{http_code}" -X DELETE \
+                    -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+                    -H "Accept: application/vnd.github+json" \
+                    "https://api.github.com/users/${ORG_OR_USER}/packages/${PACKAGE_TYPE}/${PACKAGE_NAME_ENCODED}/versions/${VERSION_ID}")
+                  
+                  HTTP_CODE=$(echo "${DELETE_RESPONSE}" | tail -n1)
+                  if [ "${HTTP_CODE}" = "204" ]; then
+                    echo "✅ Successfully deleted version ${VERSION_ID}"
+                    DELETED_COUNT=$((DELETED_COUNT + 1))
+                  else
+                    echo "❌ Failed to delete version ${VERSION_ID} (HTTP ${HTTP_CODE})"
+                  fi
+                fi
+              else
+                echo "⏭️  Keeping recent version ${VERSION_ID} (created: ${CREATED_AT}, tags: ${TAGS})"
+                KEPT_COUNT=$((KEPT_COUNT + 1))
+              fi
+            done
+            
+            PAGE=$((PAGE + 1))
+          done
+          
+          echo ""
+          echo "📊 Summary for ${PACKAGE_NAME}:"
+          if [ "${DRY_RUN}" = "true" ]; then
+            echo "   Would delete: ${DELETED_COUNT} versions"
+          else
+            echo "   Deleted: ${DELETED_COUNT} versions"
+          fi
+          echo "   Kept: ${KEPT_COUNT} versions"
+
+      - name: Summary
+        run: |
+          echo "### 🧹 Image Cleanup Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Service:** ${{ matrix.service }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Retention Period:** ${{ steps.config.outputs.retention_days }} days" >> $GITHUB_STEP_SUMMARY
+          echo "**Cutoff Date:** ${{ steps.config.outputs.cutoff_date }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Dry Run:** ${{ steps.config.outputs.dry_run }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ steps.config.outputs.dry_run }}" = "true" ]; then
+            echo "ℹ️ This was a dry run. No images were actually deleted." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "✅ Cleanup completed successfully." >> $GITHUB_STEP_SUMMARY
+          fi
