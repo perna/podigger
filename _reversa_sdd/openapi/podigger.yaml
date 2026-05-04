@@ -1,0 +1,1053 @@
+openapi: 3.0.3
+info:
+  title: Podigger API
+  description: |
+    API REST do **Podigger** — plataforma de descoberta e cadastro de podcasts.
+
+    Especificação consolidada de **todos** os endpoints expostos pelo backend Django
+    sob `/api/` e `/health/`, mais o health check.
+
+    **Autenticação:** JWT em cookies `HttpOnly` (não em `Authorization` header).
+    - `access_token` (5 min) — path `/`, enviado em todas as requests autenticadas.
+    - `refresh_token` (24 h) — path `/api/auth/token/refresh/`, usado para refresh.
+
+    **Cliente típico:** Frontend Next.js via proxy `/api/proxy/[...path]` (com auto-refresh
+    transparente de token) ou via chamadas diretas a `${API_BASE}/api/...`.
+
+    **Escala de confiança:**
+    - 🟢 CONFIRMADO — extraído do código (DRF ViewSets, serializers, urls.py)
+    - 🟡 INFERIDO — baseado em padrões DRF, pode divergir
+    - 🔴 LACUNA — gap conhecido, requer validação humana
+
+    **Documentos fonte:**
+    - `_reversa_sdd/accounts/contracts.md` — endpoints de auth/users
+    - `_reversa_sdd/podcasts/contracts.md` — endpoints de podcasts/episodes/suggestions/terms
+    - `_reversa_sdd/config/contracts.md` — health check e settings
+
+  version: 1.0.0
+  contact:
+    name: Podigger
+    url: https://podigger.app
+  license:
+    name: MIT
+
+servers:
+  - url: http://localhost:8000
+    description: Development local
+  - url: https://api.podigger.app
+    description: Production (via Nginx reverse proxy)
+
+tags:
+  - name: Auth
+    description: Login, refresh, register
+  - name: Users
+    description: Gestão de usuários (admin)
+  - name: Podcasts
+    description: Cadastro e listagem de podcasts
+  - name: Episodes
+    description: Episódios de podcasts (com FTS)
+  - name: Topic Suggestions
+    description: Sugestões de tópicos
+  - name: Popular Terms
+    description: Termos mais buscados
+  - name: Health
+    description: Health check
+
+# Não usamos `securitySchemes` formal porque a auth é via cookies HttpOnly,
+# gerenciada pelo browser automaticamente. Documentamos via `description` em cada endpoint.
+# (Cookies HttpOnly não são transportáveis via `Authorization` header no OpenAPI padrão.)
+
+paths:
+  # =====================================================================
+  # AUTH
+  # =====================================================================
+  /api/auth/token/:
+    post:
+      tags: [Auth]
+      summary: Login (obter JWT em cookies HttpOnly)
+      description: |
+        Autentica o usuário via email + senha. Em sucesso, emite cookies
+        `access_token` (5 min) e `refresh_token` (24 h) ambos `HttpOnly; SameSite=Lax; Secure`.
+
+        **Throttle:** 5 req/min por IP (scope `login`).
+
+        **Origem:** `backend/accounts/views.py:47-96` (`TokenObtainCookieView`).
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+            examples:
+              valid:
+                value: { email: "user@podigger.app", password: "senha123" }
+      responses:
+        '200':
+          description: Login OK. Set-Cookie emitido.
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+              description: |
+                Duas cookies: `access_token` (path=/, max-age=300) e
+                `refresh_token` (path=/api/auth/token/refresh/, max-age=86400).
+                Ambas `HttpOnly; SameSite=Lax; Secure`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          description: Credenciais inválidas.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: { detail: "Email ou senha inválidos" }
+        '403':
+          description: Conta ainda aguarda aprovação do admin.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example: { detail: "Sua conta aguarda aprovação" }
+        '429':
+          $ref: '#/components/responses/Throttled'
+
+  /api/auth/token/refresh/:
+    post:
+      tags: [Auth]
+      summary: Refresh access token
+      description: |
+        Lê o cookie `refresh_token`, valida e emite novo `access_token`.
+        Body da response é vazio — o novo token vem via `Set-Cookie`.
+
+        **Origem:** `backend/accounts/views.py:118-156` (`TokenRefreshCookieView`).
+      operationId: refreshToken
+      responses:
+        '200':
+          description: Refresh OK. Set-Cookie emitido com novo `access_token`.
+          headers:
+            Set-Cookie:
+              schema: { type: string }
+              description: '`access_token=<novo_jwt>; Path=/; Max-Age=300; HttpOnly; SameSite=Lax; Secure`'
+          content:
+            application/json:
+              schema:
+                type: object
+                example: {}
+        '401':
+          description: |
+            `refresh_token` ausente, inválido, expirado ou revogado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                missing:
+                  value: { detail: "Token de atualização não fornecido" }
+                invalid:
+                  value: { detail: "Token inválido ou expirado" }
+
+  /api/auth/register/:
+    post:
+      tags: [Auth]
+      summary: Registro de novo usuário
+      description: |
+        Cria conta com `role=reader` e `approval_status=pending`.
+        Usuário **não pode logar** até ser aprovado por admin.
+
+        **Throttle:** 3 req/min por IP (scope `register`).
+
+        **Validação:** `password` deve ter `len >= 8`. Email deve ser único e válido.
+
+        **Origem:** `backend/accounts/views.py:182-197` (`RegisterView`).
+      operationId: register
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+            examples:
+              valid:
+                value: { email: "novo@podigger.app", password: "senha12345" }
+      responses:
+        '201':
+          description: Conta criada (pendente de aprovação).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegisterResponse'
+        '400':
+          description: |
+            Validação de campo (email inválido, senha < 8 chars) ou email duplicado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                invalidEmail:
+                  value: { email: ["Enter a valid email address."] }
+                weakPassword:
+                  value: { password: ["Ensure this field has at least 8 characters."] }
+                duplicate:
+                  value: { detail: "Email já cadastrado" }
+        '429':
+          $ref: '#/components/responses/Throttled'
+
+  # =====================================================================
+  # USERS (admin)
+  # =====================================================================
+  /api/auth/users/:
+    get:
+      tags: [Users]
+      summary: Listar usuários (admin)
+      description: |
+        Lista todos os usuários ordenados por `created_at` desc.
+        Lista **pura** (sem paginação DRF padrão).
+
+        **Permissão:** `IsAdminRole` (role=admin).
+
+        **Origem:** `backend/accounts/views.py:200-209` (`UserListView`).
+      operationId: listUsers
+      responses:
+        '200':
+          description: Lista de usuários.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/User' }
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /api/auth/users/{pk}/approve/:
+    post:
+      tags: [Users]
+      summary: Aprovar usuário (admin)
+      description: |
+        Altera `approval_status` para `"approved"`. Não registra quem/quando
+        aprovou (gap conhecido R-USER-08).
+      operationId: approveUser
+      parameters:
+        - $ref: '#/components/parameters/PkPath'
+      responses:
+        '200':
+          description: Usuário aprovado.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/User' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /api/auth/users/{pk}/:
+    patch:
+      tags: [Users]
+      summary: Atualizar role (admin)
+      description: |
+        Altera `role` do usuário. Sem proteção contra auto-edição
+        (admin pode alterar o próprio role — decisão consciente Q&A 2026-06-05, AI-6).
+
+        Não registra quem/quando alterou (gap conhecido).
+      operationId: updateUserRole
+      parameters:
+        - $ref: '#/components/parameters/PkPath'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoleUpdateRequest'
+            examples:
+              promote:
+                value: { role: "editor" }
+              demote:
+                value: { role: "reader" }
+      responses:
+        '200':
+          description: Role atualizado.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/User' }
+        '400':
+          description: '`role` ∉ {admin, editor, reader}.'
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+              example: { detail: "papel inválido" }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  # =====================================================================
+  # PODCASTS
+  # =====================================================================
+  /api/podcasts/:
+    get:
+      tags: [Podcasts]
+      summary: Listar podcasts (paginado)
+      description: |
+        Lista paginada de podcasts (DRF `PageNumberPagination`).
+        Suporta busca por `name` (DRF `SearchFilter`).
+
+        **Permissão:** Pública (AllowAny).
+      operationId: listPodcasts
+      parameters:
+        - name: search
+          in: query
+          description: Busca por nome.
+          schema: { type: string }
+        - name: page
+          in: query
+          description: Número da página.
+          schema: { type: integer, default: 1 }
+        - name: ordering
+          in: query
+          description: Ordenação (ex: `-id`, `name`, `total_episodes`).
+          schema: { type: string }
+      responses:
+        '200':
+          description: Lista paginada.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PaginatedPodcast' }
+    post:
+      tags: [Podcasts]
+      summary: Criar podcast (editor/admin)
+      description: |
+        Cria novo podcast. Em sucesso, retorna shape simplificado `{id, status}`
+        (cliente faz GET para popular o objeto completo).
+
+        Em caso de duplicata (mesmo `feed`), retorna 200 com `status: "none"`.
+
+        **Permissão:** `IsEditorOrAdmin` (role ∈ {editor, admin}).
+      operationId: createPodcast
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/PodcastCreateRequest' }
+      responses:
+        '200':
+          description: Podcast já existia (duplicata por feed).
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PodcastMutationResponse' }
+              example: { id: 5, status: "none", message: "Podcast já existe" }
+        '201':
+          description: Podcast criado.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PodcastMutationResponse' }
+              example: { id: 5, status: "created" }
+        '400':
+          description: |
+            Validação: `name` ou `feed` ausentes, ou feed inválido (`is_valid_feed` falha, `bozo != 0`).
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+              examples:
+                missing:
+                  value: { detail: "o nome e o feed são obrigatórios" }
+                invalidFeed:
+                  value: { detail: "o feed informado é inválido" }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+
+  /api/podcasts/recent/:
+    get:
+      tags: [Podcasts]
+      summary: Últimos 6 podcasts (custom action)
+      description: |
+        Lista hard-coded em 6 podcasts, ordenados por `id` desc.
+        Retorna lista **pura** (não envelopada em `{count, next, previous, results}`).
+
+        **Permissão:** Pública.
+      operationId: recentPodcasts
+      responses:
+        '200':
+          description: Lista de 6 podcasts.
+          content:
+            application/json:
+              schema:
+                type: array
+                maxItems: 6
+                items: { $ref: '#/components/schemas/Podcast' }
+
+  /api/podcasts/{id}/:
+    get:
+      tags: [Podcasts]
+      summary: Detalhe de um podcast
+      operationId: getPodcast
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      responses:
+        '200':
+          description: Podcast.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Podcast' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    patch:
+      tags: [Podcasts]
+      summary: Atualizar podcast (editor/admin)
+      operationId: patchPodcast
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/PodcastPatchRequest' }
+      responses:
+        '200':
+          description: Podcast atualizado.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Podcast' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    delete:
+      tags: [Podcasts]
+      summary: Deletar podcast (editor/admin)
+      description: |
+        CASCADE delete — episódios do podcast são removidos também.
+      operationId: deletePodcast
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      responses:
+        '204': { description: Deletado (episódios em CASCADE). }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  # =====================================================================
+  # EPISODES
+  # =====================================================================
+  /api/episodes/:
+    get:
+      tags: [Episodes]
+      summary: Listar episódios (paginado, com FTS)
+      description: |
+        Lista paginada de episódios. Suporta busca FTS via `q` (full-text search
+        + trigrama), filtro por `podcast` (id), e ordenação.
+
+        **Comportamento de `q`:** se vazio/ausente, queryset padrão sem criar `PopularTerm`.
+        Se não-vazio, faz tracking atômico de `PopularTerm` (sempre, mesmo sem resultados).
+
+        **Permissão:** Pública.
+
+        **Gap AI-4:** sem throttle específico (não há limite de req/min).
+      operationId: listEpisodes
+      parameters:
+        - name: q
+          in: query
+          description: Termo de busca (FTS + trigrama).
+          schema: { type: string }
+        - name: podcast
+          in: query
+          description: Filtrar por `podcast_id`.
+          schema: { type: integer }
+        - name: page
+          in: query
+          description: Número da página.
+          schema: { type: integer, default: 1 }
+        - name: ordering
+          in: query
+          description: 'Ordenação (ex: `-published`, `-created_at`).'
+          schema: { type: string }
+      responses:
+        '200':
+          description: Lista paginada.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PaginatedEpisode' }
+    post:
+      tags: [Episodes]
+      summary: Criar episódio (editor/admin)
+      description: |
+        Criação manual raramente usada — episódios são normalmente criados via
+        `EpisodeUpdater.populate` em Celery task. Endpoint exposto para correções.
+      operationId: createEpisode
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/EpisodeCreateRequest' }
+      responses:
+        '201':
+          description: Episódio criado.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Episode' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+
+  /api/episodes/{id}/:
+    get:
+      tags: [Episodes]
+      summary: Detalhe de um episódio
+      operationId: getEpisode
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      responses:
+        '200':
+          description: Episódio.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Episode' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    patch:
+      tags: [Episodes]
+      summary: Atualizar episódio (editor/admin)
+      operationId: patchEpisode
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/EpisodePatchRequest' }
+      responses:
+        '200':
+          description: Episódio atualizado.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Episode' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    delete:
+      tags: [Episodes]
+      summary: Deletar episódio (editor/admin)
+      operationId: deleteEpisode
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      responses:
+        '204': { description: Deletado. }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  # =====================================================================
+  # TOPIC SUGGESTIONS
+  # =====================================================================
+  /api/topic-suggestions/:
+    get:
+      tags: [Topic Suggestions]
+      summary: Listar sugestões de tópicos
+      operationId: listTopicSuggestions
+      parameters:
+        - name: page
+          in: query
+          schema: { type: integer, default: 1 }
+        - name: ordering
+          in: query
+          description: 'Ex: `-created_at`, `is_recorded`.'
+          schema: { type: string }
+      responses:
+        '200':
+          description: Lista paginada.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PaginatedTopicSuggestion' }
+    post:
+      tags: [Topic Suggestions]
+      summary: Criar sugestão de tópico (editor/admin)
+      operationId: createTopicSuggestion
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/TopicSuggestionCreateRequest' }
+      responses:
+        '201':
+          description: Sugestão criada. `is_recorded=false` por default.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/TopicSuggestion' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+
+  /api/topic-suggestions/{id}/:
+    get:
+      tags: [Topic Suggestions]
+      summary: Detalhe de uma sugestão
+      operationId: getTopicSuggestion
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      responses:
+        '200':
+          description: Sugestão.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/TopicSuggestion' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    patch:
+      tags: [Topic Suggestions]
+      summary: Atualizar sugestão (editor/admin)
+      description: |
+        Usado tipicamente para marcar `is_recorded=true` quando a sugestão vira episódio.
+      operationId: patchTopicSuggestion
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/TopicSuggestionPatchRequest' }
+      responses:
+        '200':
+          description: Sugestão atualizada.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/TopicSuggestion' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    delete:
+      tags: [Topic Suggestions]
+      summary: Deletar sugestão (editor/admin)
+      operationId: deleteTopicSuggestion
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      responses:
+        '204': { description: Deletado. }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  # =====================================================================
+  # POPULAR TERMS
+  # =====================================================================
+  /api/popular-terms/:
+    get:
+      tags: [Popular Terms]
+      summary: Termos mais buscados (read-only)
+      description: |
+        Lista **pura** (não envelopada em paginação DRF), ordenada por `-times`
+        (mais buscados primeiro). `date_search` permite agregação por dia.
+
+        **Sem endpoint POST/PATCH/DELETE** (read-only).
+
+        **Gap:** sem filtro `?date_search=YYYY-MM-DD` (cliente recebe todos os termos).
+      operationId: listPopularTerms
+      responses:
+        '200':
+          description: Lista de termos populares.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/PopularTerm' }
+
+  /api/popular-terms/{id}/:
+    get:
+      tags: [Popular Terms]
+      summary: Detalhe de um termo popular
+      operationId: getPopularTerm
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      responses:
+        '200':
+          description: Termo.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PopularTerm' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  # =====================================================================
+  # HEALTH
+  # =====================================================================
+  /health/:
+    get:
+      tags: [Health]
+      summary: Health check
+      description: |
+        Verifica DB e Redis. Redis é **soft dependency** (ADR-004): exceção é
+        engolida, sistema reporta `db:true, redis:false` em vez de 503.
+
+        - DB up + Redis up → 200 `{status: "healthy", db: true, redis: true}`
+        - DB up + Redis down → 200 `{status: "healthy", db: true, redis: false}`
+        - DB down → 503 `{status: "unhealthy", db: false, redis: false}`
+
+        **Origem:** `backend/podcasts/health.py` + `backend/config/urls.py:10`.
+      operationId: health
+      responses:
+        '200':
+          description: Sistema operacional (Redis é tolerante a falha).
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/HealthResponse' }
+        '503':
+          description: Sistema indisponível (DB down).
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/HealthResponse' }
+              example:
+                status: unhealthy
+                db: false
+                redis: false
+                timestamp: "2026-05-25T14:30:00Z"
+                environment: production
+
+components:
+  parameters:
+    IdPath:
+      name: id
+      in: path
+      required: true
+      description: ID do recurso.
+      schema: { type: integer }
+    PkPath:
+      name: pk
+      in: path
+      required: true
+      description: Primary key do usuário.
+      schema: { type: integer }
+
+  responses:
+    BadRequest:
+      description: Validação falhou.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    Unauthorized:
+      description: 'Sem `access_token` cookie.'
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+          example: { detail: "Authentication credentials were not provided." }
+    Forbidden:
+      description: 'Token presente, mas sem permissão para a ação.'
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+          example: { detail: "You do not have permission to perform this action." }
+    NotFound:
+      description: Recurso não encontrado.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+          example: { detail: "Not found." }
+    Throttled:
+      description: Limite de requisições excedido.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+          example: { detail: "Request was throttled. Expected available in N seconds." }
+
+  schemas:
+    # ---------- Auth ----------
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+    LoginResponse:
+      type: object
+      required: [role, email]
+      properties:
+        role:
+          type: string
+          enum: [admin, editor, reader]
+        email:
+          type: string
+          format: email
+    RegisterRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 8
+    RegisterResponse:
+      type: object
+      required: [email]
+      properties:
+        email:
+          type: string
+          format: email
+    RoleUpdateRequest:
+      type: object
+      required: [role]
+      properties:
+        role:
+          type: string
+          enum: [admin, editor, reader]
+
+    # ---------- Users ----------
+    User:
+      type: object
+      required: [id, email, role, approval_status, is_active, is_staff, created_at]
+      properties:
+        id: { type: integer }
+        email: { type: string, format: email }
+        role:
+          type: string
+          enum: [admin, editor, reader]
+        approval_status:
+          type: string
+          enum: [pending, approved]
+        is_active: { type: boolean }
+        is_staff: { type: boolean }
+        created_at: { type: string, format: date-time }
+
+    # ---------- Podcasts ----------
+    Podcast:
+      type: object
+      required: [id, name, feed, image, language, total_episodes]
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        feed: { type: string, format: uri }
+        image:
+          type: string
+          nullable: true
+        language:
+          type: integer
+          nullable: true
+          description: FK para `PodcastLanguage.id`.
+        total_episodes: { type: integer }
+    PodcastCreateRequest:
+      type: object
+      required: [name, feed]
+      properties:
+        name: { type: string }
+        feed: { type: string, format: uri }
+        image:
+          type: string
+          description: 'Opcional. Path estático, ex: `/static/dist/img/custom.png`.'
+        language:
+          type: integer
+          description: 'Opcional. FK para `PodcastLanguage.id`.'
+    PodcastPatchRequest:
+      type: object
+      properties:
+        image: { type: string }
+        language: { type: integer }
+    PodcastMutationResponse:
+      type: object
+      required: [status]
+      properties:
+        id:
+          type: integer
+          description: 'Presente quando `status ∈ {created, none}`.'
+        status:
+          type: string
+          enum: [created, none, error]
+        message:
+          type: string
+          description: 'Presente em duplicatas (`status: "none"`).'
+    PaginatedPodcast:
+      type: object
+      required: [count, next, previous, results]
+      properties:
+        count: { type: integer }
+        next: { type: string, format: uri, nullable: true }
+        previous: { type: string, format: uri, nullable: true }
+        results:
+          type: array
+          items: { $ref: '#/components/schemas/Podcast' }
+
+    # ---------- Episodes ----------
+    Episode:
+      type: object
+      required: [id, title, link, description, published, enclosure, podcast, tags]
+      properties:
+        id: { type: integer }
+        title: { type: string }
+        link: { type: string, format: uri }
+        description:
+          type: string
+          nullable: true
+        published:
+          type: string
+          format: date-time
+          nullable: true
+        enclosure:
+          type: string
+          format: uri
+          nullable: true
+          description: URL do MP3/audio.
+        podcast:
+          type: object
+          required: [id, name, image]
+          properties:
+            id: { type: integer }
+            name: { type: string }
+            image: { type: string, nullable: true }
+        tags:
+          type: array
+          items:
+            type: object
+            required: [id, name]
+            properties:
+              id: { type: integer }
+              name: { type: string }
+    EpisodeCreateRequest:
+      type: object
+      required: [title, link, podcast]
+      properties:
+        title: { type: string }
+        link: { type: string, format: uri }
+        description: { type: string }
+        published: { type: string, format: date-time }
+        enclosure: { type: string, format: uri }
+        podcast: { type: integer, description: 'FK para `Podcast.id`.' }
+        tags:
+          type: array
+          items: { type: integer, description: 'FK para `Tag.id`.' }
+    EpisodePatchRequest:
+      type: object
+      properties:
+        title: { type: string }
+        description: { type: string }
+        tags:
+          type: array
+          items: { type: integer }
+    PaginatedEpisode:
+      type: object
+      required: [count, next, previous, results]
+      properties:
+        count: { type: integer }
+        next: { type: string, format: uri, nullable: true }
+        previous: { type: string, format: uri, nullable: true }
+        results:
+          type: array
+          items: { $ref: '#/components/schemas/Episode' }
+
+    # ---------- Topic Suggestions ----------
+    TopicSuggestion:
+      type: object
+      required: [id, title, description, is_recorded, created_at]
+      properties:
+        id: { type: integer }
+        title: { type: string }
+        description:
+          type: string
+          nullable: true
+        is_recorded: { type: boolean }
+        created_at: { type: string, format: date-time }
+    TopicSuggestionCreateRequest:
+      type: object
+      required: [title]
+      properties:
+        title: { type: string }
+        description: { type: string }
+    TopicSuggestionPatchRequest:
+      type: object
+      properties:
+        title: { type: string }
+        description: { type: string }
+        is_recorded: { type: boolean }
+    PaginatedTopicSuggestion:
+      type: object
+      required: [count, next, previous, results]
+      properties:
+        count: { type: integer }
+        next: { type: string, format: uri, nullable: true }
+        previous: { type: string, format: uri, nullable: true }
+        results:
+          type: array
+          items: { $ref: '#/components/schemas/TopicSuggestion' }
+
+    # ---------- Popular Terms ----------
+    PopularTerm:
+      type: object
+      required: [id, term, times, date_search]
+      properties:
+        id: { type: integer }
+        term: { type: string }
+        times: { type: integer }
+        date_search:
+          type: string
+          format: date
+          description: 'YYYY-MM-DD — permite agregação por dia.'
+
+    # ---------- Health ----------
+    HealthResponse:
+      type: object
+      required: [status, db, redis, timestamp, environment]
+      properties:
+        status:
+          type: string
+          enum: [healthy, unhealthy]
+        db: { type: boolean }
+        redis: { type: boolean }
+        timestamp: { type: string, format: date-time }
+        environment:
+          type: string
+          enum: [development, staging, production]
+
+    # ---------- Common ----------
+    Error:
+      type: object
+      required: [detail]
+      properties:
+        detail:
+          oneOf:
+            - type: string
+            - type: object
+              additionalProperties: true
+          description: |
+            Mensagem de erro. Pode ser string (PT-BR ou EN) ou objeto
+            (validação de campo DRF: `{"email": ["..."]}`).
+
+# =============================================================================
+# Notas para clientes
+# =============================================================================
+x-cookie-auth:
+  description: |
+    Toda a autenticação é via cookies `HttpOnly`. O cliente **NÃO** precisa
+    setar `Authorization` header. Os cookies são gerenciados pelo browser
+    automaticamente.
+
+    - `access_token` — 5 min, path `/`. Enviado em todas as requests autenticadas.
+    - `refresh_token` — 24 h, path `/api/auth/token/refresh/`. Usado apenas para refresh.
+
+    **Auto-refresh:** Frontend Next.js usa proxy `/api/proxy/[...path]` que:
+    1. Encaminha request com `access_token`.
+    2. Se backend retornar 401: tenta `POST /api/auth/token/refresh/`.
+    3. Em sucesso, re-envia request original com novo token.
+    4. Em falha, redireciona para `/auth/unauthorized`.
+
+x-throttling:
+  description: |
+    Limites de DRF configurados em `REST_FRAMEWORK.DEFAULT_THROTTLE_RATES`:
+    - `login` — 5 req/min (aplicado em `POST /api/auth/token/`)
+    - `register` — 3 req/min (aplicado em `POST /api/auth/register/`)
+    - `anon` / `user` — defaults DRF (não configurados explicitamente)
+
+    **Gap AI-4:** `EpisodeViewSet` sem throttle específico (busca FTS pode ser abusada).
+
+x-known-gaps:
+  description: |
+    Lacunas contratuais conhecidas:
+    - **Sem `GET /api/auth/users/{id}/`** — não é possível buscar usuário único.
+    - **Sem `GET /api/auth/me/`** — frontend perde `user` no reload.
+    - **Sem `POST /api/auth/token/blacklist/`** — logout não invalida JWT no backend (AI-5).
+    - **Resposta de `POST /api/podcasts/` é parcial** — `{id, status}` em vez do objeto completo.
+    - **Sem `?language=` em `GET /api/podcasts/`** — apesar do FK existir.
+    - **Sem `?tag=` em `GET /api/podcasts/`** — tag é episode→tag, não podcast→tag.
+    - **Sem `?tag=` em `GET /api/episodes/`** — filtro indireto via FTS `?q=tagname`.
+    - **Sem `?date_search=` em `GET /api/popular-terms/`** — recebe todos os termos.
+    - **Sem paginação em `recent` e `popular-terms`** — listas cruas.
+    - **`/api/podcasts/recent/` hard-coded em 6** — sem configuração.
+    - **`TopicSuggestion` sem `submitted_by`** — não rastreia quem sugeriu.

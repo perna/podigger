@@ -1,0 +1,10 @@
+{
+  "schema-version": 1,
+  "feature-dir": "_reversa_forward/001-remover-topic-suggestions",
+  "feature-id": "001",
+  "short-name": "remover-topic-suggestions",
+  "started-at": "2026-06-07T00:00:00Z",
+  "current-stage": "requirements",
+  "stages-completed": [],
+  "paused-features": []
+}

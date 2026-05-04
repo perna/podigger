@@ -1,0 +1,245 @@
+{
+  "generated_at": "2026-06-04T00:00:00Z",
+  "project_root": "/home/perna/workspace/projects/podigger",
+  "languages": [
+    { "name": "Python", "extensions": [".py"], "file_count": 61 },
+    { "name": "TypeScript", "extensions": [".ts", ".tsx"], "file_count": 58 },
+    { "name": "YAML", "extensions": [".yml", ".yaml"], "file_count": 26 },
+    { "name": "JSON", "extensions": [".json"], "file_count": 30 },
+    { "name": "Shell", "extensions": [".sh"], "file_count": 16 }
+  ],
+  "primary_language": "Python",
+  "frameworks": [
+    { "name": "Django", "version": "5.2.13", "source": "backend/requirements.txt" },
+    { "name": "Django REST Framework", "version": ">=3.16.1,<4.0", "source": "backend/requirements.txt" },
+    { "name": "djangorestframework-simplejwt", "version": "5.5.1", "source": "backend/requirements.txt" },
+    { "name": "Celery", "version": "5.5.3", "source": "backend/requirements.txt" },
+    { "name": "Redis", "version": "7.1.0", "source": "backend/requirements.txt" },
+    { "name": "Next.js", "version": "16.2.3", "source": "frontend/package.json" },
+    { "name": "React", "version": "19.2.1", "source": "frontend/package.json" },
+    { "name": "Tailwind CSS", "version": "v4", "source": "frontend/package.json" },
+    { "name": "TypeScript", "version": "^5", "source": "frontend/package.json" },
+    { "name": "Vitest", "version": "^4.0.18", "source": "frontend/package.json" }
+  ],
+  "package_managers": ["uv (Python)", "npm (Node.js)"],
+  "entry_points": [
+    { "path": "backend/manage.py", "type": "django_cli" },
+    { "path": "backend/config/asgi.py", "type": "asgi_entry" },
+    { "path": "backend/config/wsgi.py", "type": "wsgi_entry" },
+    { "path": "backend/config/celery.py", "type": "celery_worker" },
+    { "path": "backend/config/urls.py", "type": "django_root_urls" },
+    { "path": "frontend/src/app/layout.tsx", "type": "next_root_layout" },
+    { "path": "frontend/src/app/page.tsx", "type": "next_home_page" },
+    { "path": "frontend/src/middleware.ts", "type": "next_middleware" }
+  ],
+  "config_files": [
+    "backend/pyproject.toml",
+    "backend/pytest.ini",
+    "backend/requirements.txt",
+    "backend/requirements-dev.txt",
+    "backend/.env.example",
+    "backend/.env.staging.example",
+    "backend/.env.production.example",
+    "frontend/package.json",
+    "frontend/next.config.ts",
+    "frontend/tsconfig.json",
+    "frontend/eslint.config.mjs",
+    "frontend/postcss.config.mjs",
+    "frontend/vitest.config.ts",
+    "frontend/vitest.setup.ts",
+    "frontend/.env.staging.example",
+    "frontend/.env.production.example",
+    ".cz.toml",
+    "Makefile"
+  ],
+  "ci_cd": [
+    ".github/workflows/ci.yml",
+    ".github/workflows/release.yml",
+    ".github/workflows/deploy-staging.yml",
+    ".github/workflows/deploy-production.yml",
+    ".github/workflows/cleanup-images.yml"
+  ],
+  "docker": {
+    "dockerfiles": [
+      "backend/Dockerfile",
+      "backend/Dockerfile.production",
+      "frontend/Dockerfile",
+      "frontend/Dockerfile.production"
+    ],
+    "compose_files": [
+      "docker-compose.yml",
+      "docker-compose.base.yml",
+      "docker-compose.local.yml",
+      "docker-compose.staging.yml",
+      "docker-compose.production.yml"
+    ]
+  },
+  "database_hints": [
+    { "path": "backend/podcasts/models.py", "type": "django_models" },
+    { "path": "backend/accounts/models.py", "type": "django_models" },
+    { "path": "backend/podcasts/migrations/0001_initial.py", "type": "django_migration" },
+    { "path": "backend/podcasts/migrations/0002_enable_pg_trgm.py", "type": "django_migration" },
+    { "path": "backend/podcasts/migrations/0003_add_search_index.py", "type": "django_migration" },
+    { "path": "backend/podcasts/migrations/0004_alter_popularterm_date_search.py", "type": "django_migration" },
+    { "path": "backend/accounts/migrations/0001_initial.py", "type": "django_migration" },
+    { "path": "backend/podcasts/fixtures/initial_fake_seed.json", "type": "fixture" }
+  ],
+  "test_frameworks": {
+    "backend": "pytest + pytest-django + hypothesis",
+    "frontend": "Vitest + @testing-library/react + fast-check"
+  },
+  "test_file_count": {
+    "backend": 10,
+    "frontend": 10,
+    "total": 20
+  },
+  "modules": [
+    {
+      "name": "accounts",
+      "kind": "django_app",
+      "path": "backend/accounts/",
+      "responsibility": "Autenticação, registro, usuários, papéis, permissões",
+      "key_files": [
+        "backend/accounts/models.py",
+        "backend/accounts/views.py",
+        "backend/accounts/serializers.py",
+        "backend/accounts/urls.py",
+        "backend/accounts/authentication.py",
+        "backend/accounts/permissions.py"
+      ]
+    },
+    {
+      "name": "podcasts",
+      "kind": "django_app",
+      "path": "backend/podcasts/",
+      "responsibility": "Domínio principal: podcasts, episódios, tags, busca FTS, popularidade, sugestões",
+      "key_files": [
+        "backend/podcasts/models.py",
+        "backend/podcasts/views.py",
+        "backend/podcasts/serializers.py",
+        "backend/podcasts/urls.py",
+        "backend/podcasts/tasks.py",
+        "backend/podcasts/services/feed_parser.py",
+        "backend/podcasts/services/podcast_service.py",
+        "backend/podcasts/services/updater.py"
+      ]
+    },
+    {
+      "name": "config",
+      "kind": "django_config",
+      "path": "backend/config/",
+      "responsibility": "Configurações globais: settings, urls raiz, celery, asgi/wsgi",
+      "key_files": [
+        "backend/config/settings.py",
+        "backend/config/urls.py",
+        "backend/config/celery.py",
+        "backend/config/asgi.py",
+        "backend/config/wsgi.py"
+      ]
+    },
+    {
+      "name": "frontend-ui",
+      "kind": "frontend_module",
+      "path": "frontend/src/components/ui/",
+      "responsibility": "Design system: Button, Card, Input, Badge, Icon, Loading",
+      "key_files": [
+        "frontend/src/components/ui/Button.tsx",
+        "frontend/src/components/ui/Card.tsx",
+        "frontend/src/components/ui/Input.tsx",
+        "frontend/src/components/ui/Badge.tsx",
+        "frontend/src/components/ui/Icon.tsx",
+        "frontend/src/components/ui/Loading.tsx"
+      ]
+    },
+    {
+      "name": "frontend-pages",
+      "kind": "frontend_module",
+      "path": "frontend/src/app/",
+      "responsibility": "Rotas Next.js (App Router): home, login, register, add-podcast, about, auth/*",
+      "key_files": [
+        "frontend/src/app/layout.tsx",
+        "frontend/src/app/page.tsx",
+        "frontend/src/app/login/page.tsx",
+        "frontend/src/app/register/page.tsx",
+        "frontend/src/app/add-podcast/page.tsx",
+        "frontend/src/app/about/page.tsx",
+        "frontend/src/middleware.ts"
+      ]
+    },
+    {
+      "name": "frontend-features",
+      "kind": "frontend_module",
+      "path": "frontend/src/components/",
+      "responsibility": "Componentes de feature: home, search, podcasts, episodes, layout, providers, common",
+      "key_files": [
+        "frontend/src/components/home/HomeClient.tsx",
+        "frontend/src/components/layout/Navbar.tsx",
+        "frontend/src/components/search/SearchHero.tsx",
+        "frontend/src/components/podcasts/PodcastCard.tsx",
+        "frontend/src/components/episodes/EpisodeCardCompact.tsx",
+        "frontend/src/components/providers/ThemeProvider.tsx",
+        "frontend/src/contexts/AuthContext.tsx",
+        "frontend/src/lib/api.ts"
+      ]
+    }
+  ],
+  "total_source_files": 661,
+  "external_integrations": [
+    "PostgreSQL 15 (banco de dados com FTS + Trigram)",
+    "Redis 7 (broker Celery + cache)",
+    "Celery 5.5 (tarefas assíncronas e periódicas)",
+    "feedparser (parse de RSS/Atom feeds externos)",
+    "djangorestframework-simplejwt (JWT com cookies httpOnly)",
+    "Nginx (reverse proxy em produção)"
+  ],
+  "pre_existing_documentation": {
+    "specs_dir": ".specs/",
+    "codebase_docs": [
+      ".specs/codebase/STACK.md",
+      ".specs/codebase/ARCHITECTURE.md",
+      ".specs/codebase/CONVENTIONS.md",
+      ".specs/codebase/STRUCTURE.md",
+      ".specs/codebase/TESTING.md",
+      ".specs/codebase/INTEGRATIONS.md"
+    ],
+    "project_docs": [
+      ".specs/project/PROJECT.md",
+      ".specs/project/ROADMAP.md",
+      ".specs/project/STATE.md"
+    ],
+    "feature_docs": [
+      ".specs/features/home-search/spec.md",
+      ".specs/features/home-search/design.md",
+      ".specs/features/home-search/tasks.md"
+    ]
+  },
+  "organization_suggestion": {
+    "granularity": "module",
+    "rationale": "Pastas top-level do backend são apps Django nomeadas por domínio (accounts/, podcasts/, config/); o frontend segue o mesmo padrão em src/components/<domínio>/. A sinalização de roteamento centralizado (DRF routers em urls.py) é secundária porque cada app expõe seu próprio router.",
+    "signals": [
+      {
+        "type": "top_level_domain_folders",
+        "evidence": [
+          "backend/accounts/",
+          "backend/podcasts/",
+          "backend/config/",
+          "frontend/src/components/home/",
+          "frontend/src/components/search/",
+          "frontend/src/components/podcasts/",
+          "frontend/src/components/episodes/",
+          "frontend/src/components/layout/",
+          "frontend/src/components/ui/"
+        ]
+      },
+      {
+        "type": "centralized_routing",
+        "evidence": [
+          "backend/podcasts/urls.py",
+          "backend/accounts/urls.py",
+          "backend/config/urls.py"
+        ]
+      }
+    ],
+    "features": []
+  }
+}

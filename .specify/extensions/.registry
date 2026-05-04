@@ -1,0 +1,102 @@
+{
+  "schema_version": "1.0",
+  "extensions": {
+    "git": {
+      "version": "1.0.0",
+      "source": "local",
+      "manifest_hash": "sha256:9731aa8143a72fbebfdb440f155038ab42642517c2b2bdbbf67c8fdbe076ed79",
+      "enabled": true,
+      "priority": 10,
+      "registered_commands": {
+        "agy": [
+          "speckit.git.feature",
+          "speckit.git.validate",
+          "speckit.git.remote",
+          "speckit.git.initialize",
+          "speckit.git.commit"
+        ],
+        "codex": [
+          "speckit.git.feature",
+          "speckit.git.validate",
+          "speckit.git.remote",
+          "speckit.git.initialize",
+          "speckit.git.commit"
+        ],
+        "cursor-agent": [
+          "speckit.git.feature",
+          "speckit.git.validate",
+          "speckit.git.remote",
+          "speckit.git.initialize",
+          "speckit.git.commit"
+        ],
+        "opencode": [
+          "speckit.git.feature",
+          "speckit.git.validate",
+          "speckit.git.remote",
+          "speckit.git.initialize",
+          "speckit.git.commit"
+        ]
+      },
+      "registered_skills": [],
+      "installed_at": "2026-06-04T01:18:01.329349+00:00"
+    },
+    "agent-context": {
+      "version": "1.0.0",
+      "source": "local",
+      "manifest_hash": "sha256:9a1dc02d2d0139bb03860392ecacef79183be2c442feda2f9ccaa4e5907b1e47",
+      "enabled": true,
+      "priority": 10,
+      "registered_commands": {
+        "agy": [
+          "speckit.agent-context.update"
+        ],
+        "codex": [
+          "speckit.agent-context.update"
+        ],
+        "cursor-agent": [
+          "speckit.agent-context.update"
+        ],
+        "opencode": [
+          "speckit.agent-context.update"
+        ]
+      },
+      "registered_skills": [],
+      "installed_at": "2026-06-04T01:18:01.398053+00:00"
+    },
+    "brownfield": {
+      "version": "1.0.0",
+      "source": "local",
+      "manifest_hash": "sha256:671babc47c752bf18868d0aeeef66f0fc4f37c6cf52622cfa07e8715fb5ac4a6",
+      "enabled": true,
+      "priority": 10,
+      "registered_commands": {
+        "agy": [
+          "speckit.brownfield.scan",
+          "speckit.brownfield.bootstrap",
+          "speckit.brownfield.validate",
+          "speckit.brownfield.migrate"
+        ],
+        "codex": [
+          "speckit.brownfield.scan",
+          "speckit.brownfield.bootstrap",
+          "speckit.brownfield.validate",
+          "speckit.brownfield.migrate"
+        ],
+        "cursor-agent": [
+          "speckit.brownfield.scan",
+          "speckit.brownfield.bootstrap",
+          "speckit.brownfield.validate",
+          "speckit.brownfield.migrate"
+        ],
+        "opencode": [
+          "speckit.brownfield.scan",
+          "speckit.brownfield.bootstrap",
+          "speckit.brownfield.validate",
+          "speckit.brownfield.migrate"
+        ]
+      },
+      "registered_skills": [],
+      "installed_at": "2026-06-04T02:17:21.388853+00:00"
+    }
+  }
+}
