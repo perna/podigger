@@ -1,71 +1,210 @@
-# Base Docker Compose configuration
+# Base Docker Compose configuration for VPS Reliable CI/CD Strategy
 # This file contains common service definitions shared across environments.
-# It is not meant to be run directly.
+# It is not meant to be run directly - use with docker-compose.staging.yml or docker-compose.production.yml
+#
+# Key Features:
+# - Image references using environment variables for zero-downtime deployments
+# - Resource limits for stability and predictability
+# - Robust health checks (startup, liveness, readiness)
+# - Graceful shutdown with 30s timeout
+# - JSON logging with rotation
+#
+# Requirements: 1.5, 19.2
 
 services:
   # Backend Django + DRF
   backend:
-    build:
-      context: ./backend
+    image: ${BACKEND_IMAGE:-ghcr.io/perna/podigger/backend:latest}
     restart: unless-stopped
+    stop_grace_period: 30s
     environment:
       - DJANGO_SETTINGS_MODULE=config.settings
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8000/health/" ]
-      interval: 30s
+      # Startup probe: verify container has successfully initialized
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/health/ || exit 1"]
+      interval: 2s
       timeout: 10s
-      retries: 3
-      start_period: 40s
+      retries: 30
+      start_period: 10s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   # Frontend Next.js
   frontend:
-    build:
-      context: ./frontend
+    image: ${FRONTEND_IMAGE:-ghcr.io/perna/podigger/frontend:latest}
     restart: unless-stopped
+    stop_grace_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:3000/" ]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
+      # Startup probe: verify container has successfully initialized
+      test: ["CMD-SHELL", "curl -f http://localhost:3000/ || exit 1"]
+      interval: 2s
+      timeout: 5s
+      retries: 30
+      start_period: 5s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   # PostgreSQL Database
   db:
     image: postgres:15-alpine
     restart: unless-stopped
+    stop_grace_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2G
+        reservations:
+          cpus: '1.0'
+          memory: 1G
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}" ]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-podigger} -d ${POSTGRES_DB:-podigger}"]
       interval: 10s
       timeout: 5s
       retries: 5
+      start_period: 10s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   # Redis for cache and Celery broker
   redis:
     image: redis:7-alpine
     restart: unless-stopped
+    stop_grace_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
     healthcheck:
-      test: [ "CMD", "redis-cli", "ping" ]
+      test: ["CMD", "redis-cli", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5
+      start_period: 5s
+    logging:
+      driver: json-file
+      options:
+        max-size: "5m"
+        max-file: "2"
 
   # Celery Worker
   celery:
-    build:
-      context: ./backend
+    image: ${BACKEND_IMAGE:-ghcr.io/perna/podigger/backend:latest}
     restart: unless-stopped
+    stop_grace_period: 30s
     environment:
       - DJANGO_SETTINGS_MODULE=config.settings
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+    healthcheck:
+      # Celery worker health check via celery inspect ping
+      test: ["CMD-SHELL", "celery -A config inspect ping -d celery@$$HOSTNAME || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
 
-  # Celery Beat
+  # Celery Beat Scheduler
   celery-beat:
-    build:
-      context: ./backend
+    image: ${BACKEND_IMAGE:-ghcr.io/perna/podigger/backend:latest}
     restart: unless-stopped
+    stop_grace_period: 30s
     environment:
       - DJANGO_SETTINGS_MODULE=config.settings
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+    logging:
+      driver: json-file
+      options:
+        max-size: "5m"
+        max-file: "2"
 
-  # Database Backup
+  # Nginx Reverse Proxy
+  nginx:
+    image: nginx:1.25-alpine
+    restart: unless-stopped
+    stop_grace_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 256M
+        reservations:
+          cpus: '0.125'
+          memory: 128M
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:80/health || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Database Backup Service
   db-backup:
     image: postgres:15-alpine
     restart: unless-stopped
+    stop_grace_period: 10s
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+    logging:
+      driver: json-file
+      options:
+        max-size: "5m"
+        max-file: "2"
