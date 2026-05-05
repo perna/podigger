@@ -33,9 +33,8 @@ WORKDIR /app
 COPY --from=builder --chown=app:app /usr/local/lib/python3.12/site-packages /usr/local/lib/python3.12/site-packages
 COPY --from=builder --chown=app:app /usr/local/bin /usr/local/bin
 
-COPY --chown=app:app manage.py pyproject.toml pytest.ini ./
-COPY --chown=app:app config ./config
-COPY --chown=app:app podcasts ./podcasts
+# Copy application code (excluding files in .dockerignore)
+COPY --chown=app:app . .
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
