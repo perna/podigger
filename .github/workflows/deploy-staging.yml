@@ -127,8 +127,26 @@ jobs:
         run: |
           ssh -o ServerAliveInterval=60 -o ServerAliveCountMax=10 ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} bash -s << ENDSSH
             mkdir -p /opt/podigger-staging
+            
+            # Create .env file
             printf 'DB_PASSWORD_STAGING=%s\n' '${{ secrets.DB_PASSWORD_STAGING }}' > /opt/podigger-staging/.env
-            chmod 600 /opt/podigger-staging/.env
+            
+            # Set correct ownership and permissions
+            sudo chown deploy:deploy /opt/podigger-staging/.env
+            sudo chmod 640 /opt/podigger-staging/.env
+            
+            # Verify permissions
+            echo "Verifying .env permissions:"
+            ls -la /opt/podigger-staging/.env
+            
+            # Ensure ubuntu user is in deploy group (idempotent)
+            if ! groups ubuntu | grep -q deploy; then
+              echo "Adding ubuntu user to deploy group..."
+              sudo usermod -aG deploy ubuntu
+              echo "✅ User ubuntu added to deploy group. Note: SSH session may need to be refreshed for group changes to take effect."
+            else
+              echo "✅ User ubuntu is already in deploy group"
+            fi
           ENDSSH
 
       - name: Deploy to staging
@@ -272,8 +290,14 @@ jobs:
           
           ssh -o ServerAliveInterval=60 -o ServerAliveCountMax=10 ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} bash -s << ENDSSH
             mkdir -p /opt/podigger-staging
+            
+            # Create .env file
             printf 'DB_PASSWORD_STAGING=%s\n' '${{ secrets.DB_PASSWORD_STAGING }}' > /opt/podigger-staging/.env
-            chmod 600 /opt/podigger-staging/.env
+            
+            # Set correct ownership and permissions
+            sudo chown deploy:deploy /opt/podigger-staging/.env
+            sudo chmod 640 /opt/podigger-staging/.env
+            
             # Ensure global proxy network exists
             docker network create podigger-proxy || true
             # Start Nginx Global Proxy
