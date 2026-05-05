@@ -120,7 +120,7 @@ Each task builds incrementally on previous work, ensuring the system remains fun
     - Log non-sensitive configuration values
     - _Requirements: 14.3, 14.4, 14.7_
   
-  - [ ] 4.3 Create base CD workflow structure
+  - [~] 4.3 Create base CD workflow structure
     - Create `.github/workflows/deploy.yml` workflow file
     - Configure manual dispatch trigger with environment and commit SHA inputs
     - Configure automatic trigger on push to main for staging
@@ -129,7 +129,7 @@ Each task builds incrementally on previous work, ensuring the system remains fun
     - _Requirements: 16.8_
 
 - [ ] 5. Implement database backup system
-  - [ ] 5.1 Create database backup script
+  - [~] 5.1 Create database backup script
     - Create `scripts/backup-db.sh` script
     - Implement pg_dump with compression
     - Store backups in `/opt/podigger-{env}/backups/` directory
@@ -138,20 +138,20 @@ Each task builds incrementally on previous work, ensuring the system remains fun
     - Log backup size and timestamp
     - _Requirements: 9.3, 9.4, 9.7, 9.9, 9.10_
   
-  - [ ] 5.2 Create backup retention script
+  - [~] 5.2 Create backup retention script
     - Create `scripts/cleanup-backups.sh` script
     - Retain 7 daily backups for production
     - Retain 3 daily backups for staging
     - Delete older backups automatically
     - _Requirements: 9.5, 9.6_
   
-  - [ ] 5.3 Add scheduled backup service to Docker Compose
+  - [~] 5.3 Add scheduled backup service to Docker Compose
     - Create db-backup service in docker-compose files
     - Configure cron to run backup daily at 2 AM UTC
     - Mount backup directory as volume
     - _Requirements: 9.2_
   
-  - [ ] 5.4 Add pre-deployment backup to CD workflow
+  - [~] 5.4 Add pre-deployment backup to CD workflow
     - Add backup step before deployment in CD workflow
     - Execute backup script via SSH
     - Verify backup creation succeeded
@@ -163,7 +163,7 @@ Each task builds incrementally on previous work, ensuring the system remains fun
   - Ensure all tests pass, ask the user if questions arise.
 
 - [ ] 7. Implement zero-downtime deployment strategy
-  - [ ] 7.1 Create rolling update deployment script
+  - [~] 7.1 Create rolling update deployment script
     - Create `scripts/rolling-update.sh` script
     - Implement logic to start new containers before stopping old ones
     - Wait for startup probes to pass before proceeding
@@ -172,26 +172,26 @@ Each task builds incrementally on previous work, ensuring the system remains fun
     - Deploy one container at a time in production
     - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.8_
   
-  - [ ] 7.2 Configure graceful shutdown in Docker Compose
+  - [~] 7.2 Configure graceful shutdown in Docker Compose
     - Add `stop_grace_period: 30s` to all application services
     - Ensure applications handle SIGTERM for graceful shutdown
     - _Requirements: 2.3, 12.3, 12.4_
   
-  - [ ] 7.3 Implement container lifecycle management
+  - [~] 7.3 Implement container lifecycle management
     - Use unique container names with version suffix
     - Remove containers by ID to avoid name conflicts
     - Clean up dangling images after deployment
     - Clean up stopped containers older than 24 hours
     - _Requirements: 12.1, 12.2, 12.5, 12.6, 12.7_
   
-  - [ ] 7.4 Add deployment steps to CD workflow
+  - [~] 7.4 Add deployment steps to CD workflow
     - Add step to pull images from GHCR by commit SHA
     - Add step to execute rolling update script
     - Add step to verify no containers in "restarting" state
     - _Requirements: 1.5, 7.7_
 
 - [ ] 8. Implement database migration safety
-  - [ ] 8.1 Create migration execution script
+  - [~] 8.1 Create migration execution script
     - Create `scripts/run-migrations.sh` script
     - Execute migrations in one-off container
     - Verify database backup exists before running migrations
@@ -200,7 +200,7 @@ Each task builds incrementally on previous work, ensuring the system remains fun
     - Log migration output for troubleshooting
     - _Requirements: 13.1, 13.2, 13.3, 13.6, 13.7, 13.8_
   
-  - [ ] 8.2 Add migration step to CD workflow
+  - [~] 8.2 Add migration step to CD workflow
     - Add pre-deploy hook to execute migrations
     - Abort deployment if migrations fail
     - _Requirements: 13.4_
