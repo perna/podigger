@@ -1,0 +1,164 @@
+# Dependabot configuration for the Podigger repository.
+# Automates dependency update PRs for npm (frontend), pip (backend),
+# and github-actions (CI/CD) ecosystems.
+# See: https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+
+# =============================================================================
+# KNOWN LIMITATIONS
+# =============================================================================
+#
+# 1. MAJOR UPDATE COMMIT PREFIX (feat vs chore):
+#    The Dependabot `commit-message.prefix` field is a single value per
+#    ecosystem entry. It is NOT possible to use `feat` for major updates and
+#    `chore` for patch/minor updates natively. All PRs in an ecosystem will
+#    use the configured `chore(...)` prefix, including major updates.
+#    If needed, rename the commit manually after reviewing a major-update PR.
+#
+# 2. LABELS MUST BE CREATED MANUALLY BEFORE FIRST RUN:
+#    Dependabot silently ignores labels that do not exist in the repository.
+#    Run `.github/scripts/create-dependabot-labels.sh` before merging this
+#    file to ensure all 7 labels are created:
+#    dependencies, frontend, backend, ci-cd, dev-dependencies,
+#    production-dependencies, major-update
+#
+# 3. psycopg2 vs psycopg2-binary GROUP ORDERING:
+#    The `backend-dev-dependencies` group uses pattern `psycopg2-binary*` to
+#    capture the dev variant. The `backend-infra-dependencies` group uses
+#    `psycopg2*` which would also match `psycopg2-binary`.
+#    Dependabot assigns each package to the FIRST matching group in order.
+#    Therefore `backend-dev-dependencies` MUST appear before
+#    `backend-infra-dependencies` in the pip groups section.
+#    Do NOT reorder the pip groups without reviewing this dependency.
+#
+# =============================================================================
+
+version: 2
+
+updates:
+  - package-ecosystem: "npm"
+    directory: "frontend/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      timezone: "America/Sao_Paulo"
+    target-branch: "develop"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+      - "frontend"
+    assignees:
+      - "dependabot[bot]"
+    reviewers:
+      - "REVIEWER_PLACEHOLDER" # TODO: replace with actual frontend reviewer GitHub username
+    versioning-strategy: increase
+    commit-message:
+      prefix: "chore(frontend-deps)"
+      include: "scope"
+    groups:
+      frontend-dev-dependencies:
+        patterns:
+          - "@types/*"
+          - "eslint*"
+          - "vitest*"
+          - "@testing-library/*"
+          - "@vitejs/*"
+          - "typescript*"
+          - "tailwindcss*"
+          - "postcss*"
+          - "babel*"
+          - "@next/bundle-analyzer"
+          - "jsdom"
+          - "vite-tsconfig-paths"
+          - "fast-check"
+        labels:
+          - "dev-dependencies"
+      frontend-prod-dependencies:
+        patterns:
+          - "next"
+          - "react"
+          - "react-dom"
+          - "clsx"
+          - "tailwind-merge"
+        labels:
+          - "production-dependencies"
+    # Add entries here to ignore specific packages, e.g.:
+    # - dependency-name: "some-package"
+    #   versions: ["2.x"]
+    ignore: []
+
+  - package-ecosystem: "pip"
+    directory: "backend/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      timezone: "America/Sao_Paulo"
+    target-branch: "develop"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+      - "backend"
+    reviewers:
+      - "REVIEWER_PLACEHOLDER" # TODO: replace with actual backend reviewer GitHub username
+    versioning-strategy: increase
+    commit-message:
+      prefix: "chore(backend-deps)"
+      include: "scope"
+    groups:
+      # IMPORTANT: backend-dev-dependencies MUST come before backend-infra-dependencies.
+      # Dependabot assigns a package to the first matching group.
+      # psycopg2-binary* (dev) must match before psycopg2* (infra).
+      backend-dev-dependencies:
+        patterns:
+          - "pytest*"
+          - "ruff*"
+          - "commitizen*"
+          - "Faker*"
+          - "psycopg2-binary*"
+          - "pytest-cov*"
+          - "pytest-mock*"
+          - "pytest-django*"
+        labels:
+          - "dev-dependencies"
+      backend-django-dependencies:
+        patterns:
+          - "Django*"
+          - "djangorestframework*"
+          - "django-*"
+        labels:
+          - "production-dependencies"
+      backend-infra-dependencies:
+        patterns:
+          - "celery*"
+          - "redis*"
+          - "gunicorn*"
+          - "uvicorn*"
+          - "psycopg2*"
+          - "feedparser*"
+          - "requests*"
+          - "urllib3*"
+          - "zipp*"
+          - "hypothesis*"
+        labels:
+          - "production-dependencies"
+    # Add entries here to ignore specific packages, e.g.:
+    # - dependency-name: "some-package"
+    #   versions: ["2.x"]
+    ignore: []
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      timezone: "America/Sao_Paulo"
+    target-branch: "develop"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "ci-cd"
+    reviewers:
+      - "REVIEWER_PLACEHOLDER" # TODO: replace with actual CI/CD reviewer GitHub username
+    versioning-strategy: increase
+    commit-message:
+      prefix: "chore(ci-deps)"
+      include: "scope"
