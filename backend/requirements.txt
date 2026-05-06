@@ -18,4 +18,3 @@ feedparser>=6.0.10
 requests>=2.31.0
 urllib3>=2.6.3
 zipp>=3.19.1
-hypothesis==6.135.0
