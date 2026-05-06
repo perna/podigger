@@ -17,9 +17,12 @@
 # 2. LABELS MUST BE CREATED MANUALLY BEFORE FIRST RUN:
 #    Dependabot silently ignores labels that do not exist in the repository.
 #    Run `.github/scripts/create-dependabot-labels.sh` before merging this
-#    file to ensure all 7 labels are created:
-#    dependencies, frontend, backend, ci-cd, dev-dependencies,
-#    production-dependencies, major-update
+#    file to ensure all labels are created:
+#    dependencies, frontend, backend, ci-cd, major-update
+#
+#    NOTE: `dev-dependencies` and `production-dependencies` labels were removed
+#    because the Dependabot schema does NOT support `labels` inside `groups`.
+#    Labels can only be set at the ecosystem level.
 #
 # 3. psycopg2 vs psycopg2-binary GROUP ORDERING:
 #    The `backend-dev-dependencies` group uses pattern `psycopg2-binary*` to
@@ -70,8 +73,6 @@ updates:
           - "jsdom"
           - "vite-tsconfig-paths"
           - "fast-check"
-        labels:
-          - "dev-dependencies"
       frontend-prod-dependencies:
         patterns:
           - "next"
@@ -79,8 +80,6 @@ updates:
           - "react-dom"
           - "clsx"
           - "tailwind-merge"
-        labels:
-          - "production-dependencies"
     # Add entries here to ignore specific packages, e.g.:
     # - dependency-name: "some-package"
     #   versions: ["2.x"]
@@ -117,15 +116,11 @@ updates:
           - "pytest-cov*"
           - "pytest-mock*"
           - "pytest-django*"
-        labels:
-          - "dev-dependencies"
       backend-django-dependencies:
         patterns:
           - "Django*"
           - "djangorestframework*"
           - "django-*"
-        labels:
-          - "production-dependencies"
       backend-infra-dependencies:
         patterns:
           - "celery*"
@@ -138,8 +133,6 @@ updates:
           - "urllib3*"
           - "zipp*"
           - "hypothesis*"
-        labels:
-          - "production-dependencies"
     # Add entries here to ignore specific packages, e.g.:
     # - dependency-name: "some-package"
     #   versions: ["2.x"]
