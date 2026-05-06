@@ -19,7 +19,7 @@ from accounts.tests.factories import UserFactory
 # Helpers
 # ---------------------------------------------------------------------------
 
-PASSWORD = "senha@Segura123"
+PASSWORD = "senha@Segura123"  # noqa: S105
 
 ROLE_PARAMS = pytest.mark.parametrize(
     "role",
@@ -32,10 +32,9 @@ def _make_user(role: str):
     """Create an approved user with the given role using UserFactory traits."""
     if role == "admin":
         return UserFactory(admin=True)
-    elif role == "reader":
+    if role == "reader":
         return UserFactory(reader=True)
-    else:
-        return UserFactory()  # default is editor
+    return UserFactory()  # default is editor
 
 
 def _login(client: APIClient, user) -> "rest_framework.response.Response":  # noqa: F821

@@ -1,7 +1,3 @@
-# Feature: api-authentication-strategy
-# Property 11: Autenticação obrigatória para escrita (consolidado)
-# Property 12: Reader não pode escrever (consolidado)
-# Property 14: Leitura pública sem autenticação
 """
 Property 11: Autenticação obrigatória para escrita (consolidado)
 
@@ -47,7 +43,7 @@ WRITE_ENDPOINTS = [
 
 WRITE_METHODS = ["post", "put", "patch", "delete"]
 
-# Cartesian product: 3 endpoints × 4 methods = 12 cases
+# Cartesian product: 3 endpoints x 4 methods = 12 cases
 _WRITE_CASES = [(ep, m) for ep in WRITE_ENDPOINTS for m in WRITE_METHODS]
 _WRITE_IDS = [
     f"{m.upper()}_{ep.strip('/').replace('/', '_')}"
@@ -69,7 +65,7 @@ class TestUnauthenticatedWriteAccess:
     """
 
     @pytest.mark.parametrize(
-        "endpoint,method",
+        ("endpoint", "method"),
         _WRITE_CASES,
         ids=_WRITE_IDS,
     )
@@ -110,7 +106,7 @@ class TestReaderWriteAccess:
     """
 
     @pytest.mark.parametrize(
-        "endpoint,method",
+        ("endpoint", "method"),
         _WRITE_CASES,
         ids=_WRITE_IDS,
     )
