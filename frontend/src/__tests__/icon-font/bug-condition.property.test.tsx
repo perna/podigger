@@ -109,6 +109,10 @@ describe('Property 1: Bug Condition — Material Symbols Rounded ausente no HTML
       fc.property(
         fc.constant(null),
         () => {
+          render(
+            React.createElement(RootLayout, null, React.createElement('div', null, 'test'))
+          );
+
           const html = document.documentElement.outerHTML;
 
           const hasPreconnectLink =
