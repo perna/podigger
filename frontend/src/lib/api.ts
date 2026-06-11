@@ -25,8 +25,14 @@ export interface Podcast {
   name: string;
   feed: string;
   image: string | null;
-  language: number | null;
+  language: { id: number; code: string; name: string } | null;
   total_episodes: number;
+}
+
+export interface PodcastLanguage {
+  id: number;
+  code: string;
+  name: string;
 }
 
 export interface PodcastsResponse {
@@ -63,7 +69,8 @@ export async function fetchEpisodes(
 
 export async function fetchPodcasts(
   query?: string,
-  page = 1
+  page = 1,
+  language?: number | null
 ): Promise<PodcastsResponse> {
   const params = new URLSearchParams();
   const trimmed = query?.trim();
@@ -72,6 +79,9 @@ export async function fetchPodcasts(
   }
   if (page > 1) {
     params.set('page', String(page));
+  }
+  if (language != null) {
+    params.set('language', String(language));
   }
   const url = `${API_BASE}/api/podcasts/${params.toString() ? `?${params.toString()}` : ''}`;
   const response = await fetch(url);
@@ -105,5 +115,14 @@ export async function addPodcast(
     throw new Error(errorData.message || `API error: ${response.status}`);
   }
   
+  return response.json();
+}
+
+export async function fetchLanguages(): Promise<PodcastLanguage[]> {
+  const url = `${API_BASE}/api/languages/`;
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`API error: ${response.status}`);
+  }
   return response.json();
 }
