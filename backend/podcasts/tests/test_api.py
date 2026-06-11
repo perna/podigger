@@ -1,7 +1,7 @@
 import pytest
 from rest_framework.test import APIClient
 
-from podcasts.models import Episode, Podcast, PopularTerm
+from podcasts.models import Episode, Podcast, PodcastLanguage, PopularTerm
 
 
 @pytest.mark.django_db
@@ -15,6 +15,84 @@ class TestPodcastAPI:
         response = self.client.get("/api/podcasts/")
         assert response.status_code == 200
         assert len(response.data["results"]) == 1
+
+    def test_language_nested_serialization(self):
+        """T002: language field is nested object {id, code, name} not raw integer."""
+        lang = PodcastLanguage.objects.create(code="pt", name="Portugu\u00eas")
+        Podcast.objects.create(name="Pod 1", feed="http://feed1.com", language=lang)
+        response = self.client.get("/api/podcasts/")
+        assert response.status_code == 200
+        podcast = response.data["results"][0]
+        assert isinstance(podcast["language"], dict)
+        assert podcast["language"]["id"] == lang.id
+        assert podcast["language"]["code"] == "pt"
+        assert podcast["language"]["name"] == "Portugu\u00eas"
+
+    def test_podcast_null_language(self):
+        """T002: language is null when podcast has no language set."""
+        Podcast.objects.create(name="Pod 1", feed="http://feed1.com")
+        response = self.client.get("/api/podcasts/")
+        assert response.status_code == 200
+        assert response.data["results"][0]["language"] is None
+
+    def test_pagination_metadata(self):
+        """T003: pagination returns page_size=20 with count/next/previous/results."""
+        for i in range(25):
+            Podcast.objects.create(name=f"Pod {i}", feed=f"http://feed{i}.com")
+        response = self.client.get("/api/podcasts/")
+        assert response.status_code == 200
+        assert "count" in response.data
+        assert "next" in response.data
+        assert "previous" in response.data
+        assert "results" in response.data
+        assert response.data["count"] == 25
+        assert len(response.data["results"]) == 20
+
+    def test_language_filter(self):
+        """T004: ?language=<id> filters podcasts by language."""
+        lang_pt = PodcastLanguage.objects.create(code="pt", name="Portugu\u00eas")
+        lang_en = PodcastLanguage.objects.create(code="en", name="Ingl\u00eas")
+        Podcast.objects.create(
+            name="Pod PT", feed="http://pt.com", language=lang_pt
+        )
+        Podcast.objects.create(
+            name="Pod EN", feed="http://en.com", language=lang_en
+        )
+        response = self.client.get(f"/api/podcasts/?language={lang_pt.id}")
+        assert response.status_code == 200
+        assert response.data["count"] == 1
+        assert response.data["results"][0]["name"] == "Pod PT"
+
+    def test_languages_endpoint(self):
+        """T005: GET /api/languages/ returns all languages ordered by name."""
+        PodcastLanguage.objects.create(code="en", name="Ingl\u00eas")
+        PodcastLanguage.objects.create(code="pt", name="Portugu\u00eas")
+        response = self.client.get("/api/languages/")
+        assert response.status_code == 200
+        assert len(response.data) == 2
+        assert response.data[0]["id"] is not None
+        assert response.data[0]["code"] == "en"
+        assert response.data[0]["name"] == "Ingl\u00eas"
+
+    def test_search_language_combined_filter(self):
+        """T006: search + language query params work together."""
+        lang_pt = PodcastLanguage.objects.create(code="pt", name="Portugu\u00eas")
+        lang_en = PodcastLanguage.objects.create(code="en", name="Ingl\u00eas")
+        Podcast.objects.create(
+            name="Python PT", feed="http://pypt.com", language=lang_pt
+        )
+        Podcast.objects.create(
+            name="Python EN", feed="http://pyen.com", language=lang_en
+        )
+        Podcast.objects.create(
+            name="Java EN", feed="http://java.com", language=lang_en
+        )
+        response = self.client.get(
+            f"/api/podcasts/?search=Python&language={lang_en.id}"
+        )
+        assert response.status_code == 200
+        assert response.data["count"] == 1
+        assert response.data["results"][0]["name"] == "Python EN"
 
 
 @pytest.mark.django_db
