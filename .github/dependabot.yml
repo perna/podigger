@@ -80,11 +80,6 @@ updates:
           - "react-dom"
           - "clsx"
           - "tailwind-merge"
-    # Add entries here to ignore specific packages, e.g.:
-    # - dependency-name: "some-package"
-    #   versions: ["2.x"]
-    ignore: []
-
   - package-ecosystem: "pip"
     directory: "backend/"
     schedule:
@@ -136,7 +131,6 @@ updates:
     # Add entries here to ignore specific packages, e.g.:
     # - dependency-name: "some-package"
     #   versions: ["2.x"]
-    ignore: []
 
   - package-ecosystem: "github-actions"
     directory: "/"
@@ -151,7 +145,6 @@ updates:
       - "ci-cd"
     reviewers:
       - "REVIEWER_PLACEHOLDER" # TODO: replace with actual CI/CD reviewer GitHub username
-    versioning-strategy: increase
     commit-message:
       prefix: "chore(ci-deps)"
       include: "scope"
