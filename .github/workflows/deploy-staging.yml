@@ -176,15 +176,26 @@ jobs:
             # Build application images
             docker compose -f docker-compose.staging.yml build
             
-            # Force remove containers by name to prevent "container name already in use" conflicts
-            # This handles cases where a previous deploy left containers in a half-created state
+            # 1. Compose cleanup first (stops and removes containers for this project)
+            docker compose -f docker-compose.staging.yml down --remove-orphans --timeout 30 || true
+            
+            # 2. Force remove any leftover containers by name (safety net)
             for container in podigger-staging-backend podigger-staging-frontend podigger-staging-db podigger-staging-redis podigger-staging-celery podigger-staging-celery-beat; do
               docker stop $container 2>/dev/null || true
               docker rm -f $container 2>/dev/null || true
             done
             
-            # Clean up potentially conflicting old containers before starting
-            docker compose -f docker-compose.staging.yml down || true
+            # 3. Prune stopped containers that could still hold names
+            docker container prune -f || true
+            
+            # 4. Verify no container is holding our target name before starting
+            for container in podigger-staging-db podigger-staging-redis; do
+              while docker ps -a --filter "name=^${container}\$" --format '{{.Names}}' 2>/dev/null | grep -q .; do
+                echo "⚠️  Container $container still present, retrying removal..."
+                docker rm -f $container 2>/dev/null || true
+                sleep 1
+              done
+            done
             
             # Run migrations via one-off container BEFORE starting services
             docker compose -f docker-compose.staging.yml up -d db-staging redis-staging
