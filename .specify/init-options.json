@@ -1,0 +1,8 @@
+{
+  "ai": "opencode",
+  "branch_numbering": "sequential",
+  "here": true,
+  "integration": "opencode",
+  "script": "sh",
+  "speckit_version": "0.9.3"
+}

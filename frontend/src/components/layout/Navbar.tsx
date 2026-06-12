@@ -12,6 +12,7 @@ import { cn } from '@/lib/utils';
 
 const publicNavLinks = [
     { label: 'Search', href: '/', icon: 'search' },
+    { label: 'Podcasts', href: '/podcasts', icon: 'podcasts' },
     { label: 'About', href: '/about', icon: 'info' },
 ];
 

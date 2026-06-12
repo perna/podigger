@@ -1,0 +1,1360 @@
+{
+  "generated_at": "2026-06-04T02:30:00Z",
+  "modules": [
+    {
+      "name": "accounts",
+      "path": "backend/accounts/",
+      "purpose": "Autenticação, registro, gestão de usuários, papéis e permissões",
+      "primary_files": [
+        "backend/accounts/models.py",
+        "backend/accounts/views.py",
+        "backend/accounts/serializers.py",
+        "backend/accounts/urls.py",
+        "backend/accounts/authentication.py",
+        "backend/accounts/permissions.py"
+      ],
+      "functions": [
+        {
+          "name": "UserManager.create_user",
+          "file": "backend/accounts/models.py",
+          "params": ["email: str", "password: str | None = None", "**extra_fields"],
+          "returns": "User",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "UserManager.create_superuser",
+          "file": "backend/accounts/models.py",
+          "params": ["email: str", "password: str | None = None", "**extra_fields"],
+          "returns": "User",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "TokenObtainCookieView.post",
+          "file": "backend/accounts/views.py",
+          "params": ["request", "*args", "**kwargs"],
+          "returns": "Response (JSON + cookies HttpOnly)",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "TokenRefreshCookieView.post",
+          "file": "backend/accounts/views.py",
+          "params": ["request", "*args", "**kwargs"],
+          "returns": "Response (JSON + novo cookie access_token)",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "RegisterView.create",
+          "file": "backend/accounts/views.py",
+          "params": ["request", "*_args", "**_kwargs"],
+          "returns": "Response 201 {email}",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "UserListView.get",
+          "file": "backend/accounts/views.py (generics.ListAPIView)",
+          "params": ["request", "*args", "**kwargs"],
+          "returns": "Response 200 [users]",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "UserApproveView.post",
+          "file": "backend/accounts/views.py",
+          "params": ["_request", "pk: int", "*_args", "**_kwargs"],
+          "returns": "Response 200 UserSerializer",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "UserRoleUpdateView.patch",
+          "file": "backend/accounts/views.py",
+          "params": ["request", "pk: int", "*_args", "**_kwargs"],
+          "returns": "Response 200 UserSerializer",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "EmailTokenObtainPairSerializer.get_token",
+          "file": "backend/accounts/serializers.py",
+          "params": ["cls", "user: User"],
+          "returns": "Token (com claims role, email)",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "EmailTokenObtainPairSerializer.validate",
+          "file": "backend/accounts/serializers.py",
+          "params": ["self", "attrs: dict"],
+          "returns": "dict (com role, email adicionados)",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "RegisterSerializer.validate_password",
+          "file": "backend/accounts/serializers.py",
+          "params": ["self", "value: str"],
+          "returns": "str",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "RegisterSerializer.create",
+          "file": "backend/accounts/serializers.py",
+          "params": ["self", "validated_data: dict"],
+          "returns": "User",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "CookieJWTAuthentication.authenticate",
+          "file": "backend/accounts/authentication.py",
+          "params": ["self", "request"],
+          "returns": "tuple[User, Token] | None",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "IsAdminRole.has_permission",
+          "file": "backend/accounts/permissions.py",
+          "params": ["self", "request", "view"],
+          "returns": "bool",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "IsEditorOrAdmin.has_permission",
+          "file": "backend/accounts/permissions.py",
+          "params": ["self", "request", "view"],
+          "returns": "bool",
+          "confidence": "confirmed"
+        }
+      ],
+      "entities": [
+        {
+          "name": "User",
+          "fields": [
+            { "name": "id", "type": "AutoField (PK)", "required": true },
+            { "name": "email", "type": "EmailField (unique)", "required": true },
+            { "name": "password", "type": "CharField (hash)", "required": true },
+            { "name": "role", "type": "CharField(20, choices)", "required": true, "default": "reader" },
+            { "name": "approval_status", "type": "CharField(20, choices)", "required": true, "default": "pending" },
+            { "name": "is_active", "type": "BooleanField", "required": true, "default": true },
+            { "name": "is_staff", "type": "BooleanField", "required": true, "default": false },
+            { "name": "created_at", "type": "DateTimeField", "required": true, "default": "auto_now_add" }
+          ],
+          "confidence": "confirmed"
+        }
+      ],
+      "business_rules": [
+        {
+          "description": "Email é obrigatório e usado como USERNAME_FIELD (autenticação por email, não username)",
+          "location": "backend/accounts/models.py:66, 81",
+          "confidence": "confirmed"
+        },
+        {
+          "description": "Novos usuários são criados com approval_status='pending' e role='reader'",
+          "location": "backend/accounts/models.py:25-26",
+          "confidence": "confirmed"
+        },
+        {
+          "description": "Senha deve ter no mínimo 8 caracteres",
+          "location": "backend/accounts/serializers.py:11, 53-57",
+          "confidence": "confirmed"
+        },
+        {
+          "description": "Conta com approval_status != 'approved' não pode logar (PermissionDenied → 403)",
+          "location": "backend/accounts/serializers.py:32-35",
+          "confidence": "confirmed"
+        },
+        {
+          "description": "Access token JWT expira em 5 minutos, refresh em 24 horas",
+          "location": "backend/accounts/views.py:79, 89 (max_age)",
+          "confidence": "confirmed"
+        },
+        {
+          "description": "Cookies HttpOnly com SameSite=Lax e Secure=True em produção (não DEBUG)",
+          "location": "backend/accounts/views.py:71, 77, 141",
+          "confidence": "confirmed"
+        },
+        {
+          "description": "Roles válidas: admin, editor, reader (validação no UserRoleUpdateView)",
+          "location": "backend/accounts/views.py:250-261",
+          "confidence": "confirmed"
+        },
+        {
+          "description": "JWT contém claims customizadas: role e email (além das padrão)",
+          "location": "backend/accounts/serializers.py:23-24",
+          "confidence": "confirmed"
+        },
+        {
+          "description": "Throttling aplicado em login (scope=login) e register (scope=register)",
+          "location": "backend/accounts/views.py:44-45, 179-180",
+          "confidence": "confirmed"
+        }
+      ],
+      "dependencies": [],
+      "algorithms": [
+        {
+          "name": "Cookie-based JWT issuance",
+          "description": "Login emite tokens em cookies HttpOnly separados por path (/refresh/ vs /), com secure flag em produção",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "Approval gate",
+          "description": "Dois estágios: registro (pending) → admin aprova (approved) → login habilitado",
+          "confidence": "confirmed"
+        }
+      ],
+      "complexity": "medium"
+    },
+    {
+      "name": "podcasts",
+      "path": "backend/podcasts/",
+      "purpose": "Domínio principal: podcasts, episódios, tags, busca FTS, popularidade, sugestões de tópicos",
+      "primary_files": [
+        "backend/podcasts/models.py",
+        "backend/podcasts/views.py",
+        "backend/podcasts/serializers.py",
+        "backend/podcasts/urls.py",
+        "backend/podcasts/tasks.py",
+        "backend/podcasts/services/feed_parser.py",
+        "backend/podcasts/services/podcast_service.py",
+        "backend/podcasts/services/updater.py"
+      ],
+      "functions": [
+        {
+          "name": "EpisodeManager.search",
+          "file": "backend/podcasts/models.py",
+          "params": ["self", "query: str"],
+          "returns": "QuerySet[Episode]",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "PodcastViewSet.create",
+          "file": "backend/podcasts/views.py",
+          "params": ["self", "request"],
+          "returns": "Response (201/200/400)",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "PodcastViewSet.recent",
+          "file": "backend/podcasts/views.py",
+          "params": ["self", "request"],
+          "returns": "Response 200 (6 podcasts)",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "EpisodeViewSet.get_queryset",
+          "file": "backend/podcasts/views.py",
+          "params": ["self"],
+          "returns": "QuerySet[Episode]",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "PodcastService.create_podcast",
+          "file": "backend/podcasts/services/podcast_service.py",
+          "params": ["name: str", "feed: str"],
+          "returns": "PodcastCreateResult",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "parse_feed",
+          "file": "backend/podcasts/services/feed_parser.py",
+          "params": ["url: str", "default_image: str = '/static/dist/img/podcast-banner.png'"],
+          "returns": "dict[str, Any] | {}",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "is_valid_feed",
+          "file": "backend/podcasts/services/feed_parser.py",
+          "params": ["url: str"],
+          "returns": "bool",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "_parse_entry",
+          "file": "backend/podcasts/services/feed_parser.py",
+          "params": ["entry: Any"],
+          "returns": "dict[str, Any]",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "_strip_html",
+          "file": "backend/podcasts/services/feed_parser.py",
+          "params": ["text: str | None"],
+          "returns": "str",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "EpisodeUpdater.__init__",
+          "file": "backend/podcasts/services/updater.py",
+          "params": ["self", "feeds: Iterable[str]"],
+          "returns": "None",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "EpisodeUpdater.populate",
+          "file": "backend/podcasts/services/updater.py",
+          "params": ["self"],
+          "returns": "None",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "tasks.add_episode",
+          "file": "backend/podcasts/tasks.py",
+          "params": ["feed_url: str"],
+          "returns": "None (Celery task)",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "tasks.update_base",
+          "file": "backend/podcasts/tasks.py",
+          "params": [],
+          "returns": "None (Celery task)",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "tasks.update_total_episodes",
+          "file": "backend/podcasts/tasks.py",
+          "params": [],
+          "returns": "None (Celery task)",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "tasks.remove_podcasts",
+          "file": "backend/podcasts/tasks.py",
+          "params": [],
+          "returns": "None (Celery task)",
+          "confidence": "confirmed"
+        }
+      ],
+      "entities": [
+        {
+          "name": "BaseModel",
+          "fields": [
+            { "name": "created_at", "type": "DateTimeField", "required": true, "default": "timezone.now" },
+            { "name": "updated_at", "type": "DateTimeField", "required": false, "default": "auto_now" }
+          ],
+          "confidence": "confirmed",
+          "abstract": true
+        },
+        {
+          "name": "PodcastLanguage",
+          "fields": [
+            { "name": "code", "type": "CharField(10)", "required": false, "default": "pt" },
+            { "name": "name", "type": "CharField(60)", "required": false, "default": "português" }
+          ],
+          "confidence": "confirmed"
+        },
+        {
+          "name": "Podcast",
+          "fields": [
+            { "name": "id", "type": "AutoField (PK)", "required": true },
+            { "name": "name", "type": "CharField(128, unique)", "required": true },
+            { "name": "feed", "type": "URLField(unique)", "required": true },
+            { "name": "image", "type": "CharField(255)", "required": false, "default": "/static/dist/img/podcast-banner.png" },
+            { "name": "language", "type": "FK(PodcastLanguage, SET_NULL)", "required": false },
+            { "name": "total_episodes", "type": "IntegerField", "required": true, "default": 0 }
+          ],
+          "confidence": "confirmed"
+        },
+        {
+          "name": "Tag",
+          "fields": [
+            { "name": "id", "type": "AutoField (PK)", "required": true },
+            { "name": "name", "type": "CharField(255, unique)", "required": true }
+          ],
+          "confidence": "confirmed"
+        },
+        {
+          "name": "Episode",
+          "fields": [
+            { "name": "id", "type": "AutoField (PK)", "required": true },
+            { "name": "title", "type": "CharField(1024)", "required": true },
+            { "name": "link", "type": "URLField(unique)", "required": true },
+            { "name": "description", "type": "TextField", "required": false },
+            { "name": "published", "type": "DateTimeField", "required": false },
+            { "name": "enclosure", "type": "CharField(1024)", "required": false },
+            { "name": "to_json", "type": "JSONField", "required": false },
+            { "name": "podcast", "type": "FK(Podcast, CASCADE)", "required": true },
+            { "name": "tags", "type": "M2M(Tag)", "required": false }
+          ],
+          "confidence": "confirmed"
+        },
+        {
+          "name": "PopularTerm",
+          "fields": [
+            { "name": "id", "type": "AutoField (PK)", "required": true },
+            { "name": "term", "type": "CharField(255, db_index)", "required": true },
+            { "name": "times", "type": "IntegerField", "required": true, "default": 1 },
+            { "name": "date_search", "type": "DateField", "required": true, "default": "today" }
+          ],
+          "confidence": "confirmed"
+        },
+        {
+          "name": "TopicSuggestion",
+          "fields": [
+            { "name": "id", "type": "AutoField (PK)", "required": true },
+            { "name": "title", "type": "CharField(255, db_index)", "required": true },
+            { "name": "description", "type": "TextField", "required": false },
+            { "name": "is_recorded", "type": "BooleanField", "required": true, "default": false }
+          ],
+          "confidence": "confirmed"
+        }
+      ],
+      "business_rules": [
+        {
+          "description": "Busca de episódios usa FTS com config 'portuguese', pesos A (title) e B (description), fallback para Trigram com threshold 0.1",
+          "location": "backend/podcasts/models.py:82-118",
+          "confidence": "confirmed"
+        },
+        {
+          "description": "Toda busca incrementa o PopularTerm correspondente (cria com times=1 ou soma 1)",
+          "location": "backend/podcasts/models.py:90-95",
+          "confidence": "confirmed"
+        },
+        {
+          "description": "Criação de podcast é atômica: get_or_create dentro de transaction.atomic para evitar duplicação",
+          "location": "backend/podcasts/services/podcast_service.py:50-54",
+          "confidence": "confirmed"
+        },
+        {
+          "description": "Validação de feed verifica bozo==0 do feedparser; não valida conteúdo",
+          "location": "backend/podcasts/services/feed_parser.py:117-132",
+          "confidence": "confirmed"
+        },
+        {
+          "description": "Parse de data de episódio no formato RFC 2822 (%a, %d %b %Y %H:%M:%S), primeiros 25 chars",
+          "location": "backend/podcasts/services/updater.py:60-67",
+          "confidence": "confirmed"
+        },
+        {
+          "description": "Episódios são idempotentes: skip se Episode com mesmo link já existe",
+          "location": "backend/podcasts/services/updater.py:75-76",
+          "confidence": "confirmed"
+        },
+        {
+          "description": "Strip HTML do description usa regex simples, não robusto para HTML malformado",
+          "location": "backend/podcasts/services/feed_parser.py:14-26",
+          "confidence": "inferred"
+        },
+        {
+          "description": "Podcast existente retorna status 'none' (compatibilidade com frontend)",
+          "location": "backend/podcasts/views.py:73",
+          "confidence": "confirmed"
+        },
+        {
+          "description": "Permissão padrão: leitura pública, escrita requer IsEditorOrAdmin",
+          "location": "backend/podcasts/views.py:31-35, 107-111, 132-136",
+          "confidence": "confirmed"
+        },
+        {
+          "description": "Pipeline Celery: add_episode (on create) → update_base (periodic) → update_total_episodes → remove_podcasts (periodic cleanup)",
+          "location": "backend/podcasts/tasks.py",
+          "confidence": "confirmed"
+        }
+      ],
+      "dependencies": ["accounts.permissions"],
+      "algorithms": [
+        {
+          "name": "FTS com fallback Trigram",
+          "description": "Duas etapas: SearchVector com pesos + SearchRank, depois TrigramSimilarity como fallback quando rank=0",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "Atomic podcast creation",
+          "description": "transaction.atomic + get_or_create para evitar race conditions em POST /api/podcasts/",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "EpisodeUpdater idempotente",
+          "description": "Processa feeds em loop, com skip de items duplicados (link) e tratamento de data inválida",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "PopularTerm tracking",
+          "description": "Side effect do search: cria ou incrementa contador do termo buscado",
+          "confidence": "confirmed"
+        }
+      ],
+      "complexity": "high"
+    },
+    {
+      "name": "config",
+      "path": "backend/config/",
+      "purpose": "Configuração global do projeto Django: settings, URLconf raiz, Celery app, entry points ASGI/WSGI",
+      "primary_files": [
+        "backend/config/settings.py",
+        "backend/config/urls.py",
+        "backend/config/celery.py",
+        "backend/config/asgi.py",
+        "backend/config/wsgi.py",
+        "backend/config/__init__.py"
+      ],
+      "functions": [
+        {
+          "name": "health_check",
+          "file": "backend/podcasts/health.py",
+          "params": ["request"],
+          "returns": "Response 200",
+          "confidence": "inferred",
+          "note": "Implementação não lida, importada em config/urls.py"
+        }
+      ],
+      "entities": [],
+      "business_rules": [
+        {
+          "description": "Suporte a DATABASE_URL OU vars individuais (DATABASE_HOST, DATABASE_NAME, etc.) — DATABASE_URL tem precedência",
+          "location": "backend/config/settings.py:89-113",
+          "confidence": "confirmed"
+        },
+        {
+          "description": "Redis: DB 0 para Celery broker, DB 1 para cache (separação intencional)",
+          "location": "backend/config/settings.py:138-145",
+          "confidence": "confirmed"
+        },
+        {
+          "description": "Throttling por escopo: anon 100/min, user 200/min, login 5/min, register 3/min",
+          "location": "backend/config/settings.py:178-183",
+          "confidence": "confirmed"
+        },
+        {
+          "description": "JWT access token 5 min, refresh 1 dia, com rotação e blacklist",
+          "location": "backend/config/settings.py:200-216",
+          "confidence": "confirmed"
+        },
+        {
+          "description": "Custom token serializer do SimpleJWT: EmailTokenObtainPairSerializer (adiciona role/email e valida approval_status)",
+          "location": "backend/config/settings.py:214",
+          "confidence": "confirmed"
+        },
+        {
+          "description": "CORS permissivo em DEBUG, restrito por env list em produção",
+          "location": "backend/config/settings.py:189-194",
+          "confidence": "confirmed"
+        },
+        {
+          "description": "Custom user model: accounts.User (email ao invés de username)",
+          "location": "backend/config/settings.py:52",
+          "confidence": "confirmed"
+        }
+      ],
+      "dependencies": ["accounts", "podcasts"],
+      "algorithms": [],
+      "complexity": "low"
+    },
+    {
+      "name": "frontend-ui",
+      "path": "frontend/src/components/ui/",
+      "purpose": "Design system: primitivos de UI reaproveitáveis (Button, Card, Input, Badge, Icon, Loading)",
+      "primary_files": [
+        "frontend/src/components/ui/Button.tsx",
+        "frontend/src/components/ui/Card.tsx",
+        "frontend/src/components/ui/Input.tsx",
+        "frontend/src/components/ui/Badge.tsx",
+        "frontend/src/components/ui/Icon.tsx",
+        "frontend/src/components/ui/Loading.tsx",
+        "frontend/src/lib/utils.ts"
+      ],
+      "functions": [
+        {
+          "name": "Button (forwardRef)",
+          "file": "frontend/src/components/ui/Button.tsx",
+          "params": ["variant: 'primary' | 'secondary' | 'ghost' | 'outline' = 'primary'", "size: 'sm' | 'md' | 'lg' | 'icon' = 'md'", "isLoading?: boolean", "className?: string", "children: ReactNode", "ref?: Ref<HTMLButtonElement>"],
+          "returns": "JSX.Element",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "Card (forwardRef)",
+          "file": "frontend/src/components/ui/Card.tsx",
+          "params": ["hoverable?: boolean = false", "className?: string", "ref?: Ref<HTMLDivElement>"],
+          "returns": "JSX.Element",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "Input (forwardRef)",
+          "file": "frontend/src/components/ui/Input.tsx",
+          "params": ["className?: string", "...InputHTMLAttributes", "ref?: Ref<HTMLInputElement>"],
+          "returns": "JSX.Element",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "Badge",
+          "file": "frontend/src/components/ui/Badge.tsx",
+          "params": ["variant: 'primary' | 'secondary' | 'outline' | 'ghost' = 'primary'", "className?: string"],
+          "returns": "JSX.Element",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "Icon",
+          "file": "frontend/src/components/ui/Icon.tsx",
+          "params": ["name: string", "fill?: boolean = false", "weight?: number = 400", "grade?: number = 0", "opticalSize?: number = 24", "className?: string"],
+          "returns": "JSX.Element",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "LoadingSpinner",
+          "file": "frontend/src/components/ui/Loading.tsx",
+          "params": ["className?: string", "...SVGAttributes"],
+          "returns": "JSX.Element",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "Skeleton",
+          "file": "frontend/src/components/ui/Loading.tsx",
+          "params": ["className?: string", "...HTMLAttributes<HTMLDivElement>"],
+          "returns": "JSX.Element",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "FullPageLoading",
+          "file": "frontend/src/components/ui/Loading.tsx",
+          "params": [],
+          "returns": "JSX.Element",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "cn",
+          "file": "frontend/src/lib/utils.ts",
+          "params": ["...inputs: ClassValue[]"],
+          "returns": "string",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "formatDuration",
+          "file": "frontend/src/lib/utils.ts",
+          "params": ["seconds: number"],
+          "returns": "string (H:MM:SS or M:SS, or '0:00' on invalid input)",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "formatDate",
+          "file": "frontend/src/lib/utils.ts",
+          "params": ["date: string | Date"],
+          "returns": "string (pt-BR formatted, or '' on falsy input)",
+          "confidence": "confirmed"
+        }
+      ],
+      "entities": [
+        {
+          "name": "ButtonProps",
+          "fields": [
+            { "name": "variant", "type": "'primary' | 'secondary' | 'ghost' | 'outline'", "required": false, "default": "'primary'" },
+            { "name": "size", "type": "'sm' | 'md' | 'lg' | 'icon'", "required": false, "default": "'md'" },
+            { "name": "isLoading", "type": "boolean", "required": false },
+            { "name": "className", "type": "string", "required": false }
+          ],
+          "confidence": "confirmed"
+        },
+        {
+          "name": "CardProps",
+          "fields": [
+            { "name": "hoverable", "type": "boolean", "required": false, "default": "false" },
+            { "name": "className", "type": "string", "required": false }
+          ],
+          "confidence": "confirmed"
+        },
+        {
+          "name": "InputProps",
+          "fields": [
+            { "name": "className", "type": "string", "required": false }
+          ],
+          "confidence": "confirmed",
+          "note": "alias de InputHTMLAttributes<HTMLInputElement>"
+        },
+        {
+          "name": "BadgeProps",
+          "fields": [
+            { "name": "variant", "type": "'primary' | 'secondary' | 'outline' | 'ghost'", "required": false, "default": "'primary'" },
+            { "name": "className", "type": "string", "required": false }
+          ],
+          "confidence": "confirmed"
+        },
+        {
+          "name": "IconProps",
+          "fields": [
+            { "name": "name", "type": "string", "required": true },
+            { "name": "fill", "type": "boolean", "required": false, "default": "false" },
+            { "name": "weight", "type": "number", "required": false, "default": "400" },
+            { "name": "grade", "type": "number", "required": false, "default": "0" },
+            { "name": "opticalSize", "type": "number", "required": false, "default": "24" },
+            { "name": "className", "type": "string", "required": false }
+          ],
+          "confidence": "confirmed"
+        }
+      ],
+      "business_rules": [
+        {
+          "description": "Button desabilita quando isLoading=true OR props.disabled=true; renderiza LoadingSpinner no lugar de children",
+          "location": "frontend/src/components/ui/Button.tsx:34, 37",
+          "confidence": "confirmed"
+        },
+        {
+          "description": "cn() resolve conflitos Tailwind via twMerge — última classe vence em conflitos (ex: px-4 vs px-8)",
+          "location": "frontend/src/lib/utils.ts:8-10",
+          "confidence": "confirmed"
+        },
+        {
+          "description": "formatDuration retorna '0:00' quando input é 0, NaN, ou falsy",
+          "location": "frontend/src/lib/utils.ts:16",
+          "confidence": "confirmed"
+        },
+        {
+          "description": "formatDate retorna string vazia quando input é falsy (sem lançar)",
+          "location": "frontend/src/lib/utils.ts:32",
+          "confidence": "confirmed"
+        },
+        {
+          "description": "Icon força aria-hidden='true' e renderiza ligature '{name}' dentro de <span class='material-symbols-rounded'> — depende da fonte estar carregada no layout",
+          "location": "frontend/src/components/ui/Icon.tsx:25-33",
+          "confidence": "confirmed"
+        },
+        {
+          "description": "FullPageLoading usa z-index 100 + backdrop-blur — desenhado para cobrir a página inteira durante transições autenticadas",
+          "location": "frontend/src/components/ui/Loading.tsx:43",
+          "confidence": "confirmed"
+        }
+      ],
+      "dependencies": ["frontend-features (ThemeProvider para dark mode)"],
+      "algorithms": [
+        {
+          "name": "Variant class merging",
+          "description": "Padrão shadcn/ui-like: objeto passado para cn() resolve variantes declarativamente; twMerge resolve conflitos Tailwind em runtime",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "Material Symbols font variation",
+          "description": "String template literal monta fontVariationSettings com FILL/wght/GRAD/opsz para controlar glyphs da fonte variável",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "Duration formatting",
+          "description": "Divisão inteira para hours/minutes/seconds; saída HH:MM:SS quando hours>0, senão M:SS; padStart(2,'0') em minutos/segundos",
+          "confidence": "confirmed"
+        }
+      ],
+      "complexity": "low"
+    },
+    {
+      "name": "frontend-pages",
+      "path": "frontend/src/app/",
+      "purpose": "Roteamento Next.js App Router: páginas (RSC e Client), Route Handlers (auth/proxy/health), middleware de proteção de rotas",
+      "primary_files": [
+        "frontend/src/app/layout.tsx",
+        "frontend/src/app/page.tsx",
+        "frontend/src/app/login/page.tsx",
+        "frontend/src/app/register/page.tsx",
+        "frontend/src/app/add-podcast/page.tsx",
+        "frontend/src/app/about/page.tsx",
+        "frontend/src/app/auth/unauthorized/page.tsx",
+        "frontend/src/app/auth/forbidden/page.tsx",
+        "frontend/src/app/auth/pending/page.tsx",
+        "frontend/src/app/api/auth/login/route.ts",
+        "frontend/src/app/api/auth/register/route.ts",
+        "frontend/src/app/api/auth/refresh/route.ts",
+        "frontend/src/app/api/auth/logout/route.ts",
+        "frontend/src/app/api/health/route.ts",
+        "frontend/src/app/api/proxy/[...path]/route.ts",
+        "frontend/src/middleware.ts",
+        "frontend/src/app/globals.css"
+      ],
+      "functions": [
+        {
+          "name": "RootLayout",
+          "file": "frontend/src/app/layout.tsx",
+          "params": ["children: React.ReactNode"],
+          "returns": "JSX.Element",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "Home (page)",
+          "file": "frontend/src/app/page.tsx",
+          "params": [],
+          "returns": "JSX.Element",
+          "confidence": "confirmed",
+          "note": "RSC wrapper que renderiza <HomeClient />"
+        },
+        {
+          "name": "LoginForm / LoginPage",
+          "file": "frontend/src/app/login/page.tsx",
+          "params": [],
+          "returns": "JSX.Element",
+          "confidence": "confirmed",
+          "note": "Client Component com useState (email, password, isLoading, error, pendingMessage) e handleSubmit que chama /api/auth/login"
+        },
+        {
+          "name": "RegisterPage",
+          "file": "frontend/src/app/register/page.tsx",
+          "params": [],
+          "returns": "JSX.Element",
+          "confidence": "confirmed",
+          "note": "Client Component com useState (email, password, passwordConfirm, isLoading, error, successMessage) e handleSubmit que valida senhas antes de POST /api/auth/register"
+        },
+        {
+          "name": "AddPodcastPage",
+          "file": "frontend/src/app/add-podcast/page.tsx",
+          "params": [],
+          "returns": "JSX.Element",
+          "confidence": "confirmed",
+          "note": "Client Component com guard de role (editor/admin) e handleSubmit que POST /api/proxy/podcasts/"
+        },
+        {
+          "name": "AboutPage + 7 sub-componentes",
+          "file": "frontend/src/app/about/page.tsx + components/",
+          "params": [],
+          "returns": "JSX.Element",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "UnauthorizedPage",
+          "file": "frontend/src/app/auth/unauthorized/page.tsx",
+          "params": [],
+          "returns": "JSX.Element",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "ForbiddenPage",
+          "file": "frontend/src/app/auth/forbidden/page.tsx",
+          "params": [],
+          "returns": "JSX.Element",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "PendingPage",
+          "file": "frontend/src/app/auth/pending/page.tsx",
+          "params": [],
+          "returns": "JSX.Element",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "POST /api/auth/login",
+          "file": "frontend/src/app/api/auth/login/route.ts",
+          "params": ["request: NextRequest"],
+          "returns": "Promise<NextResponse>",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "POST /api/auth/register",
+          "file": "frontend/src/app/api/auth/register/route.ts",
+          "params": ["request: NextRequest"],
+          "returns": "Promise<NextResponse>",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "POST /api/auth/refresh",
+          "file": "frontend/src/app/api/auth/refresh/route.ts",
+          "params": ["request: NextRequest"],
+          "returns": "Promise<NextResponse>",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "POST /api/auth/logout",
+          "file": "frontend/src/app/api/auth/logout/route.ts",
+          "params": [],
+          "returns": "Promise<NextResponse>",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "GET /api/health",
+          "file": "frontend/src/app/api/health/route.ts",
+          "params": [],
+          "returns": "Promise<NextResponse>",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "handleProxy (com auto-refresh)",
+          "file": "frontend/src/app/api/proxy/[...path]/route.ts",
+          "params": ["request: NextRequest", "context: { params: Promise<{path: string[]}> }"],
+          "returns": "Promise<NextResponse>",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "buildBackendUrl",
+          "file": "frontend/src/app/api/proxy/[...path]/route.ts",
+          "params": ["pathSegments: string[]", "searchParams: URLSearchParams"],
+          "returns": "string",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "forwardToBackend",
+          "file": "frontend/src/app/api/proxy/[...path]/route.ts",
+          "params": ["request: NextRequest", "backendUrl: string", "accessToken: string | undefined", "preReadBody: ArrayBuffer | null"],
+          "returns": "Promise<Response>",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "attemptRefresh",
+          "file": "frontend/src/app/api/proxy/[...path]/route.ts",
+          "params": ["request: NextRequest"],
+          "returns": "Promise<{newToken: string, setCookieHeaders: string[]} | null>",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "buildLogoutRedirect",
+          "file": "frontend/src/app/api/proxy/[...path]/route.ts",
+          "params": ["pathSegments: string[]"],
+          "returns": "NextResponse",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "buildProxyResponse",
+          "file": "frontend/src/app/api/proxy/[...path]/route.ts",
+          "params": ["backendResponse: Response", "extraSetCookieHeaders?: string[]"],
+          "returns": "Promise<NextResponse>",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "middleware",
+          "file": "frontend/src/middleware.ts",
+          "params": ["request: NextRequest"],
+          "returns": "NextResponse",
+          "confidence": "confirmed"
+        }
+      ],
+      "entities": [
+        {
+          "name": "AuthState (useAuth return)",
+          "fields": [
+            { "name": "user", "type": "User | null", "required": true },
+            { "name": "isAuthenticated", "type": "boolean", "required": true },
+            { "name": "isLoading", "type": "boolean", "required": true }
+          ],
+          "confidence": "confirmed"
+        },
+        {
+          "name": "User (AuthContext)",
+          "fields": [
+            { "name": "email", "type": "string", "required": true },
+            { "name": "role", "type": "'admin' | 'editor' | 'reader'", "required": true }
+          ],
+          "confidence": "confirmed"
+        }
+      ],
+      "business_rules": [
+        {
+          "description": "Middleware bloqueia /add-podcast e /admin/* se access_token cookie ausente → redirect 302 /auth/unauthorized?next=",
+          "location": "frontend/src/middleware.ts:13-24, config:26-30",
+          "confidence": "confirmed"
+        },
+        {
+          "description": "Login (200) → AuthContext.login(role, email) + router.push(next || '/')",
+          "location": "frontend/src/app/login/page.tsx:36-43",
+          "confidence": "confirmed"
+        },
+        {
+          "description": "Login (403) → setPendingMessage sem redirect (conta pending)",
+          "location": "frontend/src/app/login/page.tsx:45-49",
+          "confidence": "confirmed"
+        },
+        {
+          "description": "Login (401) → setError genérico 'Email ou senha inválidos' (sem hint de campo)",
+          "location": "frontend/src/app/login/page.tsx:51-55",
+          "confidence": "confirmed"
+        },
+        {
+          "description": "Register valida password === passwordConfirm client-side antes de chamar API",
+          "location": "frontend/src/app/register/page.tsx:25-29",
+          "confidence": "confirmed"
+        },
+        {
+          "description": "Register (201) → setSuccessMessage e esconde form; não redireciona",
+          "location": "frontend/src/app/register/page.tsx:40-46, 113-129",
+          "confidence": "confirmed"
+        },
+        {
+          "description": "AddPodcast gate: render Acesso Negado se !user OR role ∉ {editor, admin}",
+          "location": "frontend/src/app/add-podcast/page.tsx:21-47",
+          "confidence": "confirmed"
+        },
+        {
+          "description": "AddPodcast trata data.status === 'created' ou 'existing' com setTimeout(2000) → router.push('/')",
+          "location": "frontend/src/app/add-podcast/page.tsx:81-91",
+          "confidence": "confirmed"
+        },
+        {
+          "description": "Proxy com auto-refresh: 401 → tenta refresh_token → reenvia request; refresh falhou → 302 /auth/unauthorized + clear cookies",
+          "location": "frontend/src/app/api/proxy/[...path]/route.ts:185-206",
+          "confidence": "confirmed"
+        },
+        {
+          "description": "Proxy pre-read body como ArrayBuffer para permitir retry (stream não pode ser consumido 2x)",
+          "location": "frontend/src/app/api/proxy/[...path]/route.ts:165-167",
+          "confidence": "confirmed"
+        },
+        {
+          "description": "Login proxy faz forward literal de Set-Cookie do backend para o browser (essencial para cookies HttpOnly chegarem)",
+          "location": "frontend/src/app/api/auth/login/route.ts:46-61",
+          "confidence": "confirmed"
+        },
+        {
+          "description": "Logout limpa cookies localmente (Set-Cookie Max-Age=0) sem chamar backend; tokens ainda válidos até exp",
+          "location": "frontend/src/app/api/auth/logout/route.ts:3-18",
+          "confidence": "confirmed"
+        },
+        {
+          "description": "ForbiddenPage mapeia role → label PT-BR via ROLE_LABELS ({admin: 'Administrador', editor: 'Editor', reader: 'Leitor'})",
+          "location": "frontend/src/app/auth/forbidden/page.tsx:10-14, 49-54",
+          "confidence": "confirmed"
+        },
+        {
+          "description": "Layout usa <html lang='en'> mesmo com UI majoritariamente PT-BR",
+          "location": "frontend/src/app/layout.tsx:26",
+          "confidence": "confirmed"
+        },
+        {
+          "description": "Login usa Suspense em torno de LoginForm por causa de useSearchParams (build-time warning sem isso)",
+          "location": "frontend/src/app/login/page.tsx:232-234",
+          "confidence": "confirmed"
+        }
+      ],
+      "dependencies": [
+        "frontend-ui (Icon)",
+        "frontend-features (Navbar, ThemeProvider, AuthContext, HomeClient)",
+        "backend accounts (login/register/refresh via /api/auth/* proxy)",
+        "backend podcasts (cadastro via /api/proxy/podcasts/)"
+      ],
+      "algorithms": [
+        {
+          "name": "Auto-refresh de token no proxy",
+          "description": "Ciclo de 2 tentativas: forward com access_token, se 401 tenta refresh, reenvia com novo token; refresh falhou → redirect + clear cookies. Body pré-lido em ArrayBuffer para permitir replay.",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "Defesa em camadas (middleware + page guard)",
+          "description": "Middleware bloqueia por presença de cookie; página /add-podcast re-checa role via useAuth() para UX específica",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "Validação client-side de senha em register",
+          "description": "password === passwordConfirm antes de chamar API; backend não tem essa validação (assume client validou)",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "RSC composition em /about",
+          "description": "Página RSC compõe 7 sub-componentes; 6 são RSC (zero JS no cliente), 1 (ActionList) é client-only por causa de navigator.share/clipboard",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "Forward literal de Set-Cookie",
+          "description": "Login proxy extrai setCookieHeaders via getSetCookie() (com fallback) e re-emite no NextResponse; essencial para cookies HttpOnly do Django chegarem ao browser",
+          "confidence": "confirmed"
+        }
+      ],
+      "complexity": "high"
+    },
+    {
+      "name": "frontend-features",
+      "path": "frontend/src/{components/{home,search,podcasts,episodes,layout,providers,common},contexts,lib}/",
+      "purpose": "Componentes de feature (home orchestration, episode list, search UI, podcast cards), contextos (auth, theme), API client, utilitários e middleware de proteção de rotas",
+      "primary_files": [
+        "frontend/src/components/home/HomeClient.tsx",
+        "frontend/src/components/home/EpisodeList.tsx",
+        "frontend/src/components/layout/Navbar.tsx",
+        "frontend/src/components/search/SearchHero.tsx",
+        "frontend/src/components/podcasts/PodcastCard.tsx",
+        "frontend/src/components/episodes/EpisodeCardCompact.tsx",
+        "frontend/src/components/providers/ThemeProvider.tsx",
+        "frontend/src/contexts/AuthContext.tsx",
+        "frontend/src/lib/api.ts",
+        "frontend/src/lib/utils.ts",
+        "frontend/src/lib/constants.ts",
+        "frontend/src/middleware.ts"
+      ],
+      "functions": [
+        {
+          "name": "HomeClient",
+          "file": "frontend/src/components/home/HomeClient.tsx",
+          "params": [],
+          "returns": "JSX.Element",
+          "confidence": "confirmed",
+          "note": "Client Component. 5 useState + 2 useCallback. handleSearch faz fetchPodcasts quando query.trim() não-vazio. Renderiza SearchHero + EpisodeList + sidebar lg+ + BottomNav md- + FAB."
+        },
+        {
+          "name": "EpisodeList",
+          "file": "frontend/src/components/home/EpisodeList.tsx",
+          "params": ["searchTerm: string", "onLoadingChange?: (loading: boolean) => void"],
+          "returns": "JSX.Element",
+          "confidence": "confirmed",
+          "note": "Client Component. Infinite scroll via IntersectionObserver no sentinel. Alterna entre EpisodeCardCompact (md+) e EpisodeCard (mobile). Estados: episodes, page, hasMore, isLoading, isLoadingMore, error."
+        },
+        {
+          "name": "EpisodeCard",
+          "file": "frontend/src/components/home/EpisodeCard.tsx",
+          "params": ["episode: Episode"],
+          "returns": "JSX.Element",
+          "confidence": "confirmed",
+          "note": "Server Component. Card mobile-large com hero image 16:9 e placeholder SVG inline. Sem 'use client'."
+        },
+        {
+          "name": "EpisodeCardCompact",
+          "file": "frontend/src/components/episodes/EpisodeCardCompact.tsx",
+          "params": ["episode: Episode"],
+          "returns": "JSX.Element",
+          "confidence": "confirmed",
+          "note": "Server Component. Card desktop-compact com thumbnail, formatRelativeTime helper inline (min/h/d/w)."
+        },
+        {
+          "name": "SearchHero",
+          "file": "frontend/src/components/search/SearchHero.tsx",
+          "params": ["query: string", "onQueryChange: (v: string) => void", "onSearch: () => void", "isSearching?: boolean"],
+          "returns": "JSX.Element",
+          "confidence": "confirmed",
+          "note": "Client Component. Hero desktop com h1 + input + Button primary. Enter no input dispara onSearch."
+        },
+        {
+          "name": "SearchHeader",
+          "file": "frontend/src/components/home/SearchHeader.tsx",
+          "params": ["query: string", "onQueryChange: (v: string) => void", "onSearch: () => void", "isSearching?: boolean"],
+          "returns": "JSX.Element",
+          "confidence": "confirmed",
+          "note": "Client Component. CÓDIGO MORTO - não importado por ninguém. Header mobile sticky com tabs (All/Latest/Popular/Short Clips). Candidado a remoção."
+        },
+        {
+          "name": "BottomNav",
+          "file": "frontend/src/components/home/BottomNav.tsx",
+          "params": ["activeItem?: 'home' | 'search' | 'library' | 'settings'"],
+          "returns": "JSX.Element",
+          "confidence": "confirmed",
+          "note": "Client Component. 4 items (Home/Search/Library/Settings). Library e Settings com href='#' (placeholders)."
+        },
+        {
+          "name": "EmptyState",
+          "file": "frontend/src/components/home/EmptyState.tsx",
+          "params": ["type: 'no-results' | 'no-episodes' | 'error'", "query?: string", "onRetry?: () => void", "className?: string"],
+          "returns": "JSX.Element",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "PodcastCard",
+          "file": "frontend/src/components/podcasts/PodcastCard.tsx",
+          "params": ["podcast: Podcast"],
+          "returns": "JSX.Element",
+          "confidence": "confirmed",
+          "note": "Client Component. Link para /podcasts/${id} (rota não implementada - 404 esperado)."
+        },
+        {
+          "name": "Navbar",
+          "file": "frontend/src/components/layout/Navbar.tsx",
+          "params": [],
+          "returns": "JSX.Element",
+          "confidence": "confirmed",
+          "note": "Client Component. Sticky top com navLinks = publicNavLinks + (Add Podcast se role editor/admin). handleLogout: POST /api/auth/logout + logout() + router.push('/')."
+        },
+        {
+          "name": "ThemeProvider",
+          "file": "frontend/src/components/providers/ThemeProvider.tsx",
+          "params": ["children: { children: React.ReactNode }"],
+          "returns": "JSX.Element",
+          "confidence": "confirmed",
+          "note": "Client Component. Lazy init: SSR='dark', client: localStorage 'podigger-theme' → prefers-color-scheme → 'dark'. useEffect aplica classe light/dark em <html> e persiste."
+        },
+        {
+          "name": "useTheme",
+          "file": "frontend/src/components/providers/ThemeProvider.tsx",
+          "params": [],
+          "returns": "{ theme: 'light' | 'dark', toggleTheme: () => void }",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "FAB",
+          "file": "frontend/src/components/common/FAB.tsx",
+          "params": [],
+          "returns": "JSX.Element",
+          "confidence": "confirmed",
+          "note": "Server Component. SEM onClick/href - placeholder visual. Deveria navegar para /add-podcast."
+        },
+        {
+          "name": "AuthProvider",
+          "file": "frontend/src/contexts/AuthContext.tsx",
+          "params": ["children: { children: React.ReactNode }"],
+          "returns": "JSX.Element",
+          "confidence": "confirmed",
+          "note": "Client Component. Estado user em memória (useState). isLoading constante false. login/logout são client-side puros - NÃO chamam API."
+        },
+        {
+          "name": "useAuth",
+          "file": "frontend/src/contexts/AuthContext.tsx",
+          "params": [],
+          "returns": "AuthContextValue (user, isAuthenticated, isLoading, login, logout, setUser)",
+          "confidence": "confirmed",
+          "note": "Throws Error('useAuth must be used within an AuthProvider') se usado fora do Provider."
+        },
+        {
+          "name": "fetchEpisodes",
+          "file": "frontend/src/lib/api.ts",
+          "params": ["query?: string", "page?: number = 1"],
+          "returns": "Promise<EpisodesResponse>",
+          "confidence": "confirmed",
+          "note": "GET /api/episodes/?q={query}&page={page}. Throws Error('API error: <status>') em !ok."
+        },
+        {
+          "name": "fetchPodcasts",
+          "file": "frontend/src/lib/api.ts",
+          "params": ["query?: string", "page?: number = 1"],
+          "returns": "Promise<PodcastsResponse>",
+          "confidence": "confirmed",
+          "note": "GET /api/podcasts/?search={query}&page={page}. Inconsistência: usa 'search' em vez de 'q'."
+        },
+        {
+          "name": "addPodcast",
+          "file": "frontend/src/lib/api.ts",
+          "params": ["name: string", "feed: string"],
+          "returns": "Promise<AddPodcastResponse>",
+          "confidence": "confirmed",
+          "note": "POST /api/podcasts/ com body {name, feed}. Status: 'created'|'existing'|'error'."
+        },
+        {
+          "name": "cn",
+          "file": "frontend/src/lib/utils.ts",
+          "params": ["...inputs: ClassValue[]"],
+          "returns": "string",
+          "confidence": "confirmed",
+          "note": "twMerge(clsx(inputs)) - padrão Next.js/Tailwind."
+        },
+        {
+          "name": "formatDuration",
+          "file": "frontend/src/lib/utils.ts",
+          "params": ["seconds: number"],
+          "returns": "string (H:MM:SS ou M:SS)",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "formatDate",
+          "file": "frontend/src/lib/utils.ts",
+          "params": ["date: string | Date"],
+          "returns": "string (pt-BR short)",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "middleware",
+          "file": "frontend/src/middleware.ts",
+          "params": ["request: NextRequest"],
+          "returns": "NextResponse",
+          "confidence": "confirmed",
+          "note": "Edge middleware. Lê access_token cookie. Se ausente: redirect /auth/unauthorized?next={encoded-url}. Matcher: /add-podcast, /admin/:path*."
+        }
+      ],
+      "entities": [
+        {
+          "name": "Episode",
+          "fields": [
+            { "name": "id", "type": "number", "required": true },
+            { "name": "title", "type": "string", "required": true },
+            { "name": "link", "type": "string", "required": true },
+            { "name": "description", "type": "string | null", "required": false },
+            { "name": "published", "type": "string | null", "required": false },
+            { "name": "enclosure", "type": "string | null", "required": false },
+            { "name": "podcast", "type": "{id: number, name: string, image: string | null}", "required": true },
+            { "name": "tags", "type": "{id: number, name: string}[]", "required": true }
+          ],
+          "confidence": "confirmed"
+        },
+        {
+          "name": "EpisodesResponse",
+          "fields": [
+            { "name": "count", "type": "number", "required": true },
+            { "name": "next", "type": "string | null", "required": true },
+            { "name": "previous", "type": "string | null", "required": true },
+            { "name": "results", "type": "Episode[]", "required": true }
+          ],
+          "confidence": "confirmed"
+        },
+        {
+          "name": "Podcast",
+          "fields": [
+            { "name": "id", "type": "number", "required": true },
+            { "name": "name", "type": "string", "required": true },
+            { "name": "feed", "type": "string", "required": true },
+            { "name": "image", "type": "string | null", "required": false },
+            { "name": "language", "type": "number | null", "required": false },
+            { "name": "total_episodes", "type": "number", "required": true }
+          ],
+          "confidence": "confirmed"
+        },
+        {
+          "name": "PodcastsResponse",
+          "fields": [
+            { "name": "count", "type": "number", "required": true },
+            { "name": "next", "type": "string | null", "required": true },
+            { "name": "previous", "type": "string | null", "required": true },
+            { "name": "results", "type": "Podcast[]", "required": true }
+          ],
+          "confidence": "confirmed"
+        },
+        {
+          "name": "AddPodcastResponse",
+          "fields": [
+            { "name": "id", "type": "number | undefined", "required": false },
+            { "name": "status", "type": "'created' | 'existing' | 'error'", "required": true },
+            { "name": "message", "type": "string | undefined", "required": false }
+          ],
+          "confidence": "confirmed"
+        },
+        {
+          "name": "AuthState",
+          "fields": [
+            { "name": "user", "type": "{email: string, role: 'admin' | 'editor' | 'reader'} | null", "required": true },
+            { "name": "isAuthenticated", "type": "boolean", "required": true },
+            { "name": "isLoading", "type": "boolean", "required": true }
+          ],
+          "confidence": "confirmed"
+        },
+        {
+          "name": "User (AuthContext)",
+          "fields": [
+            { "name": "email", "type": "string", "required": true },
+            { "name": "role", "type": "'admin' | 'editor' | 'reader'", "required": true }
+          ],
+          "confidence": "confirmed"
+        }
+      ],
+      "business_rules": [
+        {
+          "name": "Defesa em camadas: middleware + page guard + UI",
+          "description": "middleware bloqueia por presença de access_token cookie; /add-podcast re-checa role via useAuth() para render condicional; Navbar esconde 'Add Podcast' link se role não for editor/admin",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "AuthContext sem sync com cookies",
+          "description": "user em memória (useState) não é hidratado a partir do cookie. Caller (ex: página de login) é responsável por chamar login(role, email) após API response. Se cookie expirar mid-session, contexto ainda mostra authenticated até logout explícito.",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "Infinite scroll com pre-fetch",
+          "description": "IntersectionObserver com rootMargin 100px dispara loadMore antes do usuário alcançar o final. Cleanup via observer.disconnect().",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "Theme fallback chain",
+          "description": "localStorage 'podigger-theme' → prefers-color-scheme → 'dark' default. useEffect aplica classe light/dark em <html> e persiste de volta no localStorage.",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "Inconsistência q vs search nos endpoints",
+          "description": "fetchEpisodes usa param 'q' (DRF search_fields=['title'] em EpisodeViewSet); fetchPodcasts usa 'search' (DRF search_fields=['name'] em PodcastViewSet). Reflete config backend.",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "CÓDIGO MORTO: SearchHeader",
+          "description": "frontend/src/components/home/SearchHeader.tsx (93 LOC) não é importado por ninguém em runtime. Tem testes (que passam) mas é candidato a remoção - possível refactor leftover de quando a home era mobile-first.",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "FAB sem onClick",
+          "description": "frontend/src/components/common/FAB.tsx é placeholder visual - não tem onClick nem href. Ação 'Add RSS feed' deveria navegar para /add-podcast (rota existe).",
+          "confidence": "confirmed"
+        }
+      ],
+      "dependencies": ["frontend-ui", "frontend-pages"],
+      "algorithms": [
+        {
+          "name": "Infinite scroll com IntersectionObserver",
+          "description": "Sentinel div + observer.disconnect() cleanup. setPage via updater function: setPage(p => { load(...); return p+1; }).",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "Theme lazy init com fallback chain",
+          "description": "useState lazy initializer: typeof window==='undefined' → 'dark'; localStorage → matchMedia → 'dark' default. useEffect sincroniza com DOM.",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "Dual-track loading state",
+          "description": "HomeClient mantém isSearching (via EpisodeList.onLoadingChange) e isSearchingPodcasts (local) separados. UI: isSearching={isSearching || isSearchingPodcasts} para indicador único.",
+          "confidence": "confirmed"
+        }
+      ],
+      "complexity": "medium"
+    }
+  ]
+}

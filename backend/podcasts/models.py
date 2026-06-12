@@ -168,7 +168,7 @@ class TopicSuggestion(BaseModel):
     is_recorded = models.BooleanField(default=False)
 
     def __str__(self):
-        """Represent the episode by its title.
+        """Represent the topic suggestion by its title.
 
         Returns:
             str: The episode title used as the object's string representation.
