@@ -31,11 +31,16 @@ DJANGO_SETTINGS_MODULE = "config.settings"
 python_files = ["test_*.py", "*_test.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
-addopts = "-v --tb=short --strict-markers --cov=podcasts --cov-report=term-missing --cov-report=xml --cov-fail-under=70"
-testpaths = ["podcasts/tests"]
+addopts = """
+    -v --tb=short --strict-markers
+    --cov=podcasts --cov=accounts
+    --cov-report=term-missing --cov-report=xml
+    --cov-fail-under=70
+"""
+testpaths = ["podcasts/tests", "accounts/tests"]
 
 [tool.coverage.run]
-source = ["podcasts"]
+source = ["podcasts", "accounts"]
 omit = ["*/tests/*", "*/migrations/*", "*/management/*"]
 
 [tool.coverage.report]
