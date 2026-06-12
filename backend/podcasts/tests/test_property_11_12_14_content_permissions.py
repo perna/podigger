@@ -30,8 +30,6 @@ Validates: Requirements 6.1, 6.2, 6.3, 6.4
 """
 
 import pytest
-from hypothesis import HealthCheck, given, settings
-from hypothesis import strategies as st
 from rest_framework.test import APIClient
 from rest_framework_simplejwt.tokens import RefreshToken
 
@@ -76,19 +74,10 @@ _WRITE_ENDPOINTS = [
 _WRITE_METHODS = ["post", "put", "patch", "delete"]
 
 
-@pytest.mark.django_db(transaction=True)
-@given(
-    email=st.emails(),
-    password=st.text(
-        min_size=8,
-        max_size=20,
-        alphabet=st.characters(whitelist_categories=("Lu", "Ll", "Nd")),
-    ),
-    endpoint=st.sampled_from(_WRITE_ENDPOINTS),
-    method=st.sampled_from(_WRITE_METHODS),
-)
-@settings(max_examples=100, suppress_health_check=[HealthCheck.too_slow], deadline=None)
-def test_unauthenticated_write_returns_401(email, password, endpoint, method):
+@pytest.mark.django_db
+@pytest.mark.parametrize("endpoint", _WRITE_ENDPOINTS)
+@pytest.mark.parametrize("method", _WRITE_METHODS)
+def test_unauthenticated_write_returns_401(endpoint, method):
     """Property 11: Write requests without a valid access_token cookie must return 401.
 
     Validates: Requirements 5.1, 5.4
@@ -109,24 +98,15 @@ def test_unauthenticated_write_returns_401(email, password, endpoint, method):
 # ---------------------------------------------------------------------------
 
 
-@pytest.mark.django_db(transaction=True)
-@given(
-    email=st.emails(),
-    password=st.text(
-        min_size=8,
-        max_size=20,
-        alphabet=st.characters(whitelist_categories=("Lu", "Ll", "Nd")),
-    ),
-    endpoint=st.sampled_from(_WRITE_ENDPOINTS),
-    method=st.sampled_from(_WRITE_METHODS),
-)
-@settings(max_examples=100, suppress_health_check=[HealthCheck.too_slow], deadline=None)
-def test_reader_write_returns_403(email, password, endpoint, method):
+@pytest.mark.django_db
+@pytest.mark.parametrize("endpoint", _WRITE_ENDPOINTS)
+@pytest.mark.parametrize("method", _WRITE_METHODS)
+def test_reader_write_returns_403(endpoint, method):
     """Property 12: Write requests with a reader access_token must return 403.
 
     Validates: Requirements 5.2, 5.5
     """
-    user = _make_user(email, password, role="reader")
+    user = _make_user("reader@example.com", "readerpass123", role="reader")
     client = _cookie_client_for(user)
 
     http_method = getattr(client, method)
@@ -136,9 +116,6 @@ def test_reader_write_returns_403(email, password, endpoint, method):
         f"Expected HTTP 403 for reader {method.upper()} {endpoint}, "
         f"but got {response.status_code}."
     )
-
-    # Clean up to avoid unique constraint violations across hypothesis examples
-    user.delete()
 
 
 # ---------------------------------------------------------------------------
@@ -152,11 +129,8 @@ _READ_ENDPOINTS = [
 ]
 
 
-@pytest.mark.django_db(transaction=True)
-@given(
-    endpoint=st.sampled_from(_READ_ENDPOINTS),
-)
-@settings(max_examples=100, suppress_health_check=[HealthCheck.too_slow], deadline=None)
+@pytest.mark.django_db
+@pytest.mark.parametrize("endpoint", _READ_ENDPOINTS)
 def test_public_read_returns_200(endpoint):
     """Property 14: GET requests without authentication must return 200.
 
@@ -176,5 +150,4 @@ def test_public_read_returns_200(endpoint):
         f"but got {response.status_code}."
     )
 
-    # Clean up
     podcast.delete()

@@ -18,9 +18,6 @@ factory-boy>=3.3.0,<4.0
 # Qualidade de código
 ruff>=0.8.0,<0.9.0
 
-# Property-based testing
-hypothesis>=6.155.2
-
 # Versionamento
 commitizen>=3.13.0
 

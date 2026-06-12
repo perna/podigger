@@ -16,6 +16,7 @@ dependencies = [
     "django-environ>=0.10.0",
     "django-redis>=5.4.0",
     "Faker==19.9.0",
+    "factory-boy>=3.3.0,<4.0",
     "django-filter>=23.2",
     "pytest>=7.0.0",
     "pytest-django>=4.0.0",
@@ -23,7 +24,6 @@ dependencies = [
     "feedparser>=6.0.10",
     "requests>=2.31.0",
     "djangorestframework-simplejwt>=5.5.1",
-    "hypothesis>=6.155.2",
 ]
 
 
