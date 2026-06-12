@@ -52,12 +52,8 @@ class TestPodcastAPI:
         """T004: ?language=<id> filters podcasts by language."""
         lang_pt = PodcastLanguage.objects.create(code="pt", name="Portugu\u00eas")
         lang_en = PodcastLanguage.objects.create(code="en", name="Ingl\u00eas")
-        Podcast.objects.create(
-            name="Pod PT", feed="http://pt.com", language=lang_pt
-        )
-        Podcast.objects.create(
-            name="Pod EN", feed="http://en.com", language=lang_en
-        )
+        Podcast.objects.create(name="Pod PT", feed="http://pt.com", language=lang_pt)
+        Podcast.objects.create(name="Pod EN", feed="http://en.com", language=lang_en)
         response = self.client.get(f"/api/podcasts/?language={lang_pt.id}")
         assert response.status_code == 200
         assert response.data["count"] == 1
@@ -84,9 +80,7 @@ class TestPodcastAPI:
         Podcast.objects.create(
             name="Python EN", feed="http://pyen.com", language=lang_en
         )
-        Podcast.objects.create(
-            name="Java EN", feed="http://java.com", language=lang_en
-        )
+        Podcast.objects.create(name="Java EN", feed="http://java.com", language=lang_en)
         response = self.client.get(
             f"/api/podcasts/?search=Python&language={lang_en.id}"
         )
