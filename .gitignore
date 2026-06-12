@@ -88,4 +88,15 @@ uv.lock
 .claude
 .cursor
 .windsurf
+.kiro
 docs
+.continue
+.opencode
+.reversa
+.specify
+
+# Reversa
+.reversa/config.user.toml
+_reversa_sdd/
+
+skills-lock.json

@@ -16,12 +16,14 @@ dependencies = [
     "django-environ>=0.10.0",
     "django-redis>=5.4.0",
     "Faker==19.9.0",
+    "factory-boy>=3.3.0,<4.0",
     "django-filter>=23.2",
     "pytest>=7.0.0",
     "pytest-django>=4.0.0",
     "pytest-mock>=3.10.0",
     "feedparser>=6.0.10",
     "requests>=2.31.0",
+    "djangorestframework-simplejwt>=5.5.1",
 ]
 
 
@@ -31,11 +33,16 @@ DJANGO_SETTINGS_MODULE = "config.settings"
 python_files = ["test_*.py", "*_test.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
-addopts = "-v --tb=short --strict-markers --cov=podcasts --cov-report=term-missing --cov-report=xml --cov-fail-under=70"
-testpaths = ["podcasts/tests"]
+addopts = """
+    -v --tb=short --strict-markers
+    --cov=podcasts --cov=accounts
+    --cov-report=term-missing --cov-report=xml
+    --cov-fail-under=70
+"""
+testpaths = ["podcasts/tests", "accounts/tests"]
 
 [tool.coverage.run]
-source = ["podcasts"]
+source = ["podcasts", "accounts"]
 omit = ["*/tests/*", "*/migrations/*", "*/management/*"]
 
 [tool.coverage.report]

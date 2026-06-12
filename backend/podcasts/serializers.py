@@ -2,7 +2,7 @@ from typing import ClassVar
 
 from rest_framework import serializers
 
-from .models import Episode, Podcast, PopularTerm, Tag, TopicSuggestion
+from .models import Episode, Podcast, PodcastLanguage, PopularTerm, Tag, TopicSuggestion
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -23,6 +23,16 @@ class PodcastMinimalSerializer(serializers.ModelSerializer):
 
         model = Podcast
         fields: ClassVar = ["id", "name", "image"]
+
+
+class PodcastLanguageSerializer(serializers.ModelSerializer):
+    """Serializer for PodcastLanguage model (T007)."""
+
+    class Meta:
+        """Meta options for PodcastLanguageSerializer."""
+
+        model = PodcastLanguage
+        fields: ClassVar = ["id", "code", "name"]
 
 
 class EpisodeSerializer(serializers.ModelSerializer):
@@ -48,7 +58,9 @@ class EpisodeSerializer(serializers.ModelSerializer):
 
 
 class PodcastListSerializer(serializers.ModelSerializer):
-    """Serializer for listing Podcasts."""
+    """Serializer for listing Podcasts (T008)."""
+
+    language = PodcastLanguageSerializer(read_only=True)
 
     class Meta:
         """Meta options for PodcastListSerializer."""
@@ -65,8 +77,9 @@ class PodcastListSerializer(serializers.ModelSerializer):
 
 
 class PodcastDetailSerializer(serializers.ModelSerializer):
-    """Serializer for Podcast details."""
+    """Serializer for Podcast details (T009)."""
 
+    language = PodcastLanguageSerializer(read_only=True)
     episodes = EpisodeSerializer(many=True, read_only=True)
 
     class Meta:

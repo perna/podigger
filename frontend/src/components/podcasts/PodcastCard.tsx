@@ -34,6 +34,12 @@ export function PodcastCard({ podcast }: PodcastCardProps) {
                         {podcast.name}
                     </h3>
                     <div className="flex items-center gap-2 text-slate-500 dark:text-slate-400 text-xs md:text-sm">
+                        {podcast.language && (
+                            <span className="flex items-center gap-1">
+                                <Icon name="language" opticalSize={14} />
+                                {podcast.language.name}
+                            </span>
+                        )}
                         <span className="flex items-center gap-1">
                             <Icon name="description" opticalSize={14} />
                             {podcast.total_episodes} episodes

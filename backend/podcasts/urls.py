@@ -6,6 +6,7 @@ from . import views
 router = routers.DefaultRouter()
 router.register(r"podcasts", views.PodcastViewSet)
 router.register(r"episodes", views.EpisodeViewSet)
+router.register(r"languages", views.PodcastLanguageViewSet)
 router.register(r"topic-suggestions", views.TopicSuggestionViewSet)
 router.register(r"popular-terms", views.PopularTermViewSet)
 
