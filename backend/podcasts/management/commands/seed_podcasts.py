@@ -8,7 +8,6 @@ from podcasts.models import (
     PodcastLanguage,
     PopularTerm,
     Tag,
-    TopicSuggestion,
 )
 
 
@@ -16,9 +15,9 @@ class Command(BaseCommand):
     help = "Seed the database with example podcasts, episodes, tags and suggestions. Safe to run multiple times."
 
     def handle(self, *args, **options):
-        """Seed the database with example podcasts, episodes, tags, popular terms, and topic suggestions.
+        """Seed the database with example podcasts, episodes, tags, and popular terms.
 
-        Creates or verifies records for Portuguese and English languages; tags "news", "tech", and "ai"; two podcasts with metadata; sample episodes linked to those podcasts with appropriate tag associations; popular terms ("python", "django"); and a topic suggestion. Operations are performed atomically and are safe to run multiple times (uses `get_or_create`). On success a confirmation message is written to stdout.
+        Creates or verifies records for Portuguese and English languages; tags "news", "tech", and "ai"; two podcasts with metadata; sample episodes linked to those podcasts with appropriate tag associations; popular terms ("python", "django"). Operations are performed atomically and are safe to run multiple times (uses `get_or_create`). On success a confirmation message is written to stdout.
         """
         _ = args
         _ = options
@@ -98,15 +97,6 @@ class Command(BaseCommand):
             )
             PopularTerm.objects.get_or_create(
                 term="django", defaults={"times": 5, "date_search": now.date()}
-            )
-
-            # Topic suggestions
-            TopicSuggestion.objects.get_or_create(
-                title="Como testar APIs",
-                defaults={
-                    "description": "Sugestões de tópicos para testar APIs",
-                    "is_recorded": False,
-                },
             )
 
         self.stdout.write(self.style.SUCCESS("Seed data created/verified."))

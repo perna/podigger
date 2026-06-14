@@ -11,7 +11,6 @@ from podcasts.models import (
     PodcastLanguage,
     PopularTerm,
     Tag,
-    TopicSuggestion,
 )
 
 
@@ -193,18 +192,13 @@ class Command(BaseCommand):
                     m2m_rows[i : i + 2000], ignore_conflicts=True
                 )
 
-            # Create a few popular terms and topic suggestions
+            # Create a few popular terms
             PopularTerm.objects.get_or_create(
                 term="python", defaults={"times": 100, "date_search": now.date()}
             )
             PopularTerm.objects.get_or_create(
                 term="django", defaults={"times": 80, "date_search": now.date()}
             )
-            for _ in range(5):
-                TopicSuggestion.objects.get_or_create(
-                    title=fake.sentence(nb_words=4),
-                    defaults={"description": fake.paragraph(), "is_recorded": False},
-                )
 
         self.stdout.write(
             self.style.SUCCESS(

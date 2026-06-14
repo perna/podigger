@@ -87,7 +87,7 @@ class TokenObtainCookieView(TokenObtainPairView):
             secure=secure,
             samesite="Lax",
             max_age=86400,
-            path="/api/auth/token/refresh/",
+            path="/api/auth/token/refresh",
         )
 
         # Return only role and email — tokens are in HttpOnly cookies

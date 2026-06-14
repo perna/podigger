@@ -3,7 +3,7 @@ from datetime import timedelta
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 
-from podcasts.models import Episode, Podcast, PopularTerm, Tag, TopicSuggestion
+from podcasts.models import Episode, Podcast, PopularTerm, Tag
 
 
 class Command(BaseCommand):
@@ -34,9 +34,9 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         """Remove podcast-related seed data created within the last `minutes` minutes.
 
-        Identifies Podcast, Episode, Tag, PopularTerm, and TopicSuggestion records with created_at >= (now - minutes).
+        Identifies Podcast, Episode, Tag, and PopularTerm records with created_at >= (now - minutes).
         If `dry_run` is True, prints counts and exits without deleting. Otherwise deletes episodes, then podcasts,
-        removes tags created in the window that have no related episode, and deletes matching popular terms and topic suggestions,
+        removes tags created in the window that have no related episode, and deletes matching popular terms,
         then prints a deletion summary.
 
         Parameters:
@@ -54,11 +54,10 @@ class Command(BaseCommand):
         podcasts_qs = Podcast.objects.filter(created_at__gte=cutoff)
         episodes_qs = Episode.objects.filter(created_at__gte=cutoff)
         pterms_qs = PopularTerm.objects.filter(created_at__gte=cutoff)
-        topics_qs = TopicSuggestion.objects.filter(created_at__gte=cutoff)
         tags_qs = Tag.objects.filter(created_at__gte=cutoff)
 
         self.stdout.write(
-            f"Identified {podcasts_qs.count()} podcasts, {episodes_qs.count()} episodes, {tags_qs.count()} tags, {pterms_qs.count()} popular terms, {topics_qs.count()} topic suggestions created since {cutoff}."
+            f"Identified {podcasts_qs.count()} podcasts, {episodes_qs.count()} episodes, {tags_qs.count()} tags, {pterms_qs.count()} popular terms created since {cutoff}."
         )
 
         if dry_run:
@@ -72,7 +71,6 @@ class Command(BaseCommand):
         podcasts_count = podcasts_qs.count()
         _ = tags_qs.count()
         pterms_count = pterms_qs.count()
-        topics_count = topics_qs.count()
 
         episodes_qs.delete()
         podcasts_qs.delete()
@@ -83,10 +81,9 @@ class Command(BaseCommand):
         orphan_tags.delete()
 
         pterms_qs.delete()
-        topics_qs.delete()
 
         self.stdout.write(
             self.style.SUCCESS(
-                f"Deleted {ep_count} episodes, {podcasts_count} podcasts, {orphan_tags_count} orphan tags, {pterms_count} popular terms, {topics_count} topic suggestions."
+                f"Deleted {ep_count} episodes, {podcasts_count} podcasts, {orphan_tags_count} orphan tags, {pterms_count} popular terms."
             )
         )
