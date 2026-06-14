@@ -2,7 +2,7 @@ from typing import ClassVar
 
 from rest_framework import serializers
 
-from .models import Episode, Podcast, PodcastLanguage, PopularTerm, Tag, TopicSuggestion
+from .models import Episode, Podcast, PopularTerm, Tag
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -97,14 +97,43 @@ class PodcastDetailSerializer(serializers.ModelSerializer):
         ]
 
 
-class TopicSuggestionSerializer(serializers.ModelSerializer):
-    """Serializer for TopicSuggestion model."""
+class PodcastUpdateSerializer(serializers.ModelSerializer):
+    """Serializer for updating Podcasts with feed uniqueness validation."""
 
     class Meta:
-        """Meta options for TopicSuggestionSerializer."""
+        """Meta options for PodcastUpdateSerializer."""
 
-        model = TopicSuggestion
-        fields: ClassVar = ["id", "title", "description", "is_recorded"]
+        model = Podcast
+        fields: ClassVar = [
+            "id",
+            "name",
+            "feed",
+            "image",
+            "language",
+            "total_episodes",
+        ]
+        read_only_fields: ClassVar = ["id", "total_episodes"]
+
+    def validate_feed(self, value):
+        """Validate feed URL uniqueness excluding current instance.
+
+        Parameters:
+            value (str): The feed URL to validate.
+
+        Returns:
+            str: The validated feed URL.
+
+        Raises:
+            serializers.ValidationError: If feed URL is already used by another podcast.
+        """
+        msg = "Um podcast com este feed já existe."
+        if (
+            self.instance
+            and value != self.instance.feed
+            and Podcast.objects.filter(feed=value).exclude(pk=self.instance.pk).exists()
+        ):
+            raise serializers.ValidationError(msg)
+        return value
 
 
 class PopularTermSerializer(serializers.ModelSerializer):

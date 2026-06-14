@@ -3,6 +3,8 @@ import re
 from typing import Any
 
 import feedparser
+from django.core.exceptions import ValidationError
+from django.core.validators import URLValidator
 
 logger = logging.getLogger(__name__)
 
@@ -112,6 +114,26 @@ def parse_feed(
         return {}
     else:
         return result
+
+
+def is_valid_url_format(url: str) -> bool:
+    """Validate URL format using Django's URLValidator.
+
+    Performs fast synchronous validation without network requests.
+
+    Parameters:
+        url (str): The URL string to validate.
+
+    Returns:
+        bool: True if the URL format is valid, False otherwise.
+    """
+    validator = URLValidator()
+    try:
+        validator(url)
+    except ValidationError:
+        return False
+    else:
+        return True
 
 
 def is_valid_feed(url: str) -> bool:

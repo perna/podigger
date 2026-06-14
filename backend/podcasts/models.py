@@ -136,10 +136,10 @@ class Episode(models.Model):
     objects = EpisodeManager()
 
     def __str__(self):
-        """Represent the topic suggestion by its title.
+        """Represent the episode by its title.
 
         Returns:
-            str: The topic suggestion title used as the object's string representation.
+            str: The episode title used as the object's string representation.
         """
         return self.title
 
@@ -159,18 +159,3 @@ class PopularTerm(BaseModel):
         """
         return f"{self.term} ({self.times})"
 
-
-class TopicSuggestion(BaseModel):
-    """Model for suggested topics."""
-
-    title = models.CharField(max_length=255, db_index=True)
-    description = models.TextField(blank=True, null=True)
-    is_recorded = models.BooleanField(default=False)
-
-    def __str__(self):
-        """Represent the topic suggestion by its title.
-
-        Returns:
-            str: The episode title used as the object's string representation.
-        """
-        return self.title

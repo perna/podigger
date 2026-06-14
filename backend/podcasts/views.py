@@ -9,14 +9,18 @@ from rest_framework.response import Response
 
 from accounts.permissions import IsEditorOrAdmin
 
+<<<<<<< HEAD
 from .models import Episode, Podcast, PodcastLanguage, PopularTerm, TopicSuggestion
+=======
+from .models import Episode, Podcast, PopularTerm
+>>>>>>> e07ed9a (refactor: improve backend API with better search and validation)
 from .serializers import (
     EpisodeSerializer,
     PodcastDetailSerializer,
     PodcastLanguageSerializer,
     PodcastListSerializer,
+    PodcastUpdateSerializer,
     PopularTermSerializer,
-    TopicSuggestionSerializer,
 )
 from .services.podcast_service import PodcastService
 
@@ -38,7 +42,10 @@ class PodcastViewSet(viewsets.ModelViewSet):
     filter_backends: ClassVar = [filters.SearchFilter, DjangoFilterBackend]
     search_fields: ClassVar = ["name"]
     filterset_fields: ClassVar = ["language"]
+<<<<<<< HEAD
     pagination_class = PodcastPagination
+=======
+>>>>>>> e07ed9a (refactor: improve backend API with better search and validation)
 
     def get_permissions(self):
         """Return AllowAny for read actions; require IsEditorOrAdmin for writes."""
@@ -50,6 +57,8 @@ class PodcastViewSet(viewsets.ModelViewSet):
         """Return the serializer class based on the action."""
         if self.action in ["list"]:
             return PodcastListSerializer
+        if self.action in ["update", "partial_update"]:
+            return PodcastUpdateSerializer
         return PodcastDetailSerializer
 
     def create(self, request):
@@ -90,6 +99,44 @@ class PodcastViewSet(viewsets.ModelViewSet):
         return Response(
             {"id": result["id"], "status": "created"}, status=status.HTTP_201_CREATED
         )
+
+    def update(self, request, *args, **kwargs):  # noqa: ARG002
+        """Update a podcast with optional feed change detection.
+
+        Parameters:
+            request (rest_framework.request.Request): The update request.
+            *args: Positional arguments passed to parent.
+            **kwargs: Keyword arguments passed to parent.
+
+        Returns:
+            rest_framework.response.Response: Updated podcast data.
+        """
+        partial = kwargs.pop("partial", False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+
+        new_feed = serializer.validated_data.get("feed")
+        if new_feed and new_feed != instance.feed:
+            PodcastService.update_podcast_feed(instance, new_feed)
+            serializer.validated_data.pop("feed", None)
+
+        self.perform_update(serializer)
+        return Response(serializer.data)
+
+    def partial_update(self, request, *args, **kwargs):
+        """Partially update a podcast with optional feed change detection.
+
+        Parameters:
+            request (rest_framework.request.Request): The update request.
+            *args: Positional arguments passed to parent.
+            **kwargs: Keyword arguments passed to parent.
+
+        Returns:
+            rest_framework.response.Response: Updated podcast data.
+        """
+        kwargs["partial"] = True
+        return self.update(request, *args, **kwargs)
 
     @action(detail=False, methods=["get"])
     def recent(self, request):
@@ -133,28 +180,6 @@ class EpisodeViewSet(viewsets.ModelViewSet):
             return Episode.objects.search(q)
 
         return qs
-
-
-class PodcastLanguageViewSet(viewsets.ReadOnlyModelViewSet):
-    """ViewSet for listing available podcast languages (T012)."""
-
-    queryset: ClassVar = PodcastLanguage.objects.all().order_by("name")
-    serializer_class: ClassVar = PodcastLanguageSerializer
-    permission_classes: ClassVar = [AllowAny]
-    pagination_class = None
-
-
-class TopicSuggestionViewSet(viewsets.ModelViewSet):
-    """ViewSet for handling Topic Suggestions."""
-
-    queryset: ClassVar = TopicSuggestion.objects.all().order_by("-id")
-    serializer_class: ClassVar = TopicSuggestionSerializer
-
-    def get_permissions(self):
-        """Return AllowAny for read actions; require IsEditorOrAdmin for writes."""
-        if self.action in _READ_ACTIONS:
-            return [AllowAny()]
-        return [IsEditorOrAdmin()]
 
 
 class PopularTermViewSet(viewsets.ReadOnlyModelViewSet):

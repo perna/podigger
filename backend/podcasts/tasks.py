@@ -22,6 +22,27 @@ def add_episode(feed_url):
     logger.info("Finished add_episode task for feed: %s", feed_url)
 
 
+@shared_task
+def reimport_feed(podcast_id):
+    """Re-import episodes for a podcast after feed URL change.
+
+    Looks up the podcast by ID, retrieves its current feed URL, and uses
+    EpisodeUpdater to import episodes from the new feed.
+
+    Parameters:
+        podcast_id (int): ID of the podcast whose feed was updated.
+    """
+    logger.info("Starting reimport_feed task for podcast ID: %s", podcast_id)
+    try:
+        podcast = Podcast.objects.get(id=podcast_id)
+        updater = EpisodeUpdater([podcast.feed])
+        updater.populate()
+    except Podcast.DoesNotExist:
+        logger.exception("Podcast with ID %s not found for re-import", podcast_id)
+    else:
+        logger.info("Finished reimport_feed task for podcast ID: %s", podcast_id)
+
+
 @shared_task(name="update_base")
 def update_base():
     """Update episodes for all podcasts to populate feeds.

@@ -27,6 +27,8 @@ SECRET_KEY = env(
 DEBUG = env.bool("DJANGO_DEBUG", default=os.environ.get("DJANGO_DEBUG", "1") == "1")
 ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=["*"])
 
+APPEND_SLASH = False
+
 # Trust the X-Forwarded-Proto header from the proxy (Nginx) for HTTPS identification
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 

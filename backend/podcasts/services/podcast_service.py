@@ -4,9 +4,9 @@ from typing import TypedDict
 from django.db import transaction
 
 from podcasts.models import Podcast
-from podcasts.tasks import add_episode
+from podcasts.tasks import add_episode, reimport_feed
 
-from .feed_parser import is_valid_feed
+from .feed_parser import is_valid_url_format
 
 logger = logging.getLogger(__name__)
 
@@ -40,11 +40,11 @@ class PodcastService:
                 "message": "o nome e o feed são obrigatórios",
             }
 
-        if not is_valid_feed(feed):
+        if not is_valid_url_format(feed):
             return {
                 "id": None,
                 "status": "error",
-                "message": "o feed informado é inválido",
+                "message": "o formato da URL do feed é inválido",
             }
 
         # Atomic lookup/create to avoid race conditions
@@ -68,3 +68,25 @@ class PodcastService:
             "status": "created",
             "message": None,
         }
+
+    @staticmethod
+    def update_podcast_feed(podcast: Podcast, new_feed_url: str) -> None:
+        """Update podcast feed URL and trigger episode re-import.
+
+        Deletes all existing episodes for the podcast and enqueues an async
+        task to import episodes from the new feed.
+
+        Parameters:
+            podcast: The podcast instance to update.
+            new_feed_url: The new RSS feed URL.
+        """
+        with transaction.atomic():
+            podcast.episodes.all().delete()
+            podcast.feed = new_feed_url
+            podcast.save(update_fields=["feed"])
+
+        reimport_feed.delay(podcast.id)
+        logger.info(
+            "Updated feed for podcast %s and enqueued re-import",
+            podcast.id,
+        )
