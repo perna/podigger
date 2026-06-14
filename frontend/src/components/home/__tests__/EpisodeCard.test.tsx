@@ -36,7 +36,7 @@ describe('EpisodeCard', () => {
   it('Play link has correct href and opens in new tab', () => {
     const { container } = render(<EpisodeCard episode={mockEpisode} />);
     const playLinks = within(container).getAllByRole('link');
-    const playLink = playLinks.find((l) => l.textContent?.includes('Play'));
+    const playLink = playLinks.find((l) => l.textContent?.includes('Ouvir'));
     expect(playLink).toHaveAttribute('href', 'https://episode.example.com');
     expect(playLink).toHaveAttribute('target', '_blank');
   });
@@ -46,7 +46,7 @@ describe('EpisodeCard', () => {
     const links = within(container).getAllByRole('link');
     const viewLink = links.find((l) => l.getAttribute('href') === '/podcasts/10');
     expect(viewLink).toBeDefined();
-    expect(viewLink?.textContent).toMatch(/View Podcast/i);
+    expect(viewLink?.textContent).toMatch(/Ver Podcast/i);
   });
 
   it('falls back to Podcast when podcast name missing', () => {

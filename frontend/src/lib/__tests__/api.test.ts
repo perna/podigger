@@ -33,7 +33,8 @@ describe('fetchEpisodes', () => {
     const result = await fetchEpisodes();
 
     expect(fetch).toHaveBeenCalledWith(
-      expect.stringMatching(/^https?:\/\/.+\/api\/episodes\/?$/)
+      expect.stringMatching(/^https?:\/\/.+\/api\/episodes\/?$/),
+      expect.anything()
     );
     expect(result).toEqual(mockData);
     expect(result.results).toHaveLength(1);
@@ -49,7 +50,8 @@ describe('fetchEpisodes', () => {
     await fetchEpisodes('design');
 
     expect(fetch).toHaveBeenCalledWith(
-      expect.stringContaining('q=design')
+      expect.stringContaining('q=design'),
+      expect.anything()
     );
   });
 
@@ -63,7 +65,8 @@ describe('fetchEpisodes', () => {
     await fetchEpisodes('  design  ');
 
     expect(fetch).toHaveBeenCalledWith(
-      expect.stringContaining('q=design')
+      expect.stringContaining('q=design'),
+      expect.anything()
     );
   });
 
@@ -77,7 +80,8 @@ describe('fetchEpisodes', () => {
     await fetchEpisodes(undefined, 2);
 
     expect(fetch).toHaveBeenCalledWith(
-      expect.stringContaining('page=2')
+      expect.stringContaining('page=2'),
+      expect.anything()
     );
   });
 
@@ -120,7 +124,8 @@ describe('fetchPodcasts', () => {
     await fetchPodcasts();
 
     expect(fetch).toHaveBeenCalledWith(
-      expect.stringMatching(/^https?:\/\/.+\/api\/podcasts\/?$/)
+      expect.stringMatching(/^https?:\/\/.+\/api\/podcasts\/?$/),
+      expect.anything()
     );
   });
 
@@ -134,7 +139,8 @@ describe('fetchPodcasts', () => {
     await fetchPodcasts('design');
 
     expect(fetch).toHaveBeenCalledWith(
-      expect.stringContaining('search=design')
+      expect.stringContaining('search=design'),
+      expect.anything()
     );
   });
 });
