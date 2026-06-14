@@ -99,4 +99,6 @@ docs
 .reversa/config.user.toml
 _reversa_sdd/
 
+.opencode
+.specify
 skills-lock.json
