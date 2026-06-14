@@ -42,11 +42,11 @@ export function PodcastCard({ podcast }: PodcastCardProps) {
                         )}
                         <span className="flex items-center gap-1">
                             <Icon name="description" opticalSize={14} />
-                            {podcast.total_episodes} episodes
+                            {podcast.total_episodes} episódios
                         </span>
                     </div>
                     <div className="mt-2 text-primary text-xs font-semibold flex items-center gap-1 group-hover:translate-x-1 transition-transform">
-                        View details
+                        Ver detalhes
                         <Icon name="arrow_forward_ios" opticalSize={12} />
                     </div>
                 </div>

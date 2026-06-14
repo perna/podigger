@@ -4,7 +4,7 @@
 """
 Property 11: Autenticação obrigatória para escrita (consolidado)
 
-For any content endpoint (/api/podcasts/, /api/episodes/, /api/topic-suggestions/)
+For any content endpoint (/api/podcasts/, /api/episodes/)
 and any write method (POST, PUT, PATCH, DELETE), a request without a valid
 access_token cookie must return HTTP 401.
 
@@ -68,7 +68,6 @@ def _cookie_client_for(user: User) -> APIClient:
 _WRITE_ENDPOINTS = [
     "/api/podcasts/",
     "/api/episodes/",
-    "/api/topic-suggestions/",
 ]
 
 _WRITE_METHODS = ["post", "put", "patch", "delete"]

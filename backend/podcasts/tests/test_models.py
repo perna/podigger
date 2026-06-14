@@ -8,7 +8,6 @@ from podcasts.models import (
     PodcastLanguage,
     PopularTerm,
     Tag,
-    TopicSuggestion,
 )
 
 
@@ -71,9 +70,3 @@ class PodcastEpisodeRelationTests(TestCase):
         ep.refresh_from_db()
         assert ep.to_json.get("foo") == "bar"
 
-
-class TopicSuggestionModelTests(TestCase):
-    def test_topic_suggestion_fields(self):
-        ts = TopicSuggestion.objects.create(title="New Topic", description="Desc")
-        assert ts.title == "New Topic"
-        assert not ts.is_recorded

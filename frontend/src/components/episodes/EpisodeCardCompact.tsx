@@ -17,13 +17,13 @@ function formatRelativeTime(dateStr: string | null): string {
     const diffD = Math.floor(diffH / 24);
     const diffW = Math.floor(diffD / 7);
 
-    if (diffMin < 60) return `${diffMin} min ago`;
-    if (diffH < 24) return `${diffH}h ago`;
-    if (diffD === 0) return 'Today';
-    if (diffD === 1) return 'Yesterday';
-    if (diffD < 7) return `${diffD} days ago`;
-    if (diffW === 1) return '1 week ago';
-    return `${diffW} weeks ago`;
+    if (diffMin < 60) return `há ${diffMin} min`;
+    if (diffH < 24) return `há ${diffH}h`;
+    if (diffD === 0) return 'Hoje';
+    if (diffD === 1) return 'Ontem';
+    if (diffD < 7) return `há ${diffD} dias`;
+    if (diffW === 1) return '1 semana atrás';
+    return `${diffW} semanas atrás`;
 }
 
 export function EpisodeCardCompact({ episode }: EpisodeCardCompactProps) {
@@ -75,7 +75,7 @@ export function EpisodeCardCompact({ episode }: EpisodeCardCompactProps) {
                                 href={`/podcasts/${podcastId}`}
                                 className="text-primary text-xs md:text-sm font-semibold hover:underline"
                             >
-                                View Podcast
+                                Ver Podcast
                             </Link>
                         )}
                     </div>
@@ -89,7 +89,7 @@ export function EpisodeCardCompact({ episode }: EpisodeCardCompactProps) {
                     className="w-full flex items-center justify-center gap-2 bg-primary text-background-dark font-bold py-2 rounded-full hover:bg-primary/90 transition-colors text-sm"
                 >
                     <Icon name="play_arrow" opticalSize={20} />
-                    Play
+                    Ouvir
                 </a>
             </div>
         </Card>
