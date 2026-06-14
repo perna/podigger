@@ -1,9 +1,3 @@
-<<<<<<< HEAD
-import { PodcastList } from '@/components/podcasts/PodcastList';
-
-export default function PodcastsPage() {
-  return <PodcastList />;
-=======
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -166,5 +160,4 @@ export default function PodcastsPage() {
       </div>
     </div>
   );
->>>>>>> d7bbf0b (feat: add podcast detail page with episode listing)
 }

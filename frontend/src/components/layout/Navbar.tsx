@@ -11,9 +11,8 @@ import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
 
 const publicNavLinks = [
-    { label: 'Search', href: '/', icon: 'search' },
-    { label: 'Podcasts', href: '/podcasts', icon: 'podcasts' },
-    { label: 'About', href: '/about', icon: 'info' },
+    { label: 'Buscar', href: '/', icon: 'search' },
+    { label: 'Sobre', href: '/about', icon: 'info' },
 ];
 
 export function Navbar() {
@@ -26,7 +25,7 @@ export function Navbar() {
     const navLinks = [
         ...publicNavLinks,
         ...(isAuthenticated && user && (user.role === 'editor' || user.role === 'admin')
-            ? [{ label: 'Add Podcast', href: '/add-podcast', icon: 'add_circle' }]
+            ? [{ label: 'Adicionar Podcast', href: '/add-podcast', icon: 'add_circle' }]
             : []),
     ];
 
@@ -90,42 +89,34 @@ export function Navbar() {
                             />
                         </button>
 
-                        {/* Auth Actions (desktop only) */}
-                        {isAuthenticated && user ? (
-                            <div className="hidden md:flex items-center gap-3">
-                                {/* User info badge */}
-                                <span className="text-xs font-medium text-slate-500 dark:text-slate-400 capitalize">
-                                    {user.role}
-                                </span>
-                                {/* Logout button */}
-                                <button
-                                    type="button"
-                                    onClick={handleLogout}
-                                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/10 transition-colors"
-                                    aria-label="Logout"
-                                >
-                                    <Icon name="logout" opticalSize={18} />
-                                    <span>Logout</span>
-                                </button>
-                            </div>
-                        ) : (
-                            <Link
-                                href="/login"
-                                className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/10 transition-colors"
-                            >
-                                <Icon name="login" opticalSize={18} />
-                                <span>Login</span>
-                            </Link>
-                        )}
-
-                        {/* Mobile Hamburger */}
-                        <button
+                      {/* Auth Actions */}
+                      {isAuthenticated && user ? (
+                        <>
+                          {/* User info badge */}
+                          <span className="hidden md:inline text-xs font-medium text-slate-500 dark:text-slate-400 capitalize">
+                            {user.role}
+                          </span>
+                          {/* Logout button */}
+                          <button
                             type="button"
-                            className="p-2 text-slate-600 dark:text-slate-400 md:hidden"
-                            aria-label="Open menu"
+                            onClick={handleLogout}
+                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/10 transition-colors"
+                            aria-label="Logout"
+                          >
+                            <Icon name="logout" opticalSize={18} />
+                            <span className="hidden md:inline">Sair</span>
+                          </button>
+                        </>
+                      ) : (
+                        <Link
+                          href="/login"
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/10 transition-colors"
                         >
-                            <Icon name="menu" opticalSize={24} />
-                        </button>
+                          <Icon name="login" opticalSize={18} />
+                          <span className="hidden md:inline">Entrar</span>
+                        </Link>
+                      )}
+
                     </div>
                 </div>
             </div>
