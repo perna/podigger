@@ -7,10 +7,10 @@ import { cn } from '@/lib/utils';
 type NavItem = 'home' | 'search' | 'library' | 'settings';
 
 const items: { id: NavItem; label: string; icon: string; href: string }[] = [
-  { id: 'home', label: 'Home', icon: 'home', href: '/' },
-  { id: 'search', label: 'Search', icon: 'search', href: '/' },
-  { id: 'library', label: 'Library', icon: 'library_music', href: '#' },
-  { id: 'settings', label: 'Settings', icon: 'settings', href: '#' },
+  { id: 'home', label: 'Início', icon: 'home', href: '/' },
+  { id: 'search', label: 'Buscar', icon: 'search', href: '/' },
+  { id: 'library', label: 'Biblioteca', icon: 'library_music', href: '#' },
+  { id: 'settings', label: 'Ajustes', icon: 'settings', href: '#' },
 ];
 
 interface BottomNavProps {

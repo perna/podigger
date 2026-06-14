@@ -124,7 +124,7 @@ export function EpisodeList({ searchTerm, onLoadingChange }: EpisodeListProps) {
             <>
               <div className="size-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
               <p className="text-slate-400 dark:text-slate-500 text-xs font-medium uppercase tracking-widest">
-                Loading more episodes...
+                Carregando mais episódios...
               </p>
             </>
           )}

@@ -4,7 +4,6 @@ import { useState, useCallback } from 'react';
 import { SearchHero } from '@/components/search/SearchHero';
 import { EpisodeList } from './EpisodeList';
 import { BottomNav } from './BottomNav';
-import { FAB } from '@/components/common/FAB';
 import { fetchPodcasts, type Podcast } from '@/lib/api';
 import { PodcastCard } from '@/components/podcasts/PodcastCard';
 import { LoadingSpinner } from '@/components/ui/Loading';
@@ -75,73 +74,25 @@ export function HomeClient() {
                   </div>
                 ) : (
                   <p className="text-sm text-slate-500 dark:text-slate-400 italic">
-                    No podcasts found for &quot;{searchTerm}&quot;.
+                    Nenhum podcast encontrado para &quot;{searchTerm}&quot;.
                   </p>
                 )}
               </section>
             )}
 
             {/* Episodes Section */}
-            <div className="flex items-center justify-between mb-6">
+            <div className="mb-6">
               <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
                 {searchTerm
-                  ? `Episodes for "${searchTerm}"`
-                  : 'Recent Results'}
+                  ? `Episódios para "${searchTerm}"`
+                  : 'Resultados Recentes'}
               </h2>
-              <button
-                type="button"
-                className="flex items-center gap-2 text-sm text-slate-500 cursor-pointer hover:text-primary transition-colors"
-              >
-                <span className="material-symbols-rounded text-lg">tune</span>
-                <span>Filters</span>
-              </button>
             </div>
             <EpisodeList
               searchTerm={searchTerm}
               onLoadingChange={handleLoadingChange}
             />
           </main>
-
-          {/* Sidebar — visible only on lg+ */}
-          <aside className="w-full lg:w-80 shrink-0 hidden lg:block">
-            <div className="sticky top-24 space-y-6">
-              {/* Trending Podcasts placeholder */}
-              <div className="bg-white dark:bg-surface-dark-hover rounded-xl border border-slate-100 dark:border-slate-800 overflow-hidden shadow-sm">
-                <div className="p-5 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50/50 dark:bg-slate-800/30">
-                  <h2 className="text-base font-bold text-slate-900 dark:text-white">
-                    Trending Podcasts
-                  </h2>
-                  <span className="text-primary material-symbols-rounded text-xl">
-                    trending_up
-                  </span>
-                </div>
-                <div className="p-4">
-                  <p className="text-sm text-slate-500 dark:text-slate-400 text-center py-4">
-                    Coming soon...
-                  </p>
-                </div>
-              </div>
-
-              {/* Podigger Pro CTA */}
-              <div className="p-6 rounded-xl bg-linear-to-br from-primary to-blue-600 text-background-dark shadow-lg shadow-primary/20">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="material-symbols-rounded font-bold">
-                    verified
-                  </span>
-                  <h3 className="font-extrabold">Podigger Pro</h3>
-                </div>
-                <p className="text-xs font-medium opacity-90 mb-4 leading-relaxed">
-                  Unlimited RSS imports and ad-free offline listening.
-                </p>
-                <button
-                  type="button"
-                  className="w-full py-2.5 bg-background-dark text-primary text-xs font-black rounded-full hover:scale-105 transition-transform"
-                >
-                  Get Started
-                </button>
-              </div>
-            </div>
-          </aside>
         </div>
       </div>
 
@@ -149,9 +100,6 @@ export function HomeClient() {
       <div className="md:hidden">
         <BottomNav activeItem="search" />
       </div>
-
-      {/* Floating Add RSS Button */}
-      <FAB />
     </div>
   );
 }

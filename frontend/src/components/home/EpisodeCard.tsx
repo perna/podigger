@@ -49,14 +49,14 @@ export function EpisodeCard({ episode }: EpisodeCardProps) {
               className="inline-flex items-center justify-center gap-2 h-10 px-6 rounded-full bg-primary text-background-dark font-bold text-sm shadow-lg shadow-primary/20 hover:brightness-110 transition-all active:scale-95"
             >
               <Icon name="play_arrow" opticalSize={20} />
-              <span>Play</span>
+              <span>Ouvir</span>
             </a>
             {podcastId && (
               <Link
                 href={`/podcasts/${podcastId}`}
                 className="text-slate-500 dark:text-slate-400 text-sm font-semibold flex items-center gap-1 hover:text-primary transition-colors"
               >
-                View Podcast
+                  Ver Podcast
                 <Icon name="arrow_forward_ios" opticalSize={12} />
               </Link>
             )}
