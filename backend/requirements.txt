@@ -3,7 +3,7 @@
 # Para desenvolvimento, use requirements-dev.txt
 
 Django==6.0.6
-djangorestframework>=3.17.0,<4.0
+djangorestframework>=3.17.1,<4.0
 djangorestframework-simplejwt==5.5.1
 psycopg2==2.9.12          # compilado — não usar psycopg2-binary em produção
 django-cors-headers==4.9.0
