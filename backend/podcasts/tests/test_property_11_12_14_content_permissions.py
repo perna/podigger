@@ -30,10 +30,10 @@ Validates: Requirements 6.1, 6.2, 6.3, 6.4
 """
 
 import pytest
+from accounts.models import User
 from rest_framework.test import APIClient
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from accounts.models import User
 from podcasts.models import Podcast
 
 # ---------------------------------------------------------------------------

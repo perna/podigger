@@ -14,6 +14,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `SECURE_PROXY_SSL_HEADER` configuration to trust Nginx proxy HTTPS identification.
 - Unit tests for `addPodcast` API service and `AddPodcastPage` component.
 
+### Fixed
+- Fixed backend lint configuration to pass CI consistently
+- Consolidated Ruff configuration in root `ruff.toml`
+- Added `ruff format --check` step to CI pipeline
+- Auto-formatted 7 backend files for consistent code style
+- Added pre-commit hook configuration for lint enforcement
+
 ## [2.1.0] - 2026-02-28
 
 ### Added

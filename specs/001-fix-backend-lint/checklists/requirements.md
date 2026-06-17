@@ -1,8 +1,8 @@
-# Specification Quality Checklist: Listagem de Podcasts
+# Specification Quality Checklist: Fix Backend Lint
 
 **Purpose**: Validate specification completeness and quality before proceeding to planning
-**Created**: 2026-06-11
-**Feature**: [spec.md](../spec.md)
+**Created**: 2026-06-17
+**Feature**: [Link to spec.md](../spec.md)
 
 ## Content Quality
 
@@ -31,7 +31,4 @@
 
 ## Notes
 
-- All checklist items pass on first validation.
-- Spec clearly bounds scope: podcast listing only; episodes are out of scope for this feature.
-- Backend API partially exists (`/api/podcasts/`); this spec covers enhancements (pagination metadata, language filter) plus frontend.
-- No [NEEDS CLARIFICATION] markers needed — all assumptions documented with reasonable defaults.
+- All items pass validation. Specification is ready for `/speckit.plan`.

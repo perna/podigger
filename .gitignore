@@ -99,4 +99,6 @@ docs
 .reversa/config.user.toml
 _reversa_sdd/
 
-skills-lock.json
+skills-lock.json/
+specs
+.specify

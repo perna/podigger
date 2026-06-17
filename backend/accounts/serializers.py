@@ -72,5 +72,9 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields: ClassVar = ["id", "email", "role", "approval_status", "created_at"]
         read_only_fields: ClassVar = [
-            "id", "email", "role", "approval_status", "created_at",
+            "id",
+            "email",
+            "role",
+            "approval_status",
+            "created_at",
         ]
