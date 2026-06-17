@@ -4,6 +4,7 @@ from typing import ClassVar
 
 from django.conf import settings
 from django.db import IntegrityError
+
 from rest_framework import generics, status
 from rest_framework.exceptions import AuthenticationFailed, PermissionDenied
 from rest_framework.response import Response

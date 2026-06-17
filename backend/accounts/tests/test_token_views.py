@@ -8,9 +8,11 @@ Covers:
   - Property 4:  Refresh round-trip emite novo access_token
   - Property 15: Atributos de segurança dos cookies em produção (DEBUG=False)
 """
+
+from django.test import override_settings
+
 import jwt
 import pytest
-from django.test import override_settings
 from rest_framework.test import APIClient
 
 from accounts.tests.factories import UserFactory
@@ -81,12 +83,12 @@ class TestTokenObtainView:
         response = _login(client, user)
 
         assert response.status_code == 200
-        assert "access_token" in response.cookies, (
-            "Expected 'access_token' cookie in response."
-        )
-        assert response.cookies["access_token"]["httponly"], (
-            "Expected 'access_token' cookie to have HttpOnly=True."
-        )
+        assert (
+            "access_token" in response.cookies
+        ), "Expected 'access_token' cookie in response."
+        assert response.cookies["access_token"][
+            "httponly"
+        ], "Expected 'access_token' cookie to have HttpOnly=True."
 
     @ROLE_PARAMS
     def test_login_sets_httponly_refresh_token_cookie(self, role):
@@ -99,12 +101,12 @@ class TestTokenObtainView:
         response = _login(client, user)
 
         assert response.status_code == 200
-        assert "refresh_token" in response.cookies, (
-            "Expected 'refresh_token' cookie in response."
-        )
-        assert response.cookies["refresh_token"]["httponly"], (
-            "Expected 'refresh_token' cookie to have HttpOnly=True."
-        )
+        assert (
+            "refresh_token" in response.cookies
+        ), "Expected 'refresh_token' cookie in response."
+        assert response.cookies["refresh_token"][
+            "httponly"
+        ], "Expected 'refresh_token' cookie to have HttpOnly=True."
 
     @ROLE_PARAMS
     def test_login_response_body_contains_role_and_email(self, role):
@@ -117,18 +119,18 @@ class TestTokenObtainView:
         response = _login(client, user)
 
         assert response.status_code == 200
-        assert "role" in response.data, (
-            f"Expected 'role' in response body, got: {response.data}"
-        )
-        assert "email" in response.data, (
-            f"Expected 'email' in response body, got: {response.data}"
-        )
-        assert response.data["role"] == role, (
-            f"Expected role={role!r}, got {response.data['role']!r}"
-        )
-        assert response.data["email"] == user.email, (
-            f"Expected email={user.email!r}, got {response.data['email']!r}"
-        )
+        assert (
+            "role" in response.data
+        ), f"Expected 'role' in response body, got: {response.data}"
+        assert (
+            "email" in response.data
+        ), f"Expected 'email' in response body, got: {response.data}"
+        assert (
+            response.data["role"] == role
+        ), f"Expected role={role!r}, got {response.data['role']!r}"
+        assert (
+            response.data["email"] == user.email
+        ), f"Expected email={user.email!r}, got {response.data['email']!r}"
 
     @ROLE_PARAMS
     def test_login_response_body_does_not_contain_tokens(self, role):
@@ -141,12 +143,12 @@ class TestTokenObtainView:
         response = _login(client, user)
 
         assert response.status_code == 200
-        assert "access" not in response.data, (
-            "Access token must not appear in the response body."
-        )
-        assert "refresh" not in response.data, (
-            "Refresh token must not appear in the response body."
-        )
+        assert (
+            "access" not in response.data
+        ), "Access token must not appear in the response body."
+        assert (
+            "refresh" not in response.data
+        ), "Refresh token must not appear in the response body."
 
     @ROLE_PARAMS
     def test_login_with_username_field_returns_400_or_401(self, role):
@@ -253,11 +255,15 @@ class TestTokenRefreshView:
 
         assert login_response.status_code == 200
         refresh_cookie_value = login_response.cookies["refresh_token"].value
-        assert refresh_cookie_value, "Expected a non-empty refresh_token cookie after login."
+        assert (
+            refresh_cookie_value
+        ), "Expected a non-empty refresh_token cookie after login."
 
         refresh_client = APIClient()
         refresh_client.cookies["refresh_token"] = refresh_cookie_value
-        refresh_response = refresh_client.post("/api/auth/token/refresh/", format="json")
+        refresh_response = refresh_client.post(
+            "/api/auth/token/refresh/", format="json"
+        )
 
         assert refresh_response.status_code == 200, (
             f"Expected HTTP 200 from token refresh endpoint for role={role!r}, "
@@ -279,18 +285,20 @@ class TestTokenRefreshView:
 
         refresh_client = APIClient()
         refresh_client.cookies["refresh_token"] = refresh_cookie_value
-        refresh_response = refresh_client.post("/api/auth/token/refresh/", format="json")
+        refresh_response = refresh_client.post(
+            "/api/auth/token/refresh/", format="json"
+        )
 
         assert refresh_response.status_code == 200
-        assert "access_token" in refresh_response.cookies, (
-            "Expected a new 'access_token' cookie in the refresh response."
-        )
-        assert refresh_response.cookies["access_token"]["httponly"], (
-            "Expected the new 'access_token' cookie to have HttpOnly=True."
-        )
-        assert refresh_response.cookies["access_token"].value, (
-            "Expected a non-empty new access_token cookie."
-        )
+        assert (
+            "access_token" in refresh_response.cookies
+        ), "Expected a new 'access_token' cookie in the refresh response."
+        assert refresh_response.cookies["access_token"][
+            "httponly"
+        ], "Expected the new 'access_token' cookie to have HttpOnly=True."
+        assert refresh_response.cookies[
+            "access_token"
+        ].value, "Expected a non-empty new access_token cookie."
 
 
 # ---------------------------------------------------------------------------
@@ -317,13 +325,13 @@ class TestCookieSecurityAttributes:
         assert response.status_code == 200
 
         for cookie_name in ("access_token", "refresh_token"):
-            assert cookie_name in response.cookies, (
-                f"Expected '{cookie_name}' cookie in response."
-            )
+            assert (
+                cookie_name in response.cookies
+            ), f"Expected '{cookie_name}' cookie in response."
             cookie = response.cookies[cookie_name]
-            assert cookie["httponly"], (
-                f"Expected '{cookie_name}' cookie to have HttpOnly=True in production."
-            )
-            assert cookie["secure"], (
-                f"Expected '{cookie_name}' cookie to have Secure=True when DEBUG=False."
-            )
+            assert cookie[
+                "httponly"
+            ], f"Expected '{cookie_name}' cookie to have HttpOnly=True in production."
+            assert cookie[
+                "secure"
+            ], f"Expected '{cookie_name}' cookie to have Secure=True when DEBUG=False."

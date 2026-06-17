@@ -103,6 +103,11 @@ jobs:
           cd backend
           uv run ruff check .
 
+      - name: Run ruff format check
+        run: |
+          cd backend
+          uv run ruff format --check .
+
       - name: Wait for services
         run: |
           # Wait for Postgres

@@ -1,9 +1,9 @@
 """Configuração global do pytest para a suite de testes do backend."""
-import pytest
-from rest_framework.test import APIClient
 
+import pytest
 from accounts.tests.factories import UserFactory
 from podcasts.tests.factories import EpisodeFactory, PodcastFactory
+from rest_framework.test import APIClient
 
 
 @pytest.fixture(autouse=True)

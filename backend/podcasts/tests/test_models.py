@@ -1,6 +1,7 @@
-import pytest
 from django.db import IntegrityError
 from django.test import TestCase
+
+import pytest
 
 from podcasts.models import (
     Episode,

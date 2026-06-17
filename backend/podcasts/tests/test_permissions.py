@@ -25,11 +25,11 @@ and method GET, a request without authentication must return HTTP 200.
 
 Validates: Requirements 5.5, 5.6, 5.7
 """
+
 import pytest
+from accounts.tests.factories import UserFactory
 from rest_framework.test import APIClient
 from rest_framework_simplejwt.tokens import RefreshToken
-
-from accounts.tests.factories import UserFactory
 
 # ---------------------------------------------------------------------------
 # Shared parametrize data
