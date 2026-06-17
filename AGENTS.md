@@ -1,7 +1,7 @@
 <!-- SPECKIT START -->
 For additional context about technologies to be used, project structure,
 shell commands, and other important information, read the current plan
-at specs/001-podcast-listing/plan.md
+at specs/001-fix-backend-lint/plan.md
 <!-- SPECKIT END -->
 
 
