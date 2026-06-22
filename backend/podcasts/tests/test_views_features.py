@@ -1,3 +1,7 @@
+import datetime
+
+from django.utils import timezone
+
 import pytest
 from accounts.models import User
 from rest_framework.test import APIClient
@@ -69,7 +73,13 @@ class TestPodcastViewSetFeatures:
         # Create some episodes to search
         p = Podcast.objects.create(name="Pod", feed="http://feed.com")
         Episode.objects.create(
-            podcast=p, title="Python Rocks", link="http://1.com", published="2023-01-01"
+            podcast=p,
+            title="Python Rocks",
+            link="http://1.com",
+            published=timezone.make_aware(
+                datetime.datetime(2023, 1, 1),  # noqa: DTZ001
+                datetime.UTC,
+            ),
         )
 
         # Search
