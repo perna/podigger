@@ -8,6 +8,7 @@ unauthenticated and return HTTP 401 for protected endpoints.
 
 Validates: Requirements 4.1, 4.2, 4.3, 4.4
 """
+
 import pytest
 from rest_framework.test import APIClient
 from rest_framework_simplejwt.tokens import RefreshToken

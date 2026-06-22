@@ -13,6 +13,18 @@ class UserFactory(DjangoModelFactory):
     class Meta:
         model = User
         django_get_or_create = ("email",)
+        skip_postgeneration_save = True
+
+    @classmethod
+    def _after_postgeneration(cls, instance, create, results=None):
+        """Persist the instance after post-generation hooks.
+
+        Required because ``set_password`` writes the password hash to the
+        in-memory instance but not to the database row, so we need an
+        explicit ``save()`` to persist it.
+        """
+        if create:
+            instance.save()
 
     email = factory.LazyFunction(lambda: fake.unique.email())
     password = factory.PostGenerationMethodCall("set_password", "senha@Segura123")

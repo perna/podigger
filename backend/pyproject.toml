@@ -4,25 +4,25 @@ version = "0.1.0"
 description = "Podigger Django Backend"
 requires-python = ">=3.12,<3.13"
 dependencies = [
-    "Django==5.2.14",
-    "djangorestframework>=3.16.1,<4.0",
+    "Django==6.0.6",
+    "djangorestframework>=3.17.0,<4.0",
     "psycopg2-binary==2.9.11",
-    "django-cors-headers==4.0.0",
-    "celery==5.5.3",
-    "redis==7.1.0",
-    "gunicorn>=20.1.0,<24.0",
-    "uvicorn==0.38.0",
+    "django-cors-headers==4.9.0",
+    "celery==5.6.3",
+    "redis==8.0.0",
+    "gunicorn>=26.0.0,<27.0",
+    "uvicorn==0.49.0",
     "ruff>=0.8.0,<0.9.0",
-    "django-environ>=0.10.0",
-    "django-redis>=5.4.0",
+    "django-environ>=0.14.0",
+    "django-redis>=7.0.0",
     "Faker==19.9.0",
-    "factory-boy>=3.3.0,<4.0",
-    "django-filter>=23.2",
+    "factory-boy>=3.3.3,<4.0",
+    "django-filter>=25.2",
     "pytest>=7.0.0",
-    "pytest-django>=4.0.0",
+    "pytest-django>=4.11.0",
     "pytest-mock>=3.10.0",
-    "feedparser>=6.0.10",
-    "requests>=2.31.0",
+    "feedparser>=6.0.12",
+    "requests>=2.34.2",
     "djangorestframework-simplejwt>=5.5.1",
 ]
 
@@ -68,84 +68,3 @@ changelog_file = "../CHANGELOG.md"
 changelog_incremental = true
 changelog_start_rev = "HEAD"
 
-
-[tool.ruff]
-line-length = 88
-target-version = "py312"
-
-[tool.ruff.lint]
-select = [
-    "E", "W",    # pycodestyle
-    "F",         # pyflakes
-    "I",         # isort
-    "C90",       # mccabe
-    "N",         # pep8-naming
-    "D",         # pydocstyle
-    "UP",        # pyupgrade
-    "S",         # bandit security
-    "B",         # bugbear
-    "A",         # builtins
-    "C4",        # comprehensions
-    "DTZ",       # datetimez
-    "T10",       # debugger
-    "DJ",        # django
-    "EM",        # errmsg
-    "ISC",       # implicit-str-concat
-    "ICN",       # import-conventions
-    "PIE",       # pie
-    "PT",        # pytest-style
-    "Q",         # quotes
-    "RET",       # return
-    "SIM",       # simplify
-    "ARG",       # unused-arguments
-    "PTH",       # use-pathlib
-    "ERA",       # eradicate
-    "PL",        # pylint
-    "RUF",       # ruff-specific
-    "ASYNC",     # flake8-async
-    "EXE",       # flake8-executable
-    "FA",        # flake8-future-annotations
-    "FLY",       # flynt
-    "FURB",      # refurb
-    "G",         # flake8-logging-format
-    "LOG",       # flake8-logging
-    "PGH",       # pygrep-hooks
-    "PERF",      # perflint
-    "SLOT",      # flake8-slots
-    "T20",       # flake8-print
-    "TID",       # flake8-tidy-imports
-    "TRY",       # tryceratops
-    "TCH",       # flake8-type-checking
-]
-ignore = [
-    "D100",      # Missing docstring in public module
-    "D104",      # Missing docstring in public package
-    "D101",      # Missing docstring in public class (optional, but common in rapid dev)
-    "D102",      # Missing docstring in public method
-    "D103",      # Missing docstring in public function
-    "D105",      # Missing docstring in magic method
-    "D106",      # Missing docstring in public nested class
-    "D107",      # Missing docstring in __init__
-    "DJ001",     # Avoid using null=True on string-based fields
-    "TRY003",    # Avoid specifying long messages outside the exception class
-    "ISC001",    # Avoid conflicts with the formatter
-]
-
-[tool.ruff.lint.per-file-ignores]
-"**/tests/**/*.py" = ["S101", "E501", "S106", "PLR2004", "D", "ARG", "F811"]
-"**/migrations/*.py" = ["E501", "D", "RUF012"]
-"**/management/commands/*.py" = ["S311", "PLR2004", "E501", "D", "RUF012", "C901", "PLR0915", "ARG"]
-"**/settings.py" = ["E501"]
-"**/apps.py" = ["F401"]
-
-[tool.ruff.lint.mccabe]
-max-complexity = 10
-
-[tool.ruff.lint.pydocstyle]
-convention = "google"
-
-[tool.ruff.format]
-quote-style = "double"
-indent-style = "space"
-skip-magic-trailing-comma = false
-line-ending = "auto"

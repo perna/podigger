@@ -15,7 +15,9 @@ class PodcastFactory(DjangoModelFactory):
         django_get_or_create = ("feed",)
 
     name = factory.LazyFunction(lambda: fake.unique.company())
-    feed = factory.LazyFunction(lambda: f"https://feeds.example.com/{fake.unique.uuid4()}/feed.xml")
+    feed = factory.LazyFunction(
+        lambda: f"https://feeds.example.com/{fake.unique.uuid4()}/feed.xml"
+    )
     image = factory.LazyAttribute(lambda o: f"https://img.example.com/{o.name}.jpg")
 
 
@@ -26,6 +28,8 @@ class EpisodeFactory(DjangoModelFactory):
         model = Episode
 
     title = factory.LazyFunction(lambda: fake.sentence(nb_words=6))
-    link = factory.LazyFunction(lambda: f"https://episodes.example.com/{fake.unique.uuid4()}")
+    link = factory.LazyFunction(
+        lambda: f"https://episodes.example.com/{fake.unique.uuid4()}"
+    )
     description = factory.LazyFunction(lambda: fake.paragraph())
     podcast = factory.SubFactory(PodcastFactory)

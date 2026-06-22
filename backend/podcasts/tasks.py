@@ -1,7 +1,8 @@
 import logging
 
-from celery import shared_task
 from django.db.models import Count
+
+from celery import shared_task
 
 from .models import Podcast
 from .services.updater import EpisodeUpdater
