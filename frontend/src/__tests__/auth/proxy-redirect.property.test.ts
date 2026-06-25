@@ -5,7 +5,7 @@ import { describe, test } from 'vitest';
 import fc from 'fast-check';
 
 /**
- * Replicates the URL-building logic from src/middleware.ts.
+ * Replicates the URL-building logic from src/proxy.ts.
  * Given a pathname and optional search string, builds the redirect URL
  * to /auth/unauthorized with the original path as the `next` query param.
  */

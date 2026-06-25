@@ -20,7 +20,7 @@ RUN apt-get update && \
 WORKDIR /app
 
 # Copy and install dependencies FIRST (better layer caching)
-COPY requirements.txt .
+COPY requirements.txt requirements-base.txt ./
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv pip install --system --no-cache -r requirements.txt
 
