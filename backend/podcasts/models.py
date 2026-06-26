@@ -1,4 +1,5 @@
 import datetime
+from typing import ClassVar
 
 from django.contrib.postgres.search import (
     SearchQuery,
@@ -79,53 +80,66 @@ class Tag(BaseModel):
 class EpisodeManager(models.Manager):
     """Manager for the Episode model with custom search functionality."""
 
+    #: Threshold above which a trigram match is considered a hit. Tuned for
+    #: Portuguese titles; lower values would return more (worse) matches.
+    TRIGRAM_THRESHOLD = 0.1
+
     def search(self, query: str):
         """Search episodes by title and description using Full Text Search.
 
-        Falls back to Trigram Similarity if no FTS matches found.
+        Returns a **pure read** queryset. The popular-term counter is
+        updated by the `record_search_term` Celery task, which is enqueued
+        at the call site (the view) — this manager MUST NOT touch
+        `PopularTerm` (Q4 / FR-002). The manager is safe to call from
+        tests without a running Celery worker.
+
+        FTS path: uses the existing GIN index (`podcasts_episode_search_gin`,
+        migration `0003`) for the Portuguese configuration. Results are
+        ordered by `SearchRank DESC, published DESC`.
+
+        Trigram path: when FTS returns no rows, falls back to
+        `TrigramSimilarity("title", query)` with a threshold of
+        `TRIGRAM_THRESHOLD`. Ordered by `trigram DESC, published DESC`.
         """
         if not query:
             return self.get_queryset()
 
-        # Update popular terms
-        term, created = PopularTerm.objects.get_or_create(
-            term=query, defaults={"times": 1}
-        )
-        if not created:
-            PopularTerm.objects.filter(pk=term.pk).update(times=models.F("times") + 1)
-
-        # Config for Portuguese search
         config = "portuguese"
-
-        # Search Vectors
         vector = SearchVector("title", weight="A", config=config) + SearchVector(
             "description", weight="B", config=config
         )
         search_query = SearchQuery(query, config=config)
 
-        # Base queryset with annotations
         qs = self.get_queryset().annotate(
             rank=SearchRank(vector, search_query),
             trigram=TrigramSimilarity("title", query),
         )
 
-        # FTS results
         fts_results = qs.filter(rank__gt=0).order_by("-rank", "-published")
         if fts_results.exists():
             return fts_results
 
-        # Fallback to Trigram
-        return qs.filter(trigram__gt=0.1).order_by("-trigram", "-published")
+        return qs.filter(trigram__gt=self.TRIGRAM_THRESHOLD).order_by(
+            "-trigram", "-published"
+        )
 
 
 class Episode(models.Model):
-    """Model representing a podcast episode."""
+    """Model representing a podcast episode.
+
+    A composite index on `(podcast_id, published DESC)` supports the
+    "list episodes by podcast, recent first" query (US1 acceptance #3,
+    US3 acceptance #3). The index is created by migration `0005` via
+    `CREATE INDEX CONCURRENTLY` so it is safe to apply on a populated
+    database. The GIN index for full-text search lives in migration
+    `0003` and is preserved (FR-007).
+    """
 
     title = models.CharField(max_length=1024)
 
     link = models.URLField(unique=True)
     description = models.TextField(blank=True, null=True)
-    published = models.DateTimeField(null=True, blank=True)
+    published = models.DateTimeField(blank=True, null=True)
     enclosure = models.CharField(max_length=1024, blank=True, null=True)
     to_json = models.JSONField(null=True, blank=True)
     podcast = models.ForeignKey(
@@ -134,6 +148,16 @@ class Episode(models.Model):
     tags = models.ManyToManyField(Tag, related_name="episodes", blank=True)
 
     objects = EpisodeManager()
+
+    class Meta:
+        """Meta options for Episode."""
+
+        indexes: ClassVar[list[models.Index]] = [
+            models.Index(
+                fields=["podcast", "-published"],
+                name="podcasts_episode_podcast_published_idx",
+            ),
+        ]
 
     def __str__(self):
         """Represent the topic suggestion by its title.
