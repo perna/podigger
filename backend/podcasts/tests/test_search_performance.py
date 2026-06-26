@@ -9,6 +9,7 @@ function keeps the test free of new dependencies.
 
 from __future__ import annotations
 
+import os
 import time
 
 import pytest
@@ -28,6 +29,10 @@ def _quantile(values: list[float], q: float) -> float:
 
 @pytest.mark.django_db(transaction=True)
 @pytest.mark.slow
+@pytest.mark.skipif(
+    os.environ.get("PODIGGER_SKIP_SLOW_TESTS") == "1",
+    reason="Slow performance test skipped via PODIGGER_SKIP_SLOW_TESTS=1",
+)
 class TestSearchPerformance:
     """p95 latency of GET /api/episodes/?q=<term> < 500 ms (SC-001)."""
 

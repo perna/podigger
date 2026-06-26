@@ -155,7 +155,7 @@ class Episode(models.Model):
         indexes: ClassVar[list[models.Index]] = [
             models.Index(
                 fields=["podcast", "-published"],
-                name="podcasts_episode_podcast_published_idx",
+                name="episode_podcast_published_idx",
             ),
         ]
 

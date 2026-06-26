@@ -54,8 +54,11 @@ class TestCeleryConnectionReuse:
         from podcasts.tasks import DbAwareTask, add_episode
 
         with patch("podcasts.tasks.close_old_connections") as mock_close:
-            add_episode.run("http://test.com/feed")
-            add_episode.run("http://test.com/feed")
+            # `apply()` goes through the Celery task machinery
+            # (before_start, the task body, after_return) just like a
+            # worker would; `.run()` would bypass the hooks.
+            add_episode.apply(args=["http://test.com/feed"])
+            add_episode.apply(args=["http://test.com/feed"])
         # The base task's before_start hook called close_old_connections
         # at least once per task.
         assert mock_close.call_count >= 2

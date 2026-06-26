@@ -19,12 +19,12 @@ class Migration(migrations.Migration):
         migrations.RunSQL(
             sql=(
                 "CREATE INDEX CONCURRENTLY IF NOT EXISTS "
-                "podcasts_episode_podcast_published_idx "
+                "episode_podcast_published_idx "
                 "ON podcasts_episode (podcast_id, published DESC);"
             ),
             reverse_sql=(
                 "DROP INDEX CONCURRENTLY IF EXISTS "
-                "podcasts_episode_podcast_published_idx;"
+                "episode_podcast_published_idx;"
             ),
         ),
         migrations.RunSQL(

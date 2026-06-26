@@ -28,6 +28,7 @@ def test_all_optimization_guards_pass():
             "-m",
             "pytest",
             "-q",
+            "--reuse-db",
             "backend/podcasts/tests/test_refresh_service.py",
             "backend/podcasts/tests/test_search_pure_read.py",
             "backend/podcasts/tests/test_connection_reuse.py",

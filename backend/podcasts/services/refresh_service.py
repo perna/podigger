@@ -25,6 +25,7 @@ statement at the end of `process_all` (SC-004), replacing the per-podcast
 
 from __future__ import annotations
 
+import datetime
 import logging
 import time
 from typing import TypedDict
@@ -272,11 +273,11 @@ class RefreshService:
                 UPDATE podcasts_podcast
                 SET total_episodes = c.cnt
                 FROM (
-                    SELECT id, COUNT(*) AS cnt
+                    SELECT podcast_id, COUNT(*) AS cnt
                     FROM podcasts_episode
                     GROUP BY podcast_id
                 ) c
-                WHERE podcasts_podcast.id = c.id
+                WHERE podcasts_podcast.id = c.podcast_id
                 """
             )
             return cursor.rowcount
@@ -301,7 +302,7 @@ def _parse_published(value: str):
 
         struct_time = _time.strptime(value[:25], "%a, %d %b %Y %H:%M:%S")
         dt = dj_timezone.datetime.fromtimestamp(
-            _time.mktime(struct_time), tz=dj_timezone.utc
+            _time.mktime(struct_time), tz=datetime.UTC
         )
         return dj_timezone.localtime(dt)
     except (ValueError, TypeError):
