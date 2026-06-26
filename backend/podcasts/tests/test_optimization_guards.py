@@ -37,7 +37,8 @@ def test_all_optimization_guards_pass():
         ],
         cwd=str(REPO_ROOT),
         capture_output=True,
-        text=True, check=False,
+        text=True,
+        check=False,
     )
     assert result.returncode == 0, (
         "optimization regression suite failed:\n"

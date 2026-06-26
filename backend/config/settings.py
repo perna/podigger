@@ -121,9 +121,7 @@ else:
             # don't pay the auth/handshake cost on every request. 60 s is a safe
             # default for a web worker: long enough to outlive any single request,
             # short enough to rebalance across Postgres restarts. See FR-006 / US4.
-            "CONN_MAX_AGE": int(
-                os.environ.get("DJANGO_DB_CONN_MAX_AGE", "60")
-            ),
+            "CONN_MAX_AGE": int(os.environ.get("DJANGO_DB_CONN_MAX_AGE", "60")),
             "OPTIONS": {
                 # Bound the worst-case latency of a single request when the DB
                 # is unreachable. See FR-006.
