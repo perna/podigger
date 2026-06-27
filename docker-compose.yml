@@ -24,6 +24,9 @@ services:
       - DATABASE_NAME=podigger
       - DATABASE_USER=docker
       - DATABASE_PASSWORD=docker
+      # Web worker keeps each Postgres connection alive for 60 s across
+      # requests (FR-006). See backend/config/settings.py.
+      - DJANGO_DB_CONN_MAX_AGE=60
 
   # frontend:
   #   extends:
@@ -73,6 +76,7 @@ services:
       - DATABASE_NAME=podigger
       - DATABASE_USER=docker
       - DATABASE_PASSWORD=docker
+      - DJANGO_DB_CONN_MAX_AGE=60
 
 volumes:
   pgdata:

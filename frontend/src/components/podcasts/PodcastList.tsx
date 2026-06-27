@@ -34,6 +34,17 @@ export function PodcastList() {
   const [hasPrevious, setHasPrevious] = useState(false);
   const [totalCount, setTotalCount] = useState(0);
   const [selectedLanguage, setSelectedLanguage] = useState<number | null>(null);
+  const [prevDebouncedSearch, setPrevDebouncedSearch] = useState(debouncedSearch);
+  const [prevSelectedLanguage, setPrevSelectedLanguage] = useState(selectedLanguage);
+
+  if (
+    debouncedSearch !== prevDebouncedSearch ||
+    selectedLanguage !== prevSelectedLanguage
+  ) {
+    setPrevDebouncedSearch(debouncedSearch);
+    setPrevSelectedLanguage(selectedLanguage);
+    setCurrentPage(1);
+  }
 
   const totalPages = totalCount > 0
     ? Math.ceil(totalCount / 20)
@@ -57,7 +68,7 @@ export function PodcastList() {
 
   useEffect(() => {
     const trimmed = debouncedSearch.trim() || undefined;
-    setCurrentPage(1);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     loadPodcasts(trimmed, 1, selectedLanguage);
   }, [debouncedSearch, selectedLanguage, loadPodcasts]);
 

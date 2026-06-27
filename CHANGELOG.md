@@ -13,9 +13,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `CSRF_TRUSTED_ORIGINS` configuration in backend and CI workflows for staging/production.
 - `SECURE_PROXY_SSL_HEADER` configuration to trust Nginx proxy HTTPS identification.
 - Unit tests for `addPodcast` API service and `AddPodcastPage` component.
+- `RefreshService` extracted from `EpisodeUpdater` with bounded per-feed statement budget and single-statement `total_episodes` counter reset.
+- `record_search_term` Celery task for asynchronous popular-term counter updates.
+- `DbAwareTask` base class for all Celery tasks to close stale database connections between tasks.
+- Composite index `podcasts_episode_podcast_published_idx` on `(podcast_id, published DESC)` and explicit index `podcasts_popularterm_term_idx` on `term`.
+- `CONN_MAX_AGE` and `connect_timeout` settings on the default database.
+- Regression-guard test `test_optimization_guards.py` that locks in every optimization in the pass.
+- `BulkSeedMixin` and `make_large_catalogue` helpers in the test suite for the canonical 20 000-episode benchmark fixture.
 
 ### Changed
 - Upgrade Django from 5.2.14 to 6.0.6; update backend dependencies (djangorestframework, django-environ, pytest-django) for compatibility.
+- Episode search endpoint is now a pure read on the request path; the popular-terms counter is eventually consistent via a Celery task. The `/api/popular-terms/` counter may lag the most recent search by a few seconds.
+- Feed refresh path is reorganized around `RefreshService`; the `update_total_episodes` Celery task is removed (its per-podcast `COUNT(*)` is replaced by the single-statement reset inside `process_all`).
+- List and detail endpoints now use `select_related` and `Prefetch(...)` so the response is rendered with a bounded number of SQL statements. No response payload schema change.
+
+### Performance
+- Episode search p95 latency is now under 500 ms against the canonical 200 × 100 ≈ 20 000-episode benchmark fixture.
+- Feed refresh emits at least 50 % fewer SQL statements per feed.
+- `GET /api/podcasts/`, `GET /api/podcasts/{id}/`, `GET /api/episodes/?podcast=<id>` issue a bounded, constant number of SQL statements.
+- `total_episodes` is consistent with the actual episode count after every refresh.
+- Database connections are reused across requests (web) and between tasks (Celery).
 
 ### Fixed
 - Resolved factory-boy `UserFactory._after_postgeneration` deprecation warning by setting `skip_postgeneration_save = True` and overriding `_after_postgeneration` to persist the instance after `set_password`.

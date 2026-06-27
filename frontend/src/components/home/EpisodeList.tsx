@@ -19,7 +19,13 @@ export function EpisodeList({ searchTerm, onLoadingChange }: EpisodeListProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [error, setError] = useState<Error | null>(null);
+  const [prevSearchTerm, setPrevSearchTerm] = useState(searchTerm);
   const loadMoreRef = useRef<HTMLDivElement>(null);
+
+  if (searchTerm !== prevSearchTerm) {
+    setPrevSearchTerm(searchTerm);
+    setPage(1);
+  }
 
   const load = useCallback(
     async (q: string, pageNum: number, append: boolean) => {
@@ -53,7 +59,7 @@ export function EpisodeList({ searchTerm, onLoadingChange }: EpisodeListProps) {
 
   // Fetch when searchTerm changes
   useEffect(() => {
-    setPage(1);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     load(searchTerm, 1, false);
   }, [searchTerm, load]);
 
