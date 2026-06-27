@@ -145,13 +145,6 @@ jobs:
           # Reduce Hypothesis examples in CI to keep test time reasonable.
           # Full exploration (max_examples=100) is for local runs.
           HYPOTHESIS_MAX_EXAMPLES: 20
-          # Skip the slow search-performance regression test in CI. The
-          # spec (SC-001) is a guard against regression on a developer
-          # laptop; GitHub-hosted runners are typically slower than the
-          # benchmark target and produce flaky p95 measurements against
-          # the 20 000-episode fixture. Developers can still run it
-          # locally by unsetting this variable.
-          PODIGGER_SKIP_SLOW_TESTS: "1"
         run: |
           cd backend
           pytest -v --tb=short --strict-markers

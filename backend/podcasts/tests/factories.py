@@ -33,20 +33,3 @@ class EpisodeFactory(DjangoModelFactory):
     )
     description = factory.LazyFunction(lambda: fake.paragraph())
     podcast = factory.SubFactory(PodcastFactory)
-
-
-def make_large_catalogue(
-    podcasts: int = 200, episodes_per_podcast: int = 100
-) -> tuple[list[Podcast], list[Episode]]:
-    """Seed a large deterministic catalogue for performance tests.
-
-    Reuses `BulkSeedMixin` so the seed is reproducible across CI runs.
-    Returns `(podcasts, episodes)` lists.
-    """
-    from podcasts.tests._perf_fixtures import BulkSeedMixin
-
-    podcast_objs = BulkSeedMixin.seed_podcasts(podcasts)
-    all_episodes: list[Episode] = []
-    for podcast in podcast_objs:
-        all_episodes.extend(BulkSeedMixin.seed_episodes(podcast, episodes_per_podcast))
-    return podcast_objs, all_episodes
