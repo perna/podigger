@@ -43,6 +43,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Auto-formatted 7 backend files for consistent code style
 - Added pre-commit hook configuration for lint enforcement
 
+### Changed
+- Upgrade Django from 5.2.14 to 6.0.6; update backend dependencies (djangorestframework, django-environ, pytest-django) for compatibility.
+
+### Fixed
+- Resolved factory-boy `UserFactory._after_postgeneration` deprecation warning by setting `skip_postgeneration_save = True` and overriding `_after_postgeneration` to persist the instance after `set_password`.
+- Replaced naive datetime in `podcasts/tests/test_views_features.py` with a timezone-aware value to silence the Django `RuntimeWarning`.
+- Fixed backend lint configuration to pass CI consistently
+- Consolidated Ruff configuration in root `ruff.toml`
+- Added `ruff format --check` step to CI pipeline
+- Auto-formatted 7 backend files for consistent code style
+- Added pre-commit hook configuration for lint enforcement
+
 ## [2.1.0] - 2026-02-28
 
 ### Added
