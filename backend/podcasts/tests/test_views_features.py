@@ -2,11 +2,16 @@ import datetime
 
 from django.utils import timezone
 
+import datetime
+
+from django.utils import timezone
+
 import pytest
+from accounts.models import User
 from accounts.models import User
 from rest_framework.test import APIClient
 
-from podcasts.models import Episode, Podcast, PopularTerm
+from podcasts.models import Episode, Podcast, PopularTerm, Tag
 
 
 @pytest.mark.django_db
@@ -69,7 +74,11 @@ class TestPodcastViewSetFeatures:
         assert len(response.data["results"]) == 1
         assert response.data["results"][0]["name"] == "Python Podcast"
 
-    def test_search_episodes_saves_term(self):
+    def test_search_episodes_enqueues_popular_term_task(self, mocker):
+        """The search endpoint MUST enqueue `record_search_term` instead of
+        writing `PopularTerm` directly (US1, Q4). The counter is eventually
+        consistent.
+        """
         # Create some episodes to search
         p = Podcast.objects.create(name="Pod", feed="http://feed.com")
         Episode.objects.create(
@@ -81,15 +90,17 @@ class TestPodcastViewSetFeatures:
                 datetime.UTC,
             ),
         )
+        # Mock the Celery enqueue so no worker is required.
+        mock_delay = mocker.patch("podcasts.views.record_search_term.delay")
 
         # Search
         response = self.client.get("/api/episodes/?q=Python")
 
         assert response.status_code == 200
-        # Check if PopularTerm was saved
-        assert PopularTerm.objects.filter(term="Python").exists()
-        term = PopularTerm.objects.get(term="Python")
-        assert term.times == 1
+        # The Celery task was enqueued with the searched term.
+        mock_delay.assert_called_once_with("Python")
+        # And no PopularTerm row was written synchronously.
+        assert not PopularTerm.objects.filter(term="Python").exists()
 
     def test_create_podcast_validates_feed(self, mocker):
         # Mock is_valid_feed to return False
@@ -103,3 +114,52 @@ class TestPodcastViewSetFeatures:
         assert response.status_code == 400
         assert "feed" in str(response.data) or "message" in str(response.data)
         assert Podcast.objects.count() == 0
+
+
+@pytest.mark.django_db
+class TestPodcastDetailStatementBudget:
+    """US3: GET /api/podcasts/{id}/ MUST issue at most 4 statements (SC-003)."""
+
+    def setup_method(self):
+        self.client = APIClient()
+        self.podcast = Podcast.objects.create(name="P", feed="http://f.com")
+        for i in range(30):
+            ep = Episode.objects.create(
+                podcast=self.podcast, title=f"E{i}", link=f"http://f.com/{i}"
+            )
+            for j in range(5):
+                tag, _ = Tag.objects.get_or_create(name=f"t-{j}")
+                ep.tags.add(tag)
+
+    def test_podcast_detail_statement_count(self):
+        from django.db import connection
+        from django.test.utils import CaptureQueriesContext
+
+        with CaptureQueriesContext(connection) as ctx:
+            response = self.client.get(f"/api/podcasts/{self.podcast.id}/")
+        assert response.status_code == 200
+        assert len(response.data["episodes"]) == 30
+        assert (
+            len(ctx.captured_queries) <= 4
+        ), f"detail emitted {len(ctx.captured_queries)} statements, budget is 4"
+
+
+@pytest.mark.django_db
+class TestEpisodesListOrdering:
+    """US3: the default ordering of the episode list is `-published`."""
+
+    def test_episodes_list_default_ordering(self):
+        client = APIClient()
+        p = Podcast.objects.create(name="P", feed="http://f.com")
+        base = timezone.now()
+        for i in range(3):
+            Episode.objects.create(
+                podcast=p,
+                title=f"E{i}",
+                link=f"http://f.com/{i}",
+                published=base - datetime.timedelta(days=i),
+            )
+        response = client.get("/api/episodes/")
+        assert response.status_code == 200
+        titles = [r["title"] for r in response.data["results"]]
+        assert titles == ["E0", "E1", "E2"]  # most recent first

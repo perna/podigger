@@ -12,6 +12,7 @@ env/
 venv/
 .venv/
 ENV/
+!/frontend/src/shared/env/
 build/
 develop-eggs/
 dist/
@@ -89,6 +90,7 @@ uv.lock
 .cursor
 .windsurf
 .kiro
+.gemini
 docs
 .continue
 .opencode
@@ -102,3 +104,4 @@ _reversa_sdd/
 skills-lock.json/
 specs
 .specify
+graphify-out/

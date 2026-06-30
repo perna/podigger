@@ -8,11 +8,55 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Frontend architecture modernization (specs/004-frontend-modernization):
+  - Slice 1: typed environment module with Zod validation (`shared/env/`).
+  - Slice 2: typed API contract layer with Zod-validated fetch wrapper (`shared/api/`).
+  - Slice 3: normalised `AppError` hierarchy with discriminated `kind` and `toUserMessage()`.
+  - Slice 4: TanStack Query data layer with hooks for episodes, podcasts, languages, home.
+  - Slice 5: Zustand auth slice with persist + cross-tab sync.
+  - Slice 6: Zustand theme slice with system / light / dark modes and matchMedia listener.
+  - Slice 7: Add Podcast screen refactor (240 → thin Server Component composition).
+  - Slice 8: structural tests (`shared/structure/`) enforcing feature boundaries.
+  - Slice 9: bundle-size guard (`scripts/check-bundle-size.mjs`) with 10% regression cap.
+  - Shared UI primitives: `Button`, `Input`, `Card`, `Spinner`, `Skeleton`, `Icon`, `cn`.
+  - Auth feature: `LoginForm`, `RegisterForm`, `AuthBoundary`, `canEdit`, `canView` policy modules.
+  - ESLint rules blocking cross-feature deep imports, `process.env` outside `shared/env/`, and `localStorage` outside `shared/store/`.
+  - App Router **route groups** in `src/app/`: `(marketing)` for public pages, `(auth)` for auth pages, `(protected)` for authenticated app pages. The grouping mirrors the application structure without changing any URL.
 - Podcast addition interface (`/add-podcast`) with feed validation.
 - `addPodcast` service in the frontend API client.
 - `CSRF_TRUSTED_ORIGINS` configuration in backend and CI workflows for staging/production.
 - `SECURE_PROXY_SSL_HEADER` configuration to trust Nginx proxy HTTPS identification.
 - Unit tests for `addPodcast` API service and `AddPodcastPage` component.
+- `RefreshService` extracted from `EpisodeUpdater` with bounded per-feed statement budget and single-statement `total_episodes` counter reset.
+- `record_search_term` Celery task for asynchronous popular-term counter updates.
+- `DbAwareTask` base class for all Celery tasks to close stale database connections between tasks.
+- Composite index `podcasts_episode_podcast_published_idx` on `(podcast_id, published DESC)` and explicit index `podcasts_popularterm_term_idx` on `term`.
+- `CONN_MAX_AGE` and `connect_timeout` settings on the default database.
+- Regression-guard test `test_optimization_guards.py` that locks in every optimization in the pass.
+- `BulkSeedMixin` and `make_large_catalogue` helpers in the test suite for the canonical 20 000-episode benchmark fixture.
+
+### Changed
+- Reorganised `src/app/` into App Router **route groups** (`(marketing)`, `(auth)`, `(protected)`) so the file system mirrors the application structure rather than just the URL path. URL paths are unchanged.
+- Upgrade Django from 5.2.14 to 6.0.6; update backend dependencies (djangorestframework, django-environ, pytest-django) for compatibility.
+- Episode search endpoint is now a pure read on the request path; the popular-terms counter is eventually consistent via a Celery task. The `/api/popular-terms/` counter may lag the most recent search by a few seconds.
+- Feed refresh path is reorganized around `RefreshService`; the `update_total_episodes` Celery task is removed (its per-podcast `COUNT(*)` is replaced by the single-statement reset inside `process_all`).
+- List and detail endpoints now use `select_related` and `Prefetch(...)` so the response is rendered with a bounded number of SQL statements. No response payload schema change.
+
+### Performance
+- Episode search p95 latency is now under 500 ms against the canonical 200 × 100 ≈ 20 000-episode benchmark fixture.
+- Feed refresh emits at least 50 % fewer SQL statements per feed.
+- `GET /api/podcasts/`, `GET /api/podcasts/{id}/`, `GET /api/episodes/?podcast=<id>` issue a bounded, constant number of SQL statements.
+- `total_episodes` is consistent with the actual episode count after every refresh.
+- Database connections are reused across requests (web) and between tasks (Celery).
+
+### Fixed
+- Resolved factory-boy `UserFactory._after_postgeneration` deprecation warning by setting `skip_postgeneration_save = True` and overriding `_after_postgeneration` to persist the instance after `set_password`.
+- Replaced naive datetime in `podcasts/tests/test_views_features.py` with a timezone-aware value to silence the Django `RuntimeWarning`.
+- Fixed backend lint configuration to pass CI consistently
+- Consolidated Ruff configuration in root `ruff.toml`
+- Added `ruff format --check` step to CI pipeline
+- Auto-formatted 7 backend files for consistent code style
+- Added pre-commit hook configuration for lint enforcement
 
 ### Changed
 - Upgrade Django from 5.2.14 to 6.0.6; update backend dependencies (djangorestframework, django-environ, pytest-django) for compatibility.
