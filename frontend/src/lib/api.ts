@@ -42,10 +42,7 @@ export interface PodcastsResponse {
   results: Podcast[];
 }
 
-const API_BASE =
-  typeof window !== 'undefined'
-    ? process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
-    : process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+const API_BASE = 'http://localhost:8000';
 
 export async function fetchEpisodes(
   query?: string,
