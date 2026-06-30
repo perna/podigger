@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
-import { ThemeProvider } from "@/components/providers/ThemeProvider";
+import { Providers } from "./providers";
 import { Navbar } from "@/components/layout/Navbar";
-import { AuthProvider } from "@/contexts/AuthContext";
 import "./globals.css";
 
 const jakarta = Plus_Jakarta_Sans({
@@ -27,18 +26,14 @@ export default function RootLayout({
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        {/* next/font/google does not support variable icon fonts — <link> is intentional here */}
-        {/* eslint-disable-next-line @next/next/no-page-custom-font */}
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" />
       </head>
       <body className={`${jakarta.variable} antialiased font-display`}>
-        <AuthProvider>
-          <ThemeProvider>
-            <Navbar />
-            <div className="min-h-screen">{children}</div>
-          </ThemeProvider>
-        </AuthProvider>
+        <Providers>
+          <Navbar />
+          <div className="min-h-screen">{children}</div>
+        </Providers>
       </body>
-    </html >
+    </html>
   );
 }
