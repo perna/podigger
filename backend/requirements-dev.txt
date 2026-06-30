@@ -5,21 +5,21 @@
 -r requirements-base.txt
 
 # Testes
-pytest>=7.0.0
-pytest-django>=4.11.0
-pytest-mock>=3.10.0
-pytest-cov>=4.1.0
-pytest-xdist>=3.5.0,<4.0
+pytest>=9.1.1
+pytest-django>=4.12.0
+pytest-mock>=3.15.1
+pytest-cov>=7.1.0
+pytest-xdist>=3.8.0,<4.0
 
 # Dados de teste
-Faker==19.9.0
+Faker==40.23.1
 factory-boy>=3.3.3,<4.0
 
 # Qualidade de código
-ruff>=0.8.0,<0.9.0
+ruff>=0.15.20,<0.16.0
 
 # Versionamento
-commitizen>=3.13.0
+commitizen>=4.16.4
 
 # Driver PostgreSQL para dev (binário pré-compilado, mais fácil de instalar)
-psycopg2-binary==2.9.11
+psycopg2-binary==2.9.12
