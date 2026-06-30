@@ -90,6 +90,7 @@ uv.lock
 .cursor
 .windsurf
 .kiro
+.gemini
 docs
 .continue
 .opencode
@@ -103,3 +104,4 @@ _reversa_sdd/
 skills-lock.json/
 specs
 .specify
+graphify-out

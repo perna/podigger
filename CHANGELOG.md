@@ -8,6 +8,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Frontend architecture modernization (specs/004-frontend-modernization):
+  - Slice 1: typed environment module with Zod validation (`shared/env/`).
+  - Slice 2: typed API contract layer with Zod-validated fetch wrapper (`shared/api/`).
+  - Slice 3: normalised `AppError` hierarchy with discriminated `kind` and `toUserMessage()`.
+  - Slice 4: TanStack Query data layer with hooks for episodes, podcasts, languages, home.
+  - Slice 5: Zustand auth slice with persist + cross-tab sync.
+  - Slice 6: Zustand theme slice with system / light / dark modes and matchMedia listener.
+  - Slice 7: Add Podcast screen refactor (240 → thin Server Component composition).
+  - Slice 8: structural tests (`shared/structure/`) enforcing feature boundaries.
+  - Slice 9: bundle-size guard (`scripts/check-bundle-size.mjs`) with 10% regression cap.
+  - Shared UI primitives: `Button`, `Input`, `Card`, `Spinner`, `Skeleton`, `Icon`, `cn`.
+  - Auth feature: `LoginForm`, `RegisterForm`, `AuthBoundary`, `canEdit`, `canView` policy modules.
+  - ESLint rules blocking cross-feature deep imports, `process.env` outside `shared/env/`, and `localStorage` outside `shared/store/`.
+  - App Router **route groups** in `src/app/`: `(marketing)` for public pages, `(auth)` for auth pages, `(protected)` for authenticated app pages. The grouping mirrors the application structure without changing any URL.
 - Podcast addition interface (`/add-podcast`) with feed validation.
 - `addPodcast` service in the frontend API client.
 - `CSRF_TRUSTED_ORIGINS` configuration in backend and CI workflows for staging/production.
@@ -22,6 +36,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `BulkSeedMixin` and `make_large_catalogue` helpers in the test suite for the canonical 20 000-episode benchmark fixture.
 
 ### Changed
+- Reorganised `src/app/` into App Router **route groups** (`(marketing)`, `(auth)`, `(protected)`) so the file system mirrors the application structure rather than just the URL path. URL paths are unchanged.
 - Upgrade Django from 5.2.14 to 6.0.6; update backend dependencies (djangorestframework, django-environ, pytest-django) for compatibility.
 - Episode search endpoint is now a pure read on the request path; the popular-terms counter is eventually consistent via a Celery task. The `/api/popular-terms/` counter may lag the most recent search by a few seconds.
 - Feed refresh path is reorganized around `RefreshService`; the `update_total_episodes` Celery task is removed (its per-podcast `COUNT(*)` is replaced by the single-statement reset inside `process_all`).

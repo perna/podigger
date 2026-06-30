@@ -1,7 +1,7 @@
 <!-- SPECKIT START -->
 For additional context about technologies to be used, project structure,
 shell commands, and other important information, read the current plan
-at `specs/003-db-optimization/plan.md`.
+at /home/perna/workspace/projects/podigger/specs/004-frontend-modernization/plan.md
 <!-- SPECKIT END -->
 
 
