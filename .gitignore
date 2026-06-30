@@ -12,6 +12,7 @@ env/
 venv/
 .venv/
 ENV/
+!/frontend/src/shared/env/
 build/
 develop-eggs/
 dist/
