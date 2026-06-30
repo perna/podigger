@@ -9,7 +9,9 @@
     "start": "next start",
     "lint": "eslint --max-warnings=-1",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "test:structure": "vitest run src/shared/structure",
+    "test:bundle": "node scripts/check-bundle-size.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
