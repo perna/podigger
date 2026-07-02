@@ -74,7 +74,7 @@ export const authService = {
   },
 
   async logout(): Promise<void> {
-    return request({
+    await request({
       url: "/api/auth/logout/",
       init: { method: "POST" },
       schema: voidSchema,

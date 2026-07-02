@@ -185,6 +185,8 @@ jobs:
           npm run lint
 
       - name: Run build
+        env:
+          NEXT_PUBLIC_API_URL: http://localhost:8000
         run: |
           cd frontend
           npm run build

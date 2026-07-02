@@ -5,6 +5,9 @@
  * `useStore` hook and a hydration selector.
  */
 
+import { useAuthStore } from "./slices/auth";
+import { useThemeStore } from "./slices/theme";
+
 export { useAuth, useAuthStore, type AuthState, type User } from "./slices/auth";
 export {
   useTheme,

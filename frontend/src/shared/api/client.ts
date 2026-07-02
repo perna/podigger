@@ -19,10 +19,10 @@ import {
 } from "./errors";
 import { env } from "@/shared/env";
 
-export interface RequestConfig<T> {
+export interface RequestConfig<S extends z.ZodTypeAny> {
   url: string;
   init?: RequestInit;
-  schema: z.ZodType<T>;
+  schema: S;
   signal?: AbortSignal;
   timeoutMs?: number;
 }
@@ -48,7 +48,9 @@ function buildUrl(url: string): string {
   return `${base}${path}`;
 }
 
-export async function request<T>(config: RequestConfig<T>): Promise<T> {
+export async function request<S extends z.ZodTypeAny>(
+  config: RequestConfig<S>
+): Promise<z.infer<S>> {
   const { url, init, schema, signal, timeoutMs } = config;
   const timeout = timeoutMs ?? env.NEXT_PUBLIC_REQUEST_TIMEOUT_MS;
 

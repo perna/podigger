@@ -2,12 +2,7 @@ import datetime
 
 from django.utils import timezone
 
-import datetime
-
-from django.utils import timezone
-
 import pytest
-from accounts.models import User
 from accounts.models import User
 from rest_framework.test import APIClient
 
