@@ -3,7 +3,8 @@
  */
 
 import { readFileSync, readdirSync, statSync } from "node:fs";
-import { join, relative, sep } from "node:path";
+import { join, relative } from "node:path";
+import picomatch from "picomatch";
 import { rules } from "./rules";
 import type { Rule, Violation } from "./types";
 
@@ -33,23 +34,6 @@ function walk(dir: string): string[] {
   return out;
 }
 
-function matchesGlob(file: string, glob: string): boolean {
-  const norm = (s: string) => s.split(sep).join("/");
-  const f = norm(file);
-  const g = norm(glob);
-  if (!g.includes("**")) {
-    return f === g;
-  }
-  const [prefix, suffix] = g.split("**", 2);
-  if (!f.startsWith(prefix)) return false;
-  const remainder = f.slice(prefix.length);
-  if (suffix === "") return true;
-  if (remainder === suffix.slice(1)) return true;
-  if (remainder.endsWith(suffix)) return true;
-  if (remainder.endsWith("/" + suffix)) return true;
-  return remainder === suffix;
-}
-
 function lineCount(content: string): number {
   return content.split("\n").length;
 }
@@ -61,7 +45,8 @@ function expandSource(source: string, root: string): string[] {
   const baseDir = source.split("**")[0].replace(/[/\\]$/, "");
   const fullBase = baseDir.startsWith("/") || baseDir.match(/^[A-Z]:/) ? baseDir : join(root, baseDir);
   const allFiles = walk(fullBase);
-  return allFiles.filter((f) => matchesGlob(f, source));
+  const matcher = picomatch(source, { dot: true });
+  return allFiles.filter((f) => matcher(f));
 }
 
 export function runRules(root: string, customRules: readonly Rule[] = rules): Violation[] {
