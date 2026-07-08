@@ -1,4 +1,5 @@
-import { render, screen, fireEvent, cleanup } from '@testing-library/react';
+import { render, screen, fireEvent, cleanup, waitFor } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
 import AddPodcastPage from '../page';
 
@@ -6,146 +7,121 @@ import AddPodcastPage from '../page';
 const push = vi.fn();
 const back = vi.fn();
 vi.mock('next/navigation', () => ({
-  useRouter: () => ({
-    push,
-    back,
-  }),
+  useRouter: () => ({ push, back }),
 }));
 
-// Mock AuthContext — default to an editor user so the form renders
-vi.mock('@/contexts/AuthContext', () => ({
-  useAuth: vi.fn(() => ({
-    user: { email: 'editor@example.com', role: 'editor' },
-    isAuthenticated: true,
-    isLoading: false,
+// Mock the new auth slice — default to an editor user so the form renders.
+const useAuthMock = vi.fn();
+vi.mock('@/shared/store/slices/auth', () => ({
+  useAuth: () => useAuthMock(),
+}));
+
+// Mock the API layer so we can drive podcastsService.create.
+const createSpy = vi.fn();
+vi.mock('@/shared/api', async () => {
+  const actual = await vi.importActual<typeof import('@/shared/api')>('@/shared/api');
+  return {
+    ...actual,
+    podcastsService: {
+      list: vi.fn(),
+      create: (...args: unknown[]) => createSpy(...args),
+    },
+  };
+});
+
+function renderWithQuery(ui: React.ReactElement) {
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
+  });
+  return render(<QueryClientProvider client={queryClient}>{ui}</QueryClientProvider>);
+}
+
+function setAuth(user: { email: string; role: 'admin' | 'editor' | 'reader' } | null) {
+  useAuthMock.mockReturnValue({
+    user,
+    status: user ? 'authenticated' : 'unauthenticated',
+    _hasHydrated: true,
     login: vi.fn(),
     logout: vi.fn(),
-    setUser: vi.fn(),
-  })),
-}));
-
-// Mock Icon to avoid any complexity
-vi.mock('@/components/ui/Icon', () => ({
-  Icon: ({ name }: { name: string }) => <span data-testid={`icon-${name}`}>{name}</span>,
-}));
+    setStatus: vi.fn(),
+    setHasHydrated: vi.fn(),
+  });
+}
 
 describe('AddPodcastPage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.useRealTimers();
+    setAuth({ email: 'editor@example.com', role: 'editor' });
   });
 
   afterEach(() => {
     cleanup();
   });
 
-  it('renders correctly', () => {
-    render(<AddPodcastPage />);
-    expect(screen.getByText('Add a New Podcast')).toBeInTheDocument();
-    expect(screen.getByPlaceholderText('The Joe Rogan Experience')).toBeInTheDocument();
-    expect(screen.getByPlaceholderText('https://feed.url/rss')).toBeInTheDocument();
+  it('renders the form with the new labels and placeholders', () => {
+    renderWithQuery(<AddPodcastPage />);
+    expect(screen.getByLabelText(/podcast name/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/rss feed url/i)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /add podcast/i })).toBeInTheDocument();
   });
 
   it('updates input values', () => {
-    render(<AddPodcastPage />);
-    const nameInput = screen.getByPlaceholderText('The Joe Rogan Experience');
-    const urlInput = screen.getByPlaceholderText('https://feed.url/rss');
-
+    renderWithQuery(<AddPodcastPage />);
+    const nameInput = screen.getByLabelText(/podcast name/i) as HTMLInputElement;
+    const urlInput = screen.getByLabelText(/rss feed url/i) as HTMLInputElement;
     fireEvent.change(nameInput, { target: { value: 'My Podcast' } });
     fireEvent.change(urlInput, { target: { value: 'https://mypod.com/rss' } });
-
-    expect(nameInput).toHaveValue('My Podcast');
-    expect(urlInput).toHaveValue('https://mypod.com/rss');
+    expect(nameInput.value).toBe('My Podcast');
+    expect(urlInput.value).toBe('https://mypod.com/rss');
   });
 
-  it('handles successful podcast creation', async () => {
-    vi.useFakeTimers();
-    const fetchSpy = vi.spyOn(global, 'fetch').mockResolvedValue(
-      new Response(JSON.stringify({ status: 'created' }), { status: 200 })
+  it('submits via the mutation and shows the success message', async () => {
+    createSpy.mockResolvedValue({ status: 'created', message: 'Podcast added successfully.' });
+    renderWithQuery(<AddPodcastPage />);
+    fireEvent.change(screen.getByLabelText(/podcast name/i), { target: { value: 'New' } });
+    fireEvent.change(screen.getByLabelText(/rss feed url/i), { target: { value: 'https://new.com/rss' } });
+    fireEvent.click(screen.getByRole('button', { name: /add podcast/i }));
+    await waitFor(() =>
+      expect(createSpy).toHaveBeenCalledWith({ name: 'New', feed: 'https://new.com/rss' }),
     );
-    render(<AddPodcastPage />);
-
-    const nameInput = screen.getByPlaceholderText('The Joe Rogan Experience');
-    const urlInput = screen.getByPlaceholderText('https://feed.url/rss');
-    const submitBtn = screen.getByText('Add to Podigger').closest('button');
-    if (!submitBtn) throw new Error('Submit button not found');
-
-    fireEvent.change(nameInput, { target: { value: 'New Podcast' } });
-    fireEvent.change(urlInput, { target: { value: 'https://new.com/rss' } });
-
-    fireEvent.click(submitBtn);
-
-    await vi.runAllTimersAsync();
-
-    expect(fetchSpy).toHaveBeenCalledWith('/api/proxy/podcasts/', expect.objectContaining({
-      method: 'POST',
-    }));
-    expect(screen.getByText(/adicionado com sucesso/i)).toBeInTheDocument();
-    expect(push).toHaveBeenCalledWith('/');
-
-    vi.useRealTimers();
+    expect(await screen.findByText(/podcast added successfully/i)).toBeInTheDocument();
   });
 
-  it('handles already existing podcast', async () => {
-    vi.useFakeTimers();
-    vi.spyOn(global, 'fetch').mockResolvedValue(
-      new Response(JSON.stringify({ status: 'existing' }), { status: 200 })
+  it('shows the server error message when the mutation rejects with a ServerError carrying an API message', async () => {
+    const { ServerError } = await import('@/shared/api');
+    createSpy.mockRejectedValue(
+      new ServerError('Internal server error', {
+        status: 500,
+        details: { message: 'Custom API error message' },
+      }),
     );
-    render(<AddPodcastPage />);
-
-    const nameInput = screen.getByPlaceholderText('The Joe Rogan Experience');
-    const urlInput = screen.getByPlaceholderText('https://feed.url/rss');
-    const submitBtn = screen.getByText('Add to Podigger').closest('button');
-    if (!submitBtn) throw new Error('Submit button not found');
-
-    fireEvent.change(nameInput, { target: { value: 'Old Podcast' } });
-    fireEvent.change(urlInput, { target: { value: 'https://old.com/rss' } });
-
-    fireEvent.click(submitBtn);
-
-    await vi.runAllTimersAsync();
-
-    expect(screen.getByText(/já está na nossa biblioteca/i)).toBeInTheDocument();
-    expect(push).toHaveBeenCalledWith('/');
-
-    vi.useRealTimers();
+    renderWithQuery(<AddPodcastPage />);
+    fireEvent.change(screen.getByLabelText(/podcast name/i), { target: { value: 'Test' } });
+    fireEvent.change(screen.getByLabelText(/rss feed url/i), { target: { value: 'https://test.com/rss' } });
+    fireEvent.click(screen.getByRole('button', { name: /add podcast/i }));
+    expect(await screen.findByText(/custom api error message/i)).toBeInTheDocument();
   });
 
-  it('handles API error with message', async () => {
-    vi.spyOn(global, 'fetch').mockResolvedValue(
-      new Response(JSON.stringify({ message: 'Custom error message' }), { status: 500 })
-    );
-    render(<AddPodcastPage />);
-
-    fireEvent.change(screen.getByPlaceholderText('The Joe Rogan Experience'), { target: { value: 'Test' } });
-    fireEvent.change(screen.getByPlaceholderText('https://feed.url/rss'), { target: { value: 'https://test.com' } });
-
-    const submitBtn = screen.getByText('Add to Podigger').closest('button');
-    if (!submitBtn) throw new Error('Submit button not found');
-    fireEvent.click(submitBtn);
-
-    expect(await screen.findByText(/Custom error message/i)).toBeInTheDocument();
+  it('shows a generic fallback when the mutation rejects with a plain Error', async () => {
+    createSpy.mockRejectedValue(new Error('Network fail'));
+    renderWithQuery(<AddPodcastPage />);
+    fireEvent.change(screen.getByLabelText(/podcast name/i), { target: { value: 'Test' } });
+    fireEvent.change(screen.getByLabelText(/rss feed url/i), { target: { value: 'https://test.com/rss' } });
+    fireEvent.click(screen.getByRole('button', { name: /add podcast/i }));
+    expect(await screen.findByText(/something went wrong/i)).toBeInTheDocument();
   });
 
-  it('handles throw from API', async () => {
-    vi.spyOn(global, 'fetch').mockRejectedValue(new Error('Network fail'));
-    render(<AddPodcastPage />);
-
-    fireEvent.change(screen.getByPlaceholderText('The Joe Rogan Experience'), { target: { value: 'Test' } });
-    fireEvent.change(screen.getByPlaceholderText('https://feed.url/rss'), { target: { value: 'https://test.com' } });
-
-    const submitBtn = screen.getByText('Add to Podigger').closest('button');
-    if (!submitBtn) throw new Error('Submit button not found');
-    fireEvent.click(submitBtn);
-
-    expect(await screen.findByText(/Network fail/i)).toBeInTheDocument();
+  it('shows validation errors and does not call the mutation when fields are empty', async () => {
+    renderWithQuery(<AddPodcastPage />);
+    fireEvent.click(screen.getByRole('button', { name: /add podcast/i }));
+    expect(await screen.findByText(/name is required/i)).toBeInTheDocument();
+    expect(createSpy).not.toHaveBeenCalled();
   });
 
-  it('handles back button', () => {
-    render(<AddPodcastPage />);
-    const backBtn = screen.getByText('arrow_back_ios_new').closest('button');
-    if (!backBtn) throw new Error('Back button not found');
-    fireEvent.click(backBtn);
-    expect(back).toHaveBeenCalledOnce();
+  it('shows the Acesso Negado fallback when the user lacks the editor/admin role', () => {
+    setAuth({ email: 'reader@example.com', role: 'reader' });
+    renderWithQuery(<AddPodcastPage />);
+    expect(screen.getByText(/acesso negado/i)).toBeInTheDocument();
+    expect(screen.queryByLabelText(/podcast name/i)).not.toBeInTheDocument();
   });
 });
