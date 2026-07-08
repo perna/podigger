@@ -38,7 +38,8 @@ const envSchema = z.object({
     .refine(
       (v) => v.startsWith("/") || /^https?:\/\//.test(v),
       "NEXT_PUBLIC_API_URL must be a URL or an absolute path starting with '/'",
-    ),
+    )
+    .default("http://localhost:8000"),
 
   /**
    * Optional: the default page size for the episodes / podcasts list
