@@ -1,4 +1,4 @@
-Django==6.0.6
+Django==6.0.7
 djangorestframework>=3.17.1,<4.0
 djangorestframework-simplejwt==5.5.1
 django-cors-headers==4.9.0
@@ -8,7 +8,7 @@ gunicorn>=26.0.0,<27.0
 uvicorn==0.49.0
 django-environ>=0.14.0
 django-redis>=7.0.0
-django-filter>=25.2
+django-filter>=26.1
 feedparser>=6.0.12
 requests>=2.34.2
 urllib3>=2.7.0
