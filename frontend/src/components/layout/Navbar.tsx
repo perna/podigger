@@ -6,8 +6,7 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { Icon } from '@/shared/ui/Icon';
-import { useTheme } from '@/shared/store';
-import { useAuth } from '@/contexts/AuthContext';
+import { useTheme, useAuth } from '@/shared/store';
 import { cn } from '@/shared/ui/cn';
 
 const publicNavLinks = [
@@ -20,7 +19,8 @@ export function Navbar() {
     const pathname = usePathname();
     const router = useRouter();
     const { mode, setMode } = useTheme();
-    const { isAuthenticated, user, logout } = useAuth();
+    const { user, status, logout } = useAuth();
+    const isAuthenticated = status === 'authenticated' && user !== null;
 
     // Show "Add Podcast" link only for editor and admin roles
     const navLinks = [
