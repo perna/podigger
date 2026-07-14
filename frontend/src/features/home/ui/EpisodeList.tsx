@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { fetchEpisodes, type Episode } from '@/lib/api';
 import { EpisodeCard } from './EpisodeCard';
-import { EpisodeCardCompact } from '@/components/episodes/EpisodeCardCompact';
+import { EpisodeCardCompact } from '@/features/episodes/ui/EpisodeCardCompact';
 import { EmptyState } from './EmptyState';
 import { LoadingSpinner } from '@/shared/ui/Spinner';
 

@@ -6,7 +6,7 @@ import { EpisodeList } from './EpisodeList';
 import { BottomNav } from './BottomNav';
 import { FAB } from '@/features/home/ui/FAB';
 import { fetchPodcasts, type Podcast } from '@/lib/api';
-import { PodcastCard } from '@/components/podcasts/PodcastCard';
+import { PodcastCard } from '@/features/podcasts/ui/PodcastCard';
 import { LoadingSpinner } from '@/shared/ui/Spinner';
 
 export function HomeClient() {
