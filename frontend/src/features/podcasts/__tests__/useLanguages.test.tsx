@@ -15,9 +15,11 @@ import { languagesService } from "@/shared/api/endpoints/languages";
 import { useAuthStore } from "@/shared/store/slices/auth";
 
 function wrapper(qc: QueryClient) {
-  return ({ children }: { children: React.ReactNode }) => (
-    <QueryClientProvider client={qc}>{children}</QueryClientProvider>
-  );
+  function Wrapper({ children }: { children: React.ReactNode }) {
+    return <QueryClientProvider client={qc}>{children}</QueryClientProvider>;
+  }
+  Wrapper.displayName = "QueryClientWrapper";
+  return Wrapper;
 }
 
 describe("useLanguages", () => {

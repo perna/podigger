@@ -14,7 +14,7 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { canAddPodcast } from "@/features/add-podcast/policy/canAddPodcast";
+import { canAddPodcast } from "@/features/add-podcast";
 import type { User } from "@/shared/store/slices/auth";
 
 const user = (role: User["role"]): User => ({ email: "a@b.co", role });

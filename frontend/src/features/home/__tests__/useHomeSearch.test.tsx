@@ -15,9 +15,11 @@ import { useHomeSearch } from "@/features/home";
 import { episodesService } from "@/shared/api/endpoints/episodes";
 
 function wrapper(qc: QueryClient) {
-  return ({ children }: { children: React.ReactNode }) => (
-    <QueryClientProvider client={qc}>{children}</QueryClientProvider>
-  );
+  function Wrapper({ children }: { children: React.ReactNode }) {
+    return <QueryClientProvider client={qc}>{children}</QueryClientProvider>;
+  }
+  Wrapper.displayName = "QueryClientWrapper";
+  return Wrapper;
 }
 
 describe("useHomeSearch", () => {

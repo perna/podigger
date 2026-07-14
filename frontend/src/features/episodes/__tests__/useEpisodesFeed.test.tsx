@@ -15,10 +15,11 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useEpisodesFeed } from "@/features/episodes";
 import { episodesService } from "@/shared/api/endpoints/episodes";
 
-function UseEpisodesFeedProbe() {
+function UseEpisodesFeedProbe(): null {
   useEpisodesFeed();
   return null;
 }
+UseEpisodesFeedProbe.displayName = "UseEpisodesFeedProbe";
 
 describe("useEpisodesFeed", () => {
   afterEach(() => {
