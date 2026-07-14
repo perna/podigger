@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { Card } from '@/shared/ui/Card';
 import { Icon } from '@/shared/ui/Icon';
-import type { Episode } from '@/lib/api';
+import type { Episode } from '@/shared/api';
 
 interface EpisodeCardCompactProps {
     episode: Episode;

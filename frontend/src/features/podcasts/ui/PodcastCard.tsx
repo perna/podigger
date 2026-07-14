@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { Card } from '@/shared/ui/Card';
 import { Icon } from '@/shared/ui/Icon';
-import type { Podcast } from '@/lib/api';
+import type { Podcast } from '@/shared/api';
 
 interface PodcastCardProps {
     podcast: Podcast;

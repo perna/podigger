@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { fetchLanguages, type PodcastLanguage } from '@/lib/api';
+import { languagesService, type PodcastLanguage } from '@/shared/api';
 
 interface LanguageFilterProps {
   selectedLanguageId: number | null;
@@ -12,7 +12,7 @@ export function LanguageFilter({ selectedLanguageId, onLanguageChange }: Languag
   const [languages, setLanguages] = useState<PodcastLanguage[]>([]);
 
   useEffect(() => {
-    fetchLanguages()
+    languagesService.list()
       .then(setLanguages)
       .catch(() => setLanguages([]));
   }, []);

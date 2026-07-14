@@ -5,7 +5,7 @@ import { SearchHero } from '@/features/home/ui/SearchHero';
 import { EpisodeList } from './EpisodeList';
 import { BottomNav } from './BottomNav';
 import { FAB } from '@/features/home/ui/FAB';
-import { fetchPodcasts, type Podcast } from '@/lib/api';
+import { podcastsService, type Podcast } from '@/shared/api';
 import { PodcastCard } from '@/features/podcasts/ui/PodcastCard';
 import { LoadingSpinner } from '@/shared/ui/Spinner';
 
@@ -23,7 +23,7 @@ export function HomeClient() {
     if (trimmed) {
       setIsSearchingPodcasts(true);
       try {
-        const res = await fetchPodcasts(trimmed);
+        const res = await podcastsService.list({ search: trimmed });
         setPodcasts(res.results);
       } catch (err) {
         console.error('Error searching podcasts:', err);

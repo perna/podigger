@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { fetchEpisodes, type Episode } from '@/lib/api';
+import { episodesService, type Episode } from '@/shared/api';
 import { EpisodeCard } from './EpisodeCard';
 import { EpisodeCardCompact } from '@/features/episodes/ui/EpisodeCardCompact';
 import { EmptyState } from './EmptyState';
@@ -38,7 +38,7 @@ export function EpisodeList({ searchTerm, onLoadingChange }: EpisodeListProps) {
           onLoadingChange?.(true);
         }
         setError(null);
-        const res = await fetchEpisodes(trimmed || undefined, pageNum);
+        const res = await episodesService.list({ search: trimmed || undefined, page: pageNum });
         if (append) {
           setEpisodes((prev) => [...prev, ...res.results]);
         } else {

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { fetchPodcasts, type Podcast } from '@/lib/api';
+import { podcastsService, type Podcast } from '@/shared/api';
 import { useDebounce } from '@/lib/useDebounce';
 import { PodcastCard } from './PodcastCard';
 import { Pagination } from './Pagination';
@@ -54,7 +54,7 @@ export function PodcastList() {
     setIsLoading(true);
     setIsError(false);
     try {
-      const res = await fetchPodcasts(query, page, language);
+      const res = await podcastsService.list({ search: query, page, language });
       setPodcasts(res.results);
       setHasNext(res.next !== null);
       setHasPrevious(res.previous !== null);
