@@ -6,7 +6,7 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { Icon } from '@/shared/ui/Icon';
-import { useTheme } from '@/components/providers/ThemeProvider';
+import { useTheme } from '@/shared/store';
 import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/shared/ui/cn';
 
@@ -19,7 +19,7 @@ const publicNavLinks = [
 export function Navbar() {
     const pathname = usePathname();
     const router = useRouter();
-    const { theme, toggleTheme } = useTheme();
+    const { mode, setMode } = useTheme();
     const { isAuthenticated, user, logout } = useAuth();
 
     // Show "Add Podcast" link only for editor and admin roles
@@ -38,6 +38,16 @@ export function Navbar() {
         }
         logout();
         router.push('/');
+    };
+
+    const effectiveIsDark =
+        mode === 'dark' ||
+        (mode === 'system' &&
+            typeof window !== 'undefined' &&
+            window.matchMedia?.('(prefers-color-scheme: dark)').matches);
+
+    const toggleTheme = () => {
+        setMode(effectiveIsDark ? 'light' : 'dark');
     };
 
     return (
@@ -82,10 +92,10 @@ export function Navbar() {
                             type="button"
                             onClick={toggleTheme}
                             className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-white/10 transition-colors text-slate-600 dark:text-slate-300"
-                            aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+                            aria-label={effectiveIsDark ? 'Switch to light mode' : 'Switch to dark mode'}
                         >
                             <Icon
-                                name={theme === 'dark' ? 'light_mode' : 'dark_mode'}
+                                name={effectiveIsDark ? 'light_mode' : 'dark_mode'}
                                 opticalSize={20}
                             />
                         </button>

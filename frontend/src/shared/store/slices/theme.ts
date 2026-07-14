@@ -27,6 +27,11 @@ function applyThemeToDocument(mode: ThemeMode): void {
       typeof window !== "undefined" &&
       window.matchMedia?.("(prefers-color-scheme: dark)").matches);
   document.documentElement.dataset.theme = isDark ? "dark" : "light";
+  // ponytail: also toggle the legacy `.dark` class so the existing
+  // globals.css dark-mode rules (which key off `.dark`) continue to work.
+  // Remove this once globals.css migrates to `data-theme` selectors.
+  document.documentElement.classList.toggle("dark", isDark);
+  document.documentElement.classList.toggle("light", !isDark);
 }
 
 const themeSlice: StateCreator<ThemeState> = (set) => ({
