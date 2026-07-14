@@ -43,7 +43,7 @@ export function EpisodeCard({ episode }: EpisodeCardProps) {
           )}
           <div className="flex items-center justify-between pt-2">
             <a
-              href={episode.link}
+              href={episode.link ?? "#"}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center justify-center gap-2 h-10 px-6 rounded-full bg-primary text-background-dark font-bold text-sm shadow-lg shadow-primary/20 hover:brightness-110 transition-all active:scale-95"

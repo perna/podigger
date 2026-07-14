@@ -1,12 +1,9 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { SearchHero } from '@/features/home/ui/SearchHero';
-import { EpisodeList } from './EpisodeList';
-import { BottomNav } from './BottomNav';
-import { FAB } from '@/features/home/ui/FAB';
+import { SearchHero, FAB, EpisodeList, BottomNav } from '@/features/home';
+import { PodcastCard } from '@/features/podcasts';
 import { podcastsService, type Podcast } from '@/shared/api';
-import { PodcastCard } from '@/features/podcasts/ui/PodcastCard';
 import { LoadingSpinner } from '@/shared/ui/Spinner';
 
 export function HomeClient() {

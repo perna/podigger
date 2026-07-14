@@ -83,7 +83,7 @@ export function EpisodeCardCompact({ episode }: EpisodeCardCompactProps) {
             </div>
             <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800">
                 <a
-                    href={episode.enclosure || episode.link}
+                    href={episode.enclosure ?? episode.link ?? "#"}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="w-full flex items-center justify-center gap-2 bg-primary text-background-dark font-bold py-2 rounded-full hover:bg-primary/90 transition-colors text-sm"

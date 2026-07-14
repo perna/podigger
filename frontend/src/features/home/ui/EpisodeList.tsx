@@ -2,9 +2,8 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { episodesService, type Episode } from '@/shared/api';
-import { EpisodeCard } from './EpisodeCard';
-import { EpisodeCardCompact } from '@/features/episodes/ui/EpisodeCardCompact';
-import { EmptyState } from './EmptyState';
+import { EpisodeCardCompact } from '@/features/episodes';
+import { EpisodeCard, EmptyState } from '@/features/home';
 import { LoadingSpinner } from '@/shared/ui/Spinner';
 
 interface EpisodeListProps {
