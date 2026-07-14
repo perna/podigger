@@ -39,8 +39,8 @@ describe("usePodcastsFeed", () => {
   });
 
   it("placeholderData: keepPreviousData keeps the previous list across filter changes", async () => {
-    const first = deferred<{ count: number; next: string | null; previous: string | null; results: Array<{ id: number; name: string }> }>();
-    const second = deferred<{ count: number; next: string | null; previous: string | null; results: Array<{ id: number; name: string }> }>();
+    const first = deferred<{ count: number; next: string | null; previous: string | null; results: Array<{ id: number; name: string; total_episodes: number }> }>();
+    const second = deferred<{ count: number; next: string | null; previous: string | null; results: Array<{ id: number; name: string; total_episodes: number }> }>();
     const listSpy = vi
       .spyOn(podcastsService, "list")
       .mockImplementationOnce(() => first.promise)
@@ -62,11 +62,11 @@ describe("usePodcastsFeed", () => {
         next: null,
         previous: null,
         results: [
-          { id: 1, name: "podcast 1" },
-          { id: 2, name: "podcast 2" },
-          { id: 3, name: "podcast 3" },
-          { id: 4, name: "podcast 4" },
-          { id: 5, name: "podcast 5" },
+          { id: 1, name: "podcast 1", total_episodes: 0 },
+          { id: 2, name: "podcast 2", total_episodes: 0 },
+          { id: 3, name: "podcast 3", total_episodes: 0 },
+          { id: 4, name: "podcast 4", total_episodes: 0 },
+          { id: 5, name: "podcast 5", total_episodes: 0 },
         ],
       });
     });
@@ -87,7 +87,7 @@ describe("usePodcastsFeed", () => {
         count: 1,
         next: null,
         previous: null,
-        results: [{ id: 99, name: "podcast filtered" }],
+        results: [{ id: 99, name: "podcast filtered", total_episodes: 0 }],
       });
     });
     await waitFor(() => expect(screen.getByText("podcast filtered")).toBeInTheDocument());
