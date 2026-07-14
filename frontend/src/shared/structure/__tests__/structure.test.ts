@@ -28,46 +28,19 @@ describe("shared/structure — registry", () => {
   });
 });
 
-describe("shared/structure — post-refactor tree", () => {
-  // The post-refactor tree is the new feature / shared / app folders;
-  // the legacy components/, contexts/, lib/ tree is staged for
-  // deletion in T106/T107 and is excluded here. It is checked below
-  // in a separate informational assertion.
-  const POST_REFACTOR_SUFFIXES = [
-    "features",
-    "shared",
-    "app",
-  ] as const;
-  // We assert the post-refactor tree has zero violations — that is
-  // the FR-013 contract.
-
-  it("reports zero violations on the post-refactor tree (features/, shared/, app/)", () => {
-    const violations = runRules(ROOT).filter((v) =>
-      POST_REFACTOR_SUFFIXES.some((dir) => v.file === dir || v.file.startsWith(`${dir}/`)),
-    );
+describe("shared/structure — full src/ tree", () => {
+  // FR-008 (005-frontend-coverage-cleanup): the structural test asserts
+  // zero violations against the FULL src/ tree — the legacy components/,
+  // contexts/, lib/ tree MUST be gone, not just "informational".
+  it("reports zero violations on the full src/ tree (no legacy exemptions)", () => {
+    const violations = runRules(ROOT);
     if (violations.length > 0) {
       console.error(
-        "[structure] post-refactor violations:\n" +
+        "[structure] full-tree violations:\n" +
           violations.map((v) => `  ${v.file}  [${v.rule}]`).join("\n"),
       );
     }
     expect(violations).toEqual([]);
-  });
-
-  it("reports every violation on the legacy tree (components/, contexts/, lib/) for visibility", () => {
-    const violations = runRules(ROOT).filter((v) =>
-      ["components", "contexts", "lib"].some((dir) => v.file === dir || v.file.startsWith(`${dir}/`)),
-    );
-    // Informational only — these are T106/T107 cleanup debt, tracked
-    // separately. The assertion exists so the gap is visible in test
-    // output, not so it fails the build.
-    if (violations.length > 0) {
-      console.warn(
-        `[structure] LEGACY violations (tracked as iter-2 debt):\n` +
-          violations.map((v) => `  ${v.file}  [${v.rule}]`).join("\n"),
-      );
-    }
-    expect(violations.length).toBeGreaterThanOrEqual(0);
   });
 });
 
