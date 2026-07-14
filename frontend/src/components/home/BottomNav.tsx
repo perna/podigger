@@ -1,8 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { Icon } from '@/components/ui/Icon';
-import { cn } from '@/lib/utils';
+import { Icon } from '@/shared/ui/Icon';
+import { cn } from '@/shared/ui/cn';
 
 type NavItem = 'home' | 'search' | 'library' | 'settings';
 

@@ -6,7 +6,7 @@
 import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { Icon } from "@/components/ui/Icon";
+import { Icon } from "@/shared/ui/Icon";
 
 function UnauthorizedContent() {
   const searchParams = useSearchParams();

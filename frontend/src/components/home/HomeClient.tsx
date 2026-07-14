@@ -1,13 +1,13 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { SearchHero } from '@/components/search/SearchHero';
+import { SearchHero } from '@/features/home/ui/SearchHero';
 import { EpisodeList } from './EpisodeList';
 import { BottomNav } from './BottomNav';
-import { FAB } from '@/components/common/FAB';
+import { FAB } from '@/features/home/ui/FAB';
 import { fetchPodcasts, type Podcast } from '@/lib/api';
 import { PodcastCard } from '@/components/podcasts/PodcastCard';
-import { LoadingSpinner } from '@/components/ui/Loading';
+import { LoadingSpinner } from '@/shared/ui/Spinner';
 
 export function HomeClient() {
   const [query, setQuery] = useState('');

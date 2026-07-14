@@ -1,7 +1,7 @@
 'use client';
 
-import { Icon } from '@/components/ui/Icon';
-import { Button } from '@/components/ui/Button';
+import { Icon } from '@/shared/ui/Icon';
+import { Button } from '@/shared/ui/Button';
 
 interface SearchHeroProps {
     query: string;

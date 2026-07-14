@@ -1,5 +1,5 @@
-import { Button } from '@/components/ui/Button';
-import { cn } from '@/lib/utils';
+import { Button } from '@/shared/ui/Button';
+import { cn } from '@/shared/ui/cn';
 
 interface EmptyStateProps {
   type: 'no-results' | 'no-episodes' | 'error';

@@ -1,7 +1,7 @@
 'use client';
 
-import { Button } from '@/components/ui/Button';
-import { Icon } from '@/components/ui/Icon';
+import { Button } from '@/shared/ui/Button';
+import { Icon } from '@/shared/ui/Icon';
 
 interface SearchHeaderProps {
   query: string;

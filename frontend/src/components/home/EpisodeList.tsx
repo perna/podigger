@@ -5,7 +5,7 @@ import { fetchEpisodes, type Episode } from '@/lib/api';
 import { EpisodeCard } from './EpisodeCard';
 import { EpisodeCardCompact } from '@/components/episodes/EpisodeCardCompact';
 import { EmptyState } from './EmptyState';
-import { LoadingSpinner } from '@/components/ui/Loading';
+import { LoadingSpinner } from '@/shared/ui/Spinner';
 
 interface EpisodeListProps {
   searchTerm: string;

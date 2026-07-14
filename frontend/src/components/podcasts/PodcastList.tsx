@@ -6,7 +6,7 @@ import { useDebounce } from '@/lib/useDebounce';
 import { PodcastCard } from './PodcastCard';
 import { Pagination } from './Pagination';
 import { LanguageFilter } from './LanguageFilter';
-import { Skeleton } from '@/components/ui/Loading';
+import { Skeleton } from '@/shared/ui/Spinner';
 
 function PodcastCardSkeleton() {
   return (

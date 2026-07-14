@@ -5,10 +5,10 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { Icon } from '@/components/ui/Icon';
+import { Icon } from '@/shared/ui/Icon';
 import { useTheme } from '@/components/providers/ThemeProvider';
 import { useAuth } from '@/contexts/AuthContext';
-import { cn } from '@/lib/utils';
+import { cn } from '@/shared/ui/cn';
 
 const publicNavLinks = [
     { label: 'Search', href: '/', icon: 'search' },

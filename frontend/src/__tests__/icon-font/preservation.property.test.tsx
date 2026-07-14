@@ -65,7 +65,7 @@ vi.mock('@/contexts/AuthContext', () => ({
 }));
 
 // Import components AFTER mocks are set up
-import { Icon } from '@/components/ui/Icon';
+import { Icon } from '@/shared/ui/Icon';
 import RootLayout from '@/app/layout';
 
 describe('Property 2: Preservation — Comportamento Existente Inalterado', () => {

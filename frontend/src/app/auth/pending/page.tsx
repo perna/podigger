@@ -2,7 +2,7 @@
 // Requirements: 13.3
 
 import Link from "next/link";
-import { Icon } from "@/components/ui/Icon";
+import { Icon } from "@/shared/ui/Icon";
 
 export default function PendingPage() {
   return (

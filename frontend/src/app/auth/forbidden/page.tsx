@@ -5,7 +5,7 @@
 
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
-import { Icon } from "@/components/ui/Icon";
+import { Icon } from "@/shared/ui/Icon";
 
 const ROLE_LABELS: Record<string, string> = {
   admin: "Administrador",
