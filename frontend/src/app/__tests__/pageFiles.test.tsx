@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 /**
  * T035 (004 T058) — page-composition test.
  *
