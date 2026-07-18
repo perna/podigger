@@ -105,8 +105,15 @@ function update() {
   console.log(`[check-bundle-size] Baseline updated: ${(current.home.rootMainBytes / 1024).toFixed(1)}kB (${current.home.files.length} files)`);
 }
 
-if (command === "update") {
-  update();
-} else {
-  check();
+const isMain =
+  process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url);
+
+if (isMain) {
+  if (command === "update") {
+    update();
+  } else {
+    check();
+  }
 }
+
+export { check, update, readBaseline, readCurrentBundle, MAX_REGRESSION_PERCENT };
