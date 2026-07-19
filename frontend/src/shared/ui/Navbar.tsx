@@ -41,22 +41,17 @@ export function Navbar() {
         router.push('/');
     };
 
-    const [mounted, setMounted] = useState(false);
     const [systemDark, setSystemDark] = useState(false);
 
     useEffect(() => {
         const mql = window.matchMedia('(prefers-color-scheme: dark)');
-        setSystemDark(mql.matches);
+        queueMicrotask(() => setSystemDark(mql.matches));
         const handler = (e: MediaQueryListEvent) => setSystemDark(e.matches);
         mql.addEventListener('change', handler);
         return () => mql.removeEventListener('change', handler);
     }, []);
 
-    useEffect(() => {
-        setMounted(true);
-    }, []);
-
-    const effectiveIsDark = mode === 'dark' || (mode === 'system' && (mounted ? systemDark : false));
+    const effectiveIsDark = mode === 'dark' || (mode === 'system' && systemDark);
 
     const toggleTheme = () => {
         setMode(effectiveIsDark ? 'light' : 'dark');

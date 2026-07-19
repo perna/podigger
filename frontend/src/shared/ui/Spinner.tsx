@@ -8,7 +8,7 @@
  * T020–T023.
  */
 
-import type { HTMLAttributes, SVGAttributes } from "react";
+import type { SVGAttributes } from "react";
 import { cn } from "./cn";
 
 export function Spinner({ className, label = "Loading" }: { className?: string; label?: string }) {
