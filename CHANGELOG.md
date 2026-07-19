@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Frontend modernization follow-up
+- **Process debt (irreversible)**: PR #225 (`a5720f9`) merged `chore/frontend-modernization` as a single squashed commit, breaking FR-014's per-slice reversibility guarantee. The 19 pre-squash commit SHAs remain recoverable via `git log --oneline chore/frontend-modernization ^main` (branch ref preserved for exactly this purpose); re-deriving the per-slice diff from them is out of scope.
+- **Cosmetic debt (cleared)**: the 7 unhandled exceptions reported in the legacy `PodcastCard` / `EpisodeCard` test files cleared automatically when 005-frontend-coverage-cleanup US2 deleted the legacy `src/components/` tree and its tests.
+- **Spec archive**: the follow-up that closes the 9 carry-over gaps from the 004 Verifier iterations lives in `specs/005-frontend-coverage-cleanup/` (spec, plan, tasks, validation).
+
 ### Added
 - Frontend architecture modernization (specs/004-frontend-modernization):
   - Slice 1: typed environment module with Zod validation (`shared/env/`).

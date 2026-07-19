@@ -80,4 +80,10 @@ describe("shared/env/env", () => {
       expect(String(err)).toMatch(/NEXT_PUBLIC_API_URL/);
     }
   });
+
+  it("uses default 'http://localhost:8000' for NEXT_PUBLIC_API_URL when unset", async () => {
+    delete process.env.NEXT_PUBLIC_API_URL;
+    const mod = await import("@/shared/env/env");
+    expect(mod.env.NEXT_PUBLIC_API_URL).toBe("http://localhost:8000");
+  });
 });

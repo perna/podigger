@@ -62,6 +62,38 @@ const eslintConfig = defineConfig([
       ],
     },
   },
+  // T115 — warn on raw <button> / <input> / <a> in pages and feature UI; see specs/005-frontend-coverage-cleanup/spec.md FR-009.
+  {
+    files: ["src/app/**/page.tsx", "src/features/**/ui/**/*.{ts,tsx}"],
+    languageOptions: {
+      parserOptions: {
+        ecmaFeatures: { jsx: true },
+      },
+    },
+    rules: {
+      "no-restricted-syntax": [
+        "warn",
+        {
+          selector:
+            "JSXOpeningElement[name.name='button']:not(:has(JSXAttribute[name.name='data-allow-raw']))",
+          message:
+            "Use the shared <Button> primitive from @/shared/ui instead of a raw <button>.",
+        },
+        {
+          selector:
+            "JSXOpeningElement[name.name='input']:not(:has(JSXAttribute[name.name='data-allow-raw']))",
+          message:
+            "Use the shared <Input> primitive from @/shared/ui instead of a raw <input>.",
+        },
+        {
+          selector:
+            "JSXOpeningElement[name.name='a']:not(:has(JSXAttribute[name.name='data-allow-raw'])):not(:has(JSXAttribute[name.name='data-allow-raw-link']))",
+          message:
+            "Use Next.js <Link> from 'next/link' for internal navigation instead of a raw <a>.",
+        },
+      ],
+    },
+  },
 ]);
 
 export default eslintConfig;

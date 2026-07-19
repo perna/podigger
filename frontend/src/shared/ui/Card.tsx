@@ -1,16 +1,26 @@
 /**
  * T065 — Card primitives.
+ *
+ * US2 (005-frontend-coverage-cleanup, FR-006) added the optional
+ * `hoverable` prop so that the deletion of `components/ui/Card.tsx` is a
+ * behaviour-preserving move. When `hoverable` is true, the Card applies the
+ * legacy hover shadow + lift transition.
  */
 
 import { type HTMLAttributes, type ReactNode } from "react";
 import { cn } from "./cn";
 
-export function Card({ className, ...rest }: HTMLAttributes<HTMLDivElement>) {
+export interface CardProps extends HTMLAttributes<HTMLDivElement> {
+  hoverable?: boolean;
+}
+
+export function Card({ className, hoverable, ...rest }: CardProps) {
   return (
     <div
       className={cn(
-        "rounded-xl border border-surface-200 bg-white p-4 shadow-sm",
+        "rounded-xl border border-surface-200 bg-white p-4 shadow-sm transition-all",
         "dark:border-surface-800 dark:bg-surface-900",
+        hoverable && "hover:-translate-y-1 hover:shadow-xl hover:shadow-primary/5",
         className,
       )}
       {...rest}

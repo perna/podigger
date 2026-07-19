@@ -4,8 +4,8 @@
 // Requirements: 13.2, 13.6
 
 import Link from "next/link";
-import { useAuth } from "@/contexts/AuthContext";
-import { Icon } from "@/components/ui/Icon";
+import { useAuth } from "@/shared/store";
+import { Icon } from "@/shared/ui/Icon";
 
 const ROLE_LABELS: Record<string, string> = {
   admin: "Administrador",
