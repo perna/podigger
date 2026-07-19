@@ -75,19 +75,19 @@ const eslintConfig = defineConfig([
         "warn",
         {
           selector:
-            "JSXOpeningElement[name.name='button']:not([attributes.name.name='data-allow-raw'])",
+            "JSXOpeningElement[name.name='button']:not(:has(JSXAttribute[name.name='data-allow-raw']))",
           message:
             "Use the shared <Button> primitive from @/shared/ui instead of a raw <button>.",
         },
         {
           selector:
-            "JSXOpeningElement[name.name='input']:not([attributes.name.name='data-allow-raw'])",
+            "JSXOpeningElement[name.name='input']:not(:has(JSXAttribute[name.name='data-allow-raw']))",
           message:
             "Use the shared <Input> primitive from @/shared/ui instead of a raw <input>.",
         },
         {
           selector:
-            "JSXOpeningElement[name.name='a']:not([attributes.name.name='data-allow-raw']):not([attributes.name.name='data-allow-raw-link'])",
+            "JSXOpeningElement[name.name='a']:not(:has(JSXAttribute[name.name='data-allow-raw'])):not(:has(JSXAttribute[name.name='data-allow-raw-link']))",
           message:
             "Use Next.js <Link> from 'next/link' for internal navigation instead of a raw <a>.",
         },

@@ -55,13 +55,19 @@ describe("shared/store — theme slice", () => {
   });
 
   it("reacts to matchMedia change events when in 'system' mode", () => {
-    const { listeners } = mockMatchMedia(false);
+    const { mql, listeners } = mockMatchMedia(false);
     useThemeStore.getState().setMode("system");
     expect(document.documentElement.dataset.theme).toBe("light");
     const detach = attachSystemThemeListener();
     expect(listeners.size).toBe(1);
+
+    // Simulate OS preference changing to dark
+    (mql as { matches: boolean }).matches = true;
     listeners.forEach((cb) => cb());
+    expect(document.documentElement.dataset.theme).toBe("dark");
     expect(useThemeStore.getState().mode).toBe("system");
+
     detach();
+    expect(listeners.size).toBe(0);
   });
 });

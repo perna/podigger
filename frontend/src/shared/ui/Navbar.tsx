@@ -3,6 +3,7 @@
 // Feature: api-authentication-strategy
 // Requirements: 9.1, 9.2
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { Icon } from '@/shared/ui/Icon';
@@ -40,11 +41,22 @@ export function Navbar() {
         router.push('/');
     };
 
-    const effectiveIsDark =
-        mode === 'dark' ||
-        (mode === 'system' &&
-            typeof window !== 'undefined' &&
-            window.matchMedia?.('(prefers-color-scheme: dark)').matches);
+    const [mounted, setMounted] = useState(false);
+    const [systemDark, setSystemDark] = useState(false);
+
+    useEffect(() => {
+        const mql = window.matchMedia('(prefers-color-scheme: dark)');
+        setSystemDark(mql.matches);
+        const handler = (e: MediaQueryListEvent) => setSystemDark(e.matches);
+        mql.addEventListener('change', handler);
+        return () => mql.removeEventListener('change', handler);
+    }, []);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    const effectiveIsDark = mode === 'dark' || (mode === 'system' && (mounted ? systemDark : false));
 
     const toggleTheme = () => {
         setMode(effectiveIsDark ? 'light' : 'dark');
