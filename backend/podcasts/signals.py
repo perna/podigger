@@ -1,3 +1,4 @@
+from django.db import transaction
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
@@ -9,4 +10,5 @@ from .models import Podcast
 @receiver(post_save, sender=Podcast)
 def dispatch_add_episode(_sender, instance, created, **_kwargs):
     if created and instance.feed:
-        add_episode.delay(instance.feed)
+        feed_url = instance.feed
+        transaction.on_commit(lambda: add_episode.delay(feed_url))
