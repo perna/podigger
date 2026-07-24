@@ -109,14 +109,14 @@ export function EpisodeList({ searchTerm, onLoadingChange }: EpisodeListProps) {
       {/* Desktop: responsive grid with compact cards */}
       <div className="hidden md:grid grid-cols-1 xl:grid-cols-2 gap-6">
         {episodes.map((ep) => (
-          <EpisodeCardCompact key={ep.id} episode={ep} />
+          <EpisodeCardCompact key={`${ep.podcast.id}-${ep.id}`} episode={ep} />
         ))}
       </div>
 
       {/* Mobile: single column with large cards */}
       <div className="md:hidden space-y-6">
         {episodes.map((ep) => (
-          <EpisodeCard key={ep.id} episode={ep} />
+          <EpisodeCard key={`${ep.podcast.id}-${ep.id}`} episode={ep} />
         ))}
       </div>
 
