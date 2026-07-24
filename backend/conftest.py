@@ -15,6 +15,12 @@ def disable_throttling(mocker):
     )
 
 
+@pytest.fixture(autouse=True)
+def mock_add_episode_task(mocker):
+    """Impede que a task add_episode dispare sem broker nos testes."""
+    mocker.patch("podcasts.tasks.add_episode.delay")
+
+
 @pytest.fixture
 def user_factory():
     return UserFactory

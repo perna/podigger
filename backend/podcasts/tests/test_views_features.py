@@ -31,7 +31,7 @@ class TestPodcastViewSetFeatures:
         mocker.patch(
             "podcasts.services.podcast_service.is_valid_feed", return_value=True
         )
-        mock_task = mocker.patch("podcasts.services.podcast_service.add_episode.delay")
+        mock_task = mocker.patch("podcasts.tasks.add_episode.delay")
         data = {"name": "New Pod", "feed": "http://newfeed.com"}
         response = self.client.post("/api/podcasts/", data)
 
