@@ -6,3 +6,6 @@ class PodcastsConfig(AppConfig):
 
     default_auto_field = "django.db.models.BigAutoField"
     name = "podcasts"
+
+    def ready(self):
+        import podcasts.signals  # noqa: F401
