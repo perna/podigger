@@ -42,15 +42,28 @@ export function EpisodeCard({ episode }: EpisodeCardProps) {
             </p>
           )}
           <div className="flex items-center justify-between pt-2">
-            <a
-              href={episode.link ?? "#"}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 h-10 px-6 rounded-full bg-primary text-background-dark font-bold text-sm shadow-lg shadow-primary/20 hover:brightness-110 transition-all active:scale-95"
-            >
-              <Icon name="play_arrow" opticalSize={20} />
-              <span>Play</span>
-            </a>
+            {episode.enclosure ? (
+              <audio
+                controls
+                src={episode.enclosure}
+                className="h-10 max-w-[200px] flex-1"
+                preload="none"
+              >
+                <a href={episode.enclosure} target="_blank" rel="noopener noreferrer">
+                  Play
+                </a>
+              </audio>
+            ) : (
+              <a
+                href={episode.link ?? "#"}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2 h-10 px-6 rounded-full bg-primary text-background-dark font-bold text-sm shadow-lg shadow-primary/20 hover:brightness-110 transition-all active:scale-95"
+              >
+                <Icon name="play_arrow" opticalSize={20} />
+                <span>Play</span>
+              </a>
+            )}
             {podcastId && (
               <Link
                 href={`/podcasts/${podcastId}`}
