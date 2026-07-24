@@ -7,6 +7,6 @@ from .models import Podcast
 
 
 @receiver(post_save, sender=Podcast)
-def dispatch_add_episode(sender, instance, created, **kwargs):
+def dispatch_add_episode(_sender, instance, created, **_kwargs):
     if created and instance.feed:
         add_episode.delay(instance.feed)
