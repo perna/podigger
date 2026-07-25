@@ -27,6 +27,7 @@ class TestPodcastViewSetFeatures:
         )
         self.client.force_authenticate(user=self.user)
 
+    @pytest.mark.django_db(transaction=True)
     def test_create_podcast(self, mocker):
         mocker.patch(
             "podcasts.services.podcast_service.is_valid_feed", return_value=True
