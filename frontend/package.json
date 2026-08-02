@@ -9,34 +9,42 @@
     "start": "next start",
     "lint": "eslint --max-warnings=-1",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "test:structure": "vitest run src/shared/structure",
+    "test:bundle": "node scripts/check-bundle-size.mjs"
   },
   "dependencies": {
+    "@hookform/resolvers": "^5.5.7",
+    "@tanstack/react-query": "^5.80.7",
     "clsx": "^2.1.1",
-    "next": "16.2.9",
-    "react": "19.2.7",
-    "react-dom": "19.2.7",
-    "tailwind-merge": "^3.6.0"
+    "next": "16.2.12",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "react-hook-form": "^7.83.0",
+    "tailwind-merge": "^3.6.0",
+    "zod": "^4.4.3",
+    "zustand": "^5.0.5"
   },
   "devDependencies": {
-    "@next/bundle-analyzer": "^16.2.3",
-    "fast-check": "3.23.2",
+    "@next/bundle-analyzer": "^16.2.12",
+    "@tanstack/react-query-devtools": "^5.101.4",
+    "fast-check": "4.9.0",
     "@tailwindcss/postcss": "^4",
     "@testing-library/dom": "^10.4.1",
-    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/jest-dom": "^7.0.0",
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.1",
-    "@types/node": "^24",
+    "@types/node": "^26",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@vitejs/plugin-react": "^5.2.0",
+    "@vitejs/plugin-react": "^6.0.5",
     "babel-plugin-react-compiler": "1.0.0",
-    "eslint": "^9",
-    "eslint-config-next": "16.0.10",
-    "jsdom": "^28.0.0",
+    "eslint": "^10",
+    "eslint-config-next": "16.2.12",
+    "jsdom": "^30.0.1",
     "tailwindcss": "^4",
-    "typescript": "^5",
+    "typescript": "^7",
     "vite-tsconfig-paths": "^6.1.1",
-    "vitest": "^4.1.0"
+    "vitest": "^4.1.10"
   }
 }

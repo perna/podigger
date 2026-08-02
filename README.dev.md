@@ -367,3 +367,32 @@ For detailed frontend documentation, see [`frontend/README.md`](frontend/README.
 - [Tailwind CSS Documentation](https://tailwindcss.com/docs)
 - [pnpm Documentation](https://pnpm.io)
 - [NVM Documentation](https://github.com/nvm-sh/nvm)
+
+## Optimization Regression Guard
+
+The PostgreSQL optimization pass on the `podcasts` app is locked in by a
+single test that runs the whole optimization regression suite:
+
+```bash
+pytest backend/podcasts/tests/test_optimization_guards.py
+```
+
+This test fails if **any** of the following regresses:
+
+- Search p95 latency < 500 ms (SC-001) — measured by
+  `backend/podcasts/tests/test_search_performance.py`
+- Episode search is a pure read on the request path (FR-002) — measured by
+  `backend/podcasts/tests/test_search_pure_read.py`
+- Per-feed statement budget for the refresh path is below the contract in
+  `specs/003-db-optimization/contracts/sql-statement-budget.md` (SC-002) —
+  measured by `backend/podcasts/tests/test_refresh_service.py`
+- List and detail endpoint statement counts (SC-003) — measured by
+  `backend/podcasts/tests/test_api.py` and `test_views_features.py`
+- `total_episodes` matches `COUNT(*)` after a full refresh (SC-004) —
+  measured by `test_refresh_service.py::TestCounterResetIsOneStatement`
+- Web and worker connection reuse (SC-005) — measured by
+  `backend/podcasts/tests/test_connection_reuse.py`
+
+The before/after numbers for each optimization live in
+`specs/003-db-optimization/before-after.md`. If you change the
+optimization pass, update that file alongside the code change.

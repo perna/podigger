@@ -57,15 +57,14 @@ vi.mock('next/link', () => ({
     React.createElement('a', { href, ...props }, children),
 }));
 
-// Mock AuthContext — Navbar uses useAuth
-vi.mock('@/contexts/AuthContext', () => ({
-  AuthProvider: ({ children }: { children: React.ReactNode }) =>
-    React.createElement(React.Fragment, null, children),
-  useAuth: () => ({ isAuthenticated: false, user: null, logout: vi.fn() }),
+// Mock shared store — Navbar uses useAuth
+vi.mock('@/shared/store', () => ({
+  useAuth: () => ({ isAuthenticated: false, user: null, status: 'unauthenticated', logout: vi.fn() }),
+  useTheme: () => ({ mode: 'dark', setMode: vi.fn() }),
 }));
 
 // Import components AFTER mocks are set up
-import { Icon } from '@/components/ui/Icon';
+import { Icon } from '@/shared/ui/Icon';
 import RootLayout from '@/app/layout';
 
 describe('Property 2: Preservation — Comportamento Existente Inalterado', () => {

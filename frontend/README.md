@@ -16,7 +16,30 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+The home page lives at `app/(marketing)/page.tsx`; the page auto-updates as you edit the file.
+
+### App Router layout (route groups)
+
+The `app/` directory is organised by **route groups** (parenthesised folders) so
+the file system mirrors the application structure, not just the URL path. URL
+paths are unaffected by the grouping.
+
+```
+src/app/
+├── (marketing)/           # Public, unauthenticated marketing pages
+│   ├── page.tsx           # /
+│   └── about/             # /about
+├── (auth)/                # Authentication pages
+│   ├── login/             # /login
+│   └── register/          # /register
+├── (protected)/           # Authenticated app pages
+│   ├── podcasts/          # /podcasts
+│   └── add-podcast/       # /add-podcast
+├── auth/                  # Auth-fallback pages (/auth/unauthorized, etc.)
+├── api/                   # API route handlers
+├── layout.tsx             # Root layout
+└── providers.tsx          # Client providers
+```
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 

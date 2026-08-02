@@ -88,6 +88,24 @@ class TestPodcastAPI:
         assert response.data["count"] == 1
         assert response.data["results"][0]["name"] == "Python EN"
 
+    def test_list_podcasts_statement_count(self):
+        """US3: GET /api/podcasts/ MUST issue at most 2 statements (SC-003)."""
+        from django.db import connection
+        from django.test.utils import CaptureQueriesContext
+
+        for i in range(5):
+            lang = PodcastLanguage.objects.create(code=f"l{i}", name=f"L{i}")
+            Podcast.objects.create(
+                name=f"Pod {i}", feed=f"http://feed{i}.com", language=lang
+            )
+        with CaptureQueriesContext(connection) as ctx:
+            response = self.client.get("/api/podcasts/")
+        assert response.status_code == 200
+        assert response.data["count"] == 5
+        assert (
+            len(ctx.captured_queries) <= 2
+        ), f"list emitted {len(ctx.captured_queries)} statements, budget is 2"
+
 
 @pytest.mark.django_db
 class TestEpisodeAPIPagination:
@@ -220,6 +238,33 @@ class TestEpisodeAPI:
         results = response.data["results"]
         assert len(results) == 2
         assert results[0]["title"] in ["Ep 1", "Ep 2"]
+
+    def test_episodes_list_statement_count_with_podcast_filter(self):
+        """US3: GET /api/episodes/?podcast=<id> MUST stay under the budget (SC-003).
+
+        Budget breakdown (4 statements, no N+1):
+          1. Podcast existence check (django-filter validation)
+          2. Pagination COUNT(*) on Episode
+          3. Episode list with `select_related("podcast")` join
+          4. Tags prefetch in a single `IN (...)` query
+        The previous N+1 fan-out (one tag query per episode) is gone; the
+        budget accounts for the unavoidable filter-validation query.
+        """
+        from django.db import connection
+        from django.test.utils import CaptureQueriesContext
+
+        podcast = Podcast.objects.create(name="P", feed="http://f.com")
+        for i in range(30):
+            Episode.objects.create(
+                podcast=podcast, title=f"E{i}", link=f"http://f.com/{i}"
+            )
+        with CaptureQueriesContext(connection) as ctx:
+            response = self.client.get(f"/api/episodes/?podcast={podcast.id}")
+        assert response.status_code == 200
+        assert response.data["count"] == 30
+        assert (
+            len(ctx.captured_queries) <= 4
+        ), f"episodes list emitted {len(ctx.captured_queries)} statements, budget is 4"
 
     def test_search_episodes(self):
         # Note: Full text search might require specific DB setup or mocking in some envs

@@ -4,7 +4,6 @@ from typing import TypedDict
 from django.db import transaction
 
 from podcasts.models import Podcast
-from podcasts.tasks import add_episode
 
 from .feed_parser import is_valid_feed
 
@@ -59,9 +58,6 @@ class PodcastService:
                 "status": "existing",
                 "message": "este podcast já foi adicionado",
             }
-
-        # Trigger async task for new podcasts
-        add_episode.delay(feed)
 
         return {
             "id": podcast.id,

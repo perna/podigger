@@ -1,5 +1,7 @@
 from typing import ClassVar
 
+from django.db.models import Prefetch
+
 from accounts.permissions import IsEditorOrAdmin
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, status, viewsets
@@ -18,6 +20,7 @@ from .serializers import (
     TopicSuggestionSerializer,
 )
 from .services.podcast_service import PodcastService
+from .tasks import record_search_term
 
 _READ_ACTIONS = ("list", "retrieve")
 
@@ -31,13 +34,39 @@ class PodcastPagination(PageNumberPagination):
 
 
 class PodcastViewSet(viewsets.ModelViewSet):
-    """ViewSet for viewing and creating Podcasts (T010, T011)."""
+    """ViewSet for viewing and creating Podcasts.
 
-    queryset: ClassVar = Podcast.objects.all().order_by("-id")
+    Queryset shape (US3, FR-005, FR-013):
+      * `list` and `recent`: `select_related("language").order_by("-id")`
+        so the language FK is joined in the same statement.
+      * `retrieve`: the above plus
+        `prefetch_related(Prefetch("episodes", queryset=...))` so the
+        nested `episodes` list (with `tags`) is fetched in 2 additional
+        statements regardless of the number of episodes / tags.
+    """
+
     filter_backends: ClassVar = [filters.SearchFilter, DjangoFilterBackend]
     search_fields: ClassVar = ["name"]
     filterset_fields: ClassVar = ["language"]
     pagination_class = PodcastPagination
+
+    def get_queryset(self):
+        """Return the queryset, with eager loading tuned for each action.
+
+        - `list` and `recent`: 1 statement (podcast + language join).
+        - `retrieve`: 1 (podcast + language) + 1 (episodes) + 1 (tags) = 3.
+        """
+        qs = Podcast.objects.select_related("language").order_by("-id")
+        if self.action == "retrieve":
+            qs = qs.prefetch_related(
+                Prefetch(
+                    "episodes",
+                    queryset=Episode.objects.select_related("podcast")
+                    .prefetch_related("tags")
+                    .order_by("-published"),
+                )
+            )
+        return qs
 
     def get_permissions(self):
         """Return AllowAny for read actions; require IsEditorOrAdmin for writes."""
@@ -99,7 +128,7 @@ class PodcastViewSet(viewsets.ModelViewSet):
                 descending `id`.
         """
         _ = request
-        recent_podcasts = Podcast.objects.order_by("-id")[:6]
+        recent_podcasts = self.get_queryset()[:6]
         serializer = PodcastListSerializer(recent_podcasts, many=True)
         return Response(serializer.data)
 
@@ -122,14 +151,35 @@ class EpisodeViewSet(viewsets.ModelViewSet):
         return [IsEditorOrAdmin()]
 
     def get_queryset(self):
-        """Return the queryset, optionally filtered by search term."""
-        qs = super().get_queryset()
+        """Return the queryset, optionally filtered by search term.
+
+        Search path (when `q` is non-empty):
+          1. Build the queryset via `Episode.objects.search(q)` (pure read).
+          2. Enqueue `record_search_term.delay(q)` so the popular-terms
+             counter is updated asynchronously. The request stays a pure
+             read; the counter is eventually consistent (Q4 / FR-002).
+          3. Eagerly load `podcast` and `tags` so the response is rendered
+             with a bounded number of SQL statements (US3 / FR-005).
+
+        Non-search path: ordered by `-published` with the same eager
+        loading so the list endpoint is also N+1-free.
+        """
+        qs = super().get_queryset().select_related("podcast").prefetch_related("tags")
         q = self.request.query_params.get("q") or self.request.query_params.get(
             "search"
         )
 
         if q:
-            return Episode.objects.search(q)
+            search_qs = (
+                Episode.objects.search(q)
+                .select_related("podcast")
+                .prefetch_related("tags")
+            )
+            # Enqueue the PopularTerm counter update. Safe to fire-and-forget
+            # because the manager is a pure read and the view does not need
+            # the result.
+            record_search_term.delay(q)
+            return search_qs
 
         return qs
 

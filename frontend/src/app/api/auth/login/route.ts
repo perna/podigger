@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { env } from '@/shared/env';
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000';
+const BACKEND_URL = env.NEXT_PUBLIC_API_URL;
+
 
 export async function POST(request: NextRequest) {
     let body: { email?: unknown; password?: unknown };
