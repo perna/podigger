@@ -12,7 +12,7 @@ dependencies = [
     "redis==8.0.1",
     "gunicorn>=26.0.0,<27.0",
     "uvicorn==0.51.0",
-    "ruff>=0.16.0,<0.17.0",
+    "ruff>=0.16.1,<0.17.0",
     "django-environ>=0.14.0",
     "django-redis>=7.0.0",
     "Faker==40.36.0",
