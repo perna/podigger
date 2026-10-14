@@ -3,4 +3,4 @@
 # Para desenvolvimento, use requirements-dev.txt
 
 -r requirements-base.txt
-psycopg2==2.9.12          # compilado — não usar psycopg2-binary em produção
+psycopg2==2.9.13          # compilado — não usar psycopg2-binary em produção
